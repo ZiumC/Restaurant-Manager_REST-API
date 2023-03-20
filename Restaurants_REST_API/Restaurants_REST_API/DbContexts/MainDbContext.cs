@@ -156,6 +156,30 @@ namespace Restaurants_REST_API.DbContexts
                 });
             });
 
+            modelBuilder.Entity<Certificate>(c =>
+            {
+                c.HasKey(e => e.IdCertificate);
+                c.Property(e => e.Name).IsRequired().HasMaxLength(125);
+
+                c.HasData(new Certificate { IdCertificate = 1, Name = "Italian Cuisine" });
+                c.HasData(new Certificate { IdCertificate = 2, Name = "Germany Cuisine" });
+                c.HasData(new Certificate { IdCertificate = 3, Name = "Polish Cuisine" });
+            });
+
+            modelBuilder.Entity<EmployeeCertificates>(ec =>
+            {
+                ec.HasKey(e => e.IdEmployeeCertificate);
+                ec.Property(e => e.ExpirationDate).IsRequired();
+
+                ec.HasData(new EmployeeCertificates { IdEmployeeCertificate = 1, IdCertificate = 1, IdEmployee = 1, ExpirationDate = DateTime.Parse("2023-11-11") });
+                ec.HasData(new EmployeeCertificates { IdEmployeeCertificate = 2, IdCertificate = 1, IdEmployee = 2, ExpirationDate = DateTime.Parse("2023-11-11") });
+                ec.HasData(new EmployeeCertificates { IdEmployeeCertificate = 3, IdCertificate = 2, IdEmployee = 1, ExpirationDate = DateTime.Parse("2023-10-09") });
+                ec.HasData(new EmployeeCertificates { IdEmployeeCertificate = 4, IdCertificate = 2, IdEmployee = 4, ExpirationDate = DateTime.Parse("2023-10-09") });
+                ec.HasData(new EmployeeCertificates { IdEmployeeCertificate = 5, IdCertificate = 2, IdEmployee = 3, ExpirationDate = DateTime.Parse("2023-10-09") });
+                ec.HasData(new EmployeeCertificates { IdEmployeeCertificate = 6, IdCertificate = 3, IdEmployee = 1, ExpirationDate = DateTime.Parse("2023-11-12") });
+                ec.HasData(new EmployeeCertificates { IdEmployeeCertificate = 7, IdCertificate = 3, IdEmployee = 5, ExpirationDate = DateTime.Parse("2023-11-12") });
+            });
+
         }
 
         public DbSet<Address> Address { get; set; }
@@ -163,6 +187,8 @@ namespace Restaurants_REST_API.DbContexts
         public DbSet<Client> Clients { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
         public DbSet<Employee> Employees { get; set; }
+        public DbSet<Certificate> Certificates { get; set; }
+        public DbSet<EmployeeCertificates> EmployeeCertificates { get; set; }
 
     }
 }
