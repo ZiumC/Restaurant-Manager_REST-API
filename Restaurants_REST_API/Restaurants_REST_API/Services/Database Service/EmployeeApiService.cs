@@ -18,38 +18,72 @@ namespace Restaurants_REST_API.Services.Database_Service
         public async Task<IEnumerable<EmployeeDTO>> GetAllEmployeesAsync()
         {
             return await (from emp in _context.Employees
-                    join addr in _context.Address
-                    on emp.IdAddress equals addr.IdAddress
+                          join addr in _context.Address
+                          on emp.IdAddress equals addr.IdAddress
 
-                    join empCert in _context.EmployeeCertificates
-                    on emp.IdEmployee equals empCert.IdEmployee
+                          join empCert in _context.EmployeeCertificates
+                          on emp.IdEmployee equals empCert.IdEmployee
 
-                    join cert in _context.Certificates
-                    on empCert.IdCertificate equals cert.IdCertificate
+                          join cert in _context.Certificates
+                          on empCert.IdCertificate equals cert.IdCertificate
 
-                    select new EmployeeDTO
-                    {
+                          select new EmployeeDTO
+                          {
 
-                        FirstName = emp.Name,
-                        Surname = emp.Surname,
-                        PESEL = emp.PESEL,
-                        Salary = emp.Salary,
-                        HiredDate = emp.HiredDate,
-                        IsOwner = emp.IsOwner,
-                        IsHealthBook = emp.IsHealthBook,
-                        City = addr.City,
-                        Street = addr.Street,
-                        NoBuilding = addr.NoBuilding,
-                        NoLocal = addr.NoLocal,
-                        CertificateName = cert.Name,
-                        ExpirationDate = empCert.ExpirationDate
+                              FirstName = emp.Name,
+                              Surname = emp.Surname,
+                              PESEL = emp.PESEL,
+                              Salary = emp.Salary,
+                              HiredDate = emp.HiredDate,
+                              IsOwner = emp.IsOwner,
+                              IsHealthBook = emp.IsHealthBook,
+                              City = addr.City,
+                              Street = addr.Street,
+                              NoBuilding = addr.NoBuilding,
+                              NoLocal = addr.NoLocal,
+                              CertificateName = cert.Name,
+                              ExpirationDate = empCert.ExpirationDate
 
-                    }).ToListAsync();
+                          }).ToListAsync();
         }
 
-        public Task<Employee> GetEmployeeByIdAsync(int empId)
+        public async Task<Employee?> GetBasicEmployeeDataByIdAsync(int empId)
         {
-            throw new NotImplementedException();
+            return await _context.Employees
+                .Where(e => e.IdEmployee == empId)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<EmployeeDTO> GetDetailedEmployeeDataAsync(Employee employee)
+        {
+
+            Address address = await _context.Address
+                .Where(a => a.IdAddress == employee.IdAddress)
+                .FirstAsync();
+
+            return await (from empCert in _context.EmployeeCertificates
+                          join cert in _context.Certificates
+                          on empCert.IdCertificate equals cert.IdCertificate
+
+                          where empCert.IdEmployee == employee.IdEmployee
+                          select new EmployeeDTO
+                          {
+
+                              FirstName = employee.Name,
+                              Surname = employee.Surname,
+                              PESEL = employee.PESEL,
+                              Salary = employee.Salary,
+                              HiredDate = employee.HiredDate,
+                              IsOwner = employee.IsOwner,
+                              IsHealthBook = employee.IsHealthBook,
+                              City = address.City,
+                              Street = address.Street,
+                              NoBuilding = address.NoBuilding,
+                              NoLocal = address.NoLocal,
+                              CertificateName = cert.Name,
+                              ExpirationDate = empCert.ExpirationDate
+
+                          }).FirstAsync();
         }
 
         public Task<IEnumerable<Employee>> GetAllSupervisorsAsync()
