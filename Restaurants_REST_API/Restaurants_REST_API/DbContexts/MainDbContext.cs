@@ -21,10 +21,11 @@ namespace Restaurants_REST_API.DbContexts
             base.OnConfiguring(optionsBuilder);
 
             optionsBuilder.UseSqlServer(_configuration["ConnectionStrings:Default"]);
-            Console.WriteLine(_configuration["ConnectionStrings:Default"]);
+            
         }
 
         public DbSet<Address> Address { get; set; }
+        public DbSet<Restaurant> Restaurants { get; set; }
 
 
     }
