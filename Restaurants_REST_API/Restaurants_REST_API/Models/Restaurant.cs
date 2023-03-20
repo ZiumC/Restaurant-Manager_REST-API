@@ -14,5 +14,7 @@ namespace Restaurants_REST_API.Models
         public virtual Address Address { get; set; }
 
         public virtual ICollection<Reservation> Reservations { get; set; }
+
+        public virtual ICollection<EmployeesInRestaurant> RestaurantEmployees { get; set; }
     }
 }
