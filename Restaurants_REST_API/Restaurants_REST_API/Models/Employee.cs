@@ -33,7 +33,11 @@ namespace Restaurants_REST_API.Models
         [MinLength(11)]
         public string PESEL { get; set; }
 
-        
+        [Required]
+        [MaxLength(1)]
+        public string IsOwner { get; set; }
+
+
         public virtual int IdAddress { get; set; }
 
         [ForeignKey(nameof(IdAddress))]

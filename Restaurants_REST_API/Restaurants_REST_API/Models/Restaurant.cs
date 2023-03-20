@@ -13,10 +13,9 @@ namespace Restaurants_REST_API.Models
         public string Name { get; set; }
 
         public int IdAddress { get; set; }
-
         [ForeignKey(nameof(IdAddress))]
         public virtual Address Address { get; set; }
 
-        public virtual ICollection<Reservation> Reservations { get; set; }  
+        public virtual ICollection<Reservation> Reservations { get; set; }
     }
 }
