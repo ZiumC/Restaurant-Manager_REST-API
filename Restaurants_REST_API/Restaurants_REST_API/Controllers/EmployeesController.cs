@@ -79,5 +79,20 @@ namespace Restaurants_REST_API.Controllers
 
             return Ok(await _employeeApiService.GetSupervisorsDetailsAsync(new List<int> { id }));
         }
+
+        [HttpGet]
+        [Route("/owner")]
+        public async Task<IActionResult> GetOwnerDerails() 
+        {
+            Employee? ownerBasicData = await _employeeApiService.GetOwnerBasicDataAsync();
+
+            if (ownerBasicData == null)
+            {
+                 return NotFound($"Owner not found");
+            }
+
+            return Ok(await _employeeApiService.GetDetailedEmployeeDataAsync(ownerBasicData));
+        }
+
     }
 }

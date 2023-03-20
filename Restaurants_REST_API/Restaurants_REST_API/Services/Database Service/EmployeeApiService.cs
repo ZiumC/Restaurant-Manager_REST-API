@@ -153,9 +153,21 @@ namespace Restaurants_REST_API.Services.Database_Service
 
         }
 
-        public Task<Employee> GetOwnerAsync()
+        // Owner employee type should has always id equals 1.
+        public async Task<Employee?> GetOwnerBasicDataAsync()
         {
-            throw new NotImplementedException();
+            return await (from eir in _context.EmployeesInRestaurants
+                          join et in _context.EmployeeTypes
+                          on eir.IdType equals et.IdType
+
+                          join emp in _context.Employees
+                          on eir.IdEmployee equals emp.IdEmployee
+
+                          where et.IdType == 1
+
+                          select emp
+                          ).FirstOrDefaultAsync();
+
         }
 
         public Task<IEnumerable<Employee>> GetAllEmployeesByRestaurantIdAsync(int restaurantId)
