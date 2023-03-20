@@ -21,5 +21,8 @@ namespace Restaurants_REST_API.Models
 
         [MaxLength(5)]
         public string NoLocal { get; set; }
+
+
+        public virtual ICollection<Restaurant> Restaurants { get; set;}
     }
 }
