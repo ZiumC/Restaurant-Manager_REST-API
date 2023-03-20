@@ -29,5 +29,19 @@ namespace Restaurants_REST_API.Controllers
             return Ok(employees);
         }
 
+        [HttpGet]
+        [Route("/empId")]
+        public async Task<IActionResult> GetEmployeeBy(int empId)
+        {
+            var employee = await _employeeApiService.GetBasicEmployeeDataByIdAsync(empId);
+
+            if (employee == null)
+            {
+                return NotFound($"Employee {empId} not found");
+            }
+
+            return Ok(await _employeeApiService.GetDetailedEmployeeDataAsync(employee));
+        }
+
     }
 }
