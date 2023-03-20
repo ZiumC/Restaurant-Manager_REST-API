@@ -180,6 +180,29 @@ namespace Restaurants_REST_API.DbContexts
                 ec.HasData(new EmployeeCertificates { IdEmployeeCertificate = 7, IdCertificate = 3, IdEmployee = 5, ExpirationDate = DateTime.Parse("2023-11-12") });
             });
 
+            modelBuilder.Entity<EmployeeType>(et =>
+            {
+                et.HasKey(e => e.IdType);
+                et.Property(e => e.Name).IsRequired().HasMaxLength(50);
+
+                et.HasData(new EmployeeType { IdType = 1, Name = "Owner" });
+                et.HasData(new EmployeeType { IdType = 2, Name = "Chef" });
+                et.HasData(new EmployeeType { IdType = 3, Name = "Chef helper" });
+                et.HasData(new EmployeeType { IdType = 4, Name = "Waiter" });
+            });
+
+            modelBuilder.Entity<EmployeesInRestaurant>(eir =>
+            {
+                eir.HasKey(e => e.IdRestaurantWorker);
+
+                eir.HasData(new EmployeesInRestaurant { IdRestaurantWorker = 1, IdType = 1, IdEmployee = 1, IdRestaurant = 1 });
+                eir.HasData(new EmployeesInRestaurant { IdRestaurantWorker = 2, IdType = 2, IdEmployee = 2, IdRestaurant = 1 });
+                eir.HasData(new EmployeesInRestaurant { IdRestaurantWorker = 3, IdType = 3, IdEmployee = 3, IdRestaurant = 1 });
+                eir.HasData(new EmployeesInRestaurant { IdRestaurantWorker = 4, IdType = 3, IdEmployee = 4, IdRestaurant = 1 });
+                eir.HasData(new EmployeesInRestaurant { IdRestaurantWorker = 5, IdType = 4, IdEmployee = 5, IdRestaurant = 1 });
+                eir.HasData(new EmployeesInRestaurant { IdRestaurantWorker = 6, IdType = 1, IdEmployee = 1, IdRestaurant = 2 });
+            });
+
         }
 
         public DbSet<Address> Address { get; set; }
@@ -189,6 +212,9 @@ namespace Restaurants_REST_API.DbContexts
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Certificate> Certificates { get; set; }
         public DbSet<EmployeeCertificates> EmployeeCertificates { get; set; }
+        public DbSet<EmployeeType> EmployeeTypes { get; set; }
+        public DbSet<EmployeesInRestaurant> EmployeesInRestaurants { get; set; }
+
 
     }
 }

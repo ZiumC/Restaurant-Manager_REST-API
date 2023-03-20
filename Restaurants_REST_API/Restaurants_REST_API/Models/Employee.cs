@@ -30,5 +30,7 @@ namespace Restaurants_REST_API.Models
 
 
         public virtual ICollection<EmployeeCertificates> EmployeeCertificates { get; set; }
+
+        public virtual ICollection<EmployeesInRestaurant> EmployeeInRestaurant { get; set; }
     }
 }
