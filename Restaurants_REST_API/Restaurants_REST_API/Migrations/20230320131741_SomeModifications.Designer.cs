@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Restaurants_REST_API.DbContexts;
 
@@ -11,9 +12,10 @@ using Restaurants_REST_API.DbContexts;
 namespace Restaurants_REST_API.Migrations
 {
     [DbContext(typeof(MainDbContext))]
-    partial class MainDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230320131741_SomeModifications")]
+    partial class SomeModifications
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,64 +55,6 @@ namespace Restaurants_REST_API.Migrations
                     b.HasKey("IdAddress");
 
                     b.ToTable("Address");
-
-                    b.HasData(
-                        new
-                        {
-                            IdAddress = 1,
-                            City = "Warsaw",
-                            NoBuilding = "11",
-                            NoLocal = "1",
-                            Street = "John Paul II"
-                        },
-                        new
-                        {
-                            IdAddress = 2,
-                            City = "Warsaw",
-                            NoBuilding = "1",
-                            NoLocal = "2",
-                            Street = "John Paul II"
-                        },
-                        new
-                        {
-                            IdAddress = 3,
-                            City = "Warsaw",
-                            NoBuilding = "78",
-                            NoLocal = "32A",
-                            Street = "Stawki"
-                        },
-                        new
-                        {
-                            IdAddress = 4,
-                            City = "Warsaw",
-                            NoBuilding = "14",
-                            NoLocal = "",
-                            Street = "Romualda"
-                        },
-                        new
-                        {
-                            IdAddress = 5,
-                            City = "Warsaw",
-                            NoBuilding = "B2",
-                            NoLocal = "21",
-                            Street = "Skret"
-                        },
-                        new
-                        {
-                            IdAddress = 6,
-                            City = "Warsaw",
-                            NoBuilding = "A1",
-                            NoLocal = "A1",
-                            Street = "Koszyk"
-                        },
-                        new
-                        {
-                            IdAddress = 7,
-                            City = "Warsaw",
-                            NoBuilding = "21",
-                            NoLocal = "37",
-                            Street = "John Paul II"
-                        });
                 });
 
             modelBuilder.Entity("Restaurants_REST_API.Models.Client", b =>
@@ -134,26 +78,6 @@ namespace Restaurants_REST_API.Migrations
                     b.HasKey("IdClient");
 
                     b.ToTable("Clients");
-
-                    b.HasData(
-                        new
-                        {
-                            IdClient = 1,
-                            IsBusinessman = "N",
-                            Name = "Jan"
-                        },
-                        new
-                        {
-                            IdClient = 2,
-                            IsBusinessman = "N",
-                            Name = "Michal"
-                        },
-                        new
-                        {
-                            IdClient = 3,
-                            IsBusinessman = "Y",
-                            Name = "Joanna"
-                        });
                 });
 
             modelBuilder.Entity("Restaurants_REST_API.Models.Employee", b =>
@@ -203,68 +127,6 @@ namespace Restaurants_REST_API.Migrations
                     b.HasIndex("IdAddress");
 
                     b.ToTable("Employees");
-
-                    b.HasData(
-                        new
-                        {
-                            IdEmployee = 1,
-                            HiredDate = new DateTime(1999, 1, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IdAddress = 3,
-                            IsHealthBook = "Y",
-                            IsOwner = "Y",
-                            Name = "Michal",
-                            PESEL = "11122233344",
-                            Salary = 3421m,
-                            Surname = "Nowak"
-                        },
-                        new
-                        {
-                            IdEmployee = 2,
-                            HiredDate = new DateTime(2002, 3, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IdAddress = 4,
-                            IsHealthBook = "Y",
-                            IsOwner = "N",
-                            Name = "Kacper",
-                            PESEL = "22233344455",
-                            Salary = 2217m,
-                            Surname = "Kawka"
-                        },
-                        new
-                        {
-                            IdEmployee = 3,
-                            HiredDate = new DateTime(2004, 2, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IdAddress = 5,
-                            IsHealthBook = "Y",
-                            IsOwner = "N",
-                            Name = "Janusz",
-                            PESEL = "33344455566",
-                            Salary = 2213m,
-                            Surname = "Jogurt"
-                        },
-                        new
-                        {
-                            IdEmployee = 4,
-                            HiredDate = new DateTime(2005, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IdAddress = 6,
-                            IsHealthBook = "Y",
-                            IsOwner = "N",
-                            Name = "Bozena",
-                            PESEL = "44455566677",
-                            Salary = 2613m,
-                            Surname = "Lawenda"
-                        },
-                        new
-                        {
-                            IdEmployee = 5,
-                            HiredDate = new DateTime(2010, 11, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IdAddress = 7,
-                            IsHealthBook = "Y",
-                            IsOwner = "N",
-                            Name = "Joanna",
-                            PESEL = "55566677788",
-                            Salary = 2913m,
-                            Surname = "Skrzynka"
-                        });
                 });
 
             modelBuilder.Entity("Restaurants_REST_API.Models.Reservation", b =>
@@ -294,32 +156,6 @@ namespace Restaurants_REST_API.Migrations
                     b.HasIndex("IdRestauration");
 
                     b.ToTable("Reservations");
-
-                    b.HasData(
-                        new
-                        {
-                            IdReservation = 1,
-                            IdClient = 1,
-                            IdRestauration = 1,
-                            ReservationDate = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            TableNumber = 1
-                        },
-                        new
-                        {
-                            IdReservation = 2,
-                            IdClient = 3,
-                            IdRestauration = 1,
-                            ReservationDate = new DateTime(2023, 11, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            TableNumber = 2
-                        },
-                        new
-                        {
-                            IdReservation = 3,
-                            IdClient = 2,
-                            IdRestauration = 1,
-                            ReservationDate = new DateTime(2023, 2, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            TableNumber = 1
-                        });
                 });
 
             modelBuilder.Entity("Restaurants_REST_API.Models.Restaurant", b =>
@@ -343,20 +179,6 @@ namespace Restaurants_REST_API.Migrations
                     b.HasIndex("IdAddress");
 
                     b.ToTable("Restaurants");
-
-                    b.HasData(
-                        new
-                        {
-                            IdRestaurant = 1,
-                            IdAddress = 1,
-                            Name = "Pod Lasem"
-                        },
-                        new
-                        {
-                            IdRestaurant = 2,
-                            IdAddress = 2,
-                            Name = "Zapiecek"
-                        });
                 });
 
             modelBuilder.Entity("Restaurants_REST_API.Models.Employee", b =>
