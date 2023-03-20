@@ -6,10 +6,8 @@ namespace Restaurants_REST_API.DbContexts
 {
     public class MainDbContext : DbContext
     {
-        private readonly IConfiguration _configuration;
-        public MainDbContext(IConfiguration configuration)
+        public MainDbContext()
         {
-            _configuration = configuration;
         }
 
         public MainDbContext(DbContextOptions opt) : base(opt)
@@ -21,7 +19,7 @@ namespace Restaurants_REST_API.DbContexts
         {
             base.OnConfiguring(optionsBuilder);
 
-            optionsBuilder.UseSqlServer(_configuration["ConnectionStrings:Default"]);
+            //optionsBuilder.UseSqlServer(_configuration["ConnectionStrings:Default"]);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

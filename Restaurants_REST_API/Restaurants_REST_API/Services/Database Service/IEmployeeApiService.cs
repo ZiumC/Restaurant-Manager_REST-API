@@ -1,10 +1,11 @@
-﻿using Restaurants_REST_API.Models;
+﻿using Restaurants_REST_API.DTOs;
+using Restaurants_REST_API.Models;
 
 namespace Restaurants_REST_API.Services.Database_Service
 {
     public interface IEmployeeApiService
     {
-        public Task<IEnumerable<Employee>> GetAllEmployeesAsync();
+        public Task<IEnumerable<EmployeeDTO>> GetAllEmployeesAsync();
         public Task<Employee> GetEmployeeByIdAsync(int empId);
         public Task<IEnumerable<Employee>> GetAllSupervisorsAsync();
         public Task<Employee> GetSupervisorByIdAsync(int empId);
