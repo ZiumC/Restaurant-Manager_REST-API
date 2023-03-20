@@ -6,13 +6,10 @@ namespace Restaurants_REST_API.Models
 {
     public class Reservation
     {
-        [Key]
         public int IdReservation { get; set; }
 
-        [Required]
         public DateTime ReservationDate { get; set; }
 
-        [Required]
         public int TableNumber { get; set; }
 
 
