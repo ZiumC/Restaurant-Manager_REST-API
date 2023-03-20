@@ -26,7 +26,8 @@ namespace Restaurants_REST_API.DbContexts
 
         public DbSet<Address> Address { get; set; }
         public DbSet<Restaurant> Restaurants { get; set; }
-
+        public DbSet<Client> Clients { get; set; }
+        public DbSet<Reservation> Reservations { get; set; }
 
     }
 }
