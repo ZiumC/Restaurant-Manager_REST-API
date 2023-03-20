@@ -203,6 +203,35 @@ namespace Restaurants_REST_API.DbContexts
                 eir.HasData(new EmployeesInRestaurant { IdRestaurantWorker = 6, IdType = 1, IdEmployee = 1, IdRestaurant = 2 });
             });
 
+
+            modelBuilder.Entity<Dish>(d =>
+            {
+                d.HasKey(e => e.IdDish);
+                d.Property(e => e.Name).IsRequired().HasMaxLength(100);
+                d.Property(e => e.Price).IsRequired().HasColumnType("money");
+
+                d.HasData(new Dish { IdDish = 1, Name = "Pizza", Price = new Decimal(19.99) });
+                d.HasData(new Dish { IdDish = 2, Name = "Calzone", Price = new Decimal(11.99) });
+                d.HasData(new Dish { IdDish = 3, Name = "Pierogi", Price = new Decimal(9.99) });
+                d.HasData(new Dish { IdDish = 4, Name = "Brat Wurst", Price = new Decimal(7.99) });
+                d.HasData(new Dish { IdDish = 5, Name = "Cheese Bread", Price = new Decimal(19.99) });
+                d.HasData(new Dish { IdDish = 6, Name = "Carbonara", Price = new Decimal(12.99) });
+            });
+
+
+            modelBuilder.Entity<DishInRestaurant>(d =>
+            {
+                d.HasKey(e => e.IdRestaurantDish);
+
+                d.HasData(new DishInRestaurant { IdRestaurantDish = 1, IdDish = 1, IdRestaurant = 1 });
+                d.HasData(new DishInRestaurant { IdRestaurantDish = 2, IdDish = 2, IdRestaurant = 1 });
+                d.HasData(new DishInRestaurant { IdRestaurantDish = 3, IdDish = 3, IdRestaurant = 1 });
+                d.HasData(new DishInRestaurant { IdRestaurantDish = 4, IdDish = 4, IdRestaurant = 1 });
+                d.HasData(new DishInRestaurant { IdRestaurantDish = 5, IdDish = 5, IdRestaurant = 1 });
+                d.HasData(new DishInRestaurant { IdRestaurantDish = 6, IdDish = 6, IdRestaurant = 1 });
+                d.HasData(new DishInRestaurant { IdRestaurantDish = 7, IdDish = 6, IdRestaurant = 2 });
+            });
+
         }
 
         public DbSet<Address> Address { get; set; }
@@ -214,7 +243,7 @@ namespace Restaurants_REST_API.DbContexts
         public DbSet<EmployeeCertificates> EmployeeCertificates { get; set; }
         public DbSet<EmployeeType> EmployeeTypes { get; set; }
         public DbSet<EmployeesInRestaurant> EmployeesInRestaurants { get; set; }
-
-
+        public DbSet<Dish> Dishes { get; set; }
+        public DbSet<DishInRestaurant> RestaurantDishes { get; set; }
     }
 }
