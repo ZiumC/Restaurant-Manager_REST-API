@@ -15,8 +15,6 @@ namespace Restaurants_REST_API.DTOs
         public string Street { get; set; }
         public string NoBuilding { get; set; }
         public string NoLocal { get; set; }
-        public string CertificateName { get; set; }
-        public DateTime ExpirationDate { get; set; }
-
+        public List<CertificateDTO> certificates { get; set;}
     }
 }
