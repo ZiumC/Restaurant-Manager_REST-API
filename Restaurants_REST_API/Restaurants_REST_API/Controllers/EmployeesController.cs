@@ -30,18 +30,54 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpGet]
-        [Route("/empId")]
-        public async Task<IActionResult> GetEmployeeBy(int empId)
+        [Route("/id")]
+        public async Task<IActionResult> GetEmployeeBy(int id)
         {
-            var employee = await _employeeApiService.GetBasicEmployeeDataByIdAsync(empId);
+            var employee = await _employeeApiService.GetBasicEmployeeDataByIdAsync(id);
 
             if (employee == null)
             {
-                return NotFound($"Employee {empId} not found");
+                return NotFound($"Employee {id} not found");
             }
 
             return Ok(await _employeeApiService.GetDetailedEmployeeDataAsync(employee));
         }
 
+        [HttpGet]
+        [Route("/supervisors")]
+        public async Task<IActionResult> GetSupervisors()
+        {
+            var supervisorsId = await _employeeApiService.GetSupervisorsIdAsync();
+
+            if (supervisorsId == null)
+            {
+                return NotFound("No supervisors found");
+            }
+
+            return Ok(await _employeeApiService.GetSupervisorsDetailsAsync((List<int>)supervisorsId));
+        }
+
+        /*
+         * This method uses GetSupervisorsDetailsAsync(List<int>) because implementation of 
+         * GetSupervisorDetailsByIdAsync(int id) in interface IEmployeeApiService would very similar!
+         */
+        [HttpGet]
+        [Route("/supervisors/id")]
+        public async Task<IActionResult> GetSupervisors(int id)
+        {
+            var supervisorsIdList = await _employeeApiService.GetSupervisorsIdAsync();
+
+            if (supervisorsIdList == null)
+            {
+                return NotFound($"Supervisors not exist");
+            }
+
+            if (!supervisorsIdList.Contains(id))
+            {
+                return NotFound($"Supervisor {id} not exist");
+            }
+
+            return Ok(await _employeeApiService.GetSupervisorsDetailsAsync(new List<int> { id }));
+        }
     }
 }
