@@ -11,7 +11,7 @@ namespace Restaurants_REST_API.Models
 
         public DateTime HiredDate { get; set; }
 
-        public string IsHealthBook { get; set; }
+        public DateTime? FirstPromotionChefDate  { get; set; }
 
         public string Name { get; set; }
 
@@ -21,7 +21,6 @@ namespace Restaurants_REST_API.Models
         public string PESEL { get; set; }
 
         public string IsOwner { get; set; }
-
 
         public virtual int IdAddress { get; set; }
 

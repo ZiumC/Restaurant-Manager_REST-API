@@ -10,6 +10,8 @@ namespace Restaurants_REST_API.Models
 
         public DateTime ReservationDate { get; set; }
 
+        public string StateOfReservation { get; set; }  
+
         public int TableNumber { get; set; }
 
 
@@ -23,5 +25,8 @@ namespace Restaurants_REST_API.Models
 
         [ForeignKey(nameof(IdRestauration))]
         public virtual Restaurant Restaurant { get; set; }
+
+
+        public virtual Complain Complain { get; set; }
     }
 }

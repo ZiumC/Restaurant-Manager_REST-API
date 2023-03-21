@@ -9,11 +9,11 @@ namespace Restaurants_REST_API.Models
 
         public int IdDish { get; set; }
         [ForeignKey(nameof(IdDish))]
-        public virtual Dish Dish { get; set; }
+        public virtual Dish? Dish { get; set; }
 
 
         public int IdRestaurant { get; set; }
         [ForeignKey(nameof(IdRestaurant))]
-        public virtual Restaurant Restaurant { get; set; }
+        public virtual Restaurant? Restaurant { get; set; }
     }
 }

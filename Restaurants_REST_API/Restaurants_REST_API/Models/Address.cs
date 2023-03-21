@@ -12,7 +12,7 @@ namespace Restaurants_REST_API.Models
 
         public string NoBuilding { get; set; }
 
-        public string NoLocal { get; set; }
+        public string? NoLocal { get; set; }
 
 
         public virtual ICollection<Restaurant> Restaurants { get; set;}
