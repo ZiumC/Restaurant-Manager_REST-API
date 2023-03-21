@@ -9,8 +9,8 @@ namespace Restaurants_REST_API.DTOs
         public string PESEL { get; set; }
         public decimal Salary { get; set; }
         public DateTime HiredDate { get; set; }
+        public DateTime? FirstPromotionChefDate { get; set; }
         public string IsOwner { get; set; }
-        public string IsHealthBook { get; set; }
         public string City { get; set; }
         public string Street { get; set; }
         public string NoBuilding { get; set; }

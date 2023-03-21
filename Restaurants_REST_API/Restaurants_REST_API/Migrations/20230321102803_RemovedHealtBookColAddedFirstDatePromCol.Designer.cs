@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Restaurants_REST_API.DbContexts;
 
@@ -11,9 +12,10 @@ using Restaurants_REST_API.DbContexts;
 namespace Restaurants_REST_API.Migrations
 {
     [DbContext(typeof(MainDbContext))]
-    partial class MainDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230321102803_RemovedHealtBookColAddedFirstDatePromCol")]
+    partial class RemovedHealtBookColAddedFirstDatePromCol
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -185,48 +187,6 @@ namespace Restaurants_REST_API.Migrations
                             IdClient = 3,
                             IsBusinessman = "Y",
                             Name = "Joanna"
-                        });
-                });
-
-            modelBuilder.Entity("Restaurants_REST_API.Models.Complain", b =>
-                {
-                    b.Property<int>("IdComplain")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdComplain"), 1L, 1);
-
-                    b.Property<DateTime>("ComplainDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("IdReservation")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdRestaurant")
-                        .HasColumnType("int");
-
-                    b.Property<string>("StatusOfComplain")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("IdComplain");
-
-                    b.HasIndex("IdReservation")
-                        .IsUnique();
-
-                    b.HasIndex("IdRestaurant");
-
-                    b.ToTable("Complains");
-
-                    b.HasData(
-                        new
-                        {
-                            IdComplain = 1,
-                            ComplainDate = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IdReservation = 1,
-                            IdRestaurant = 1,
-                            StatusOfComplain = "New"
                         });
                 });
 
@@ -667,11 +627,6 @@ namespace Restaurants_REST_API.Migrations
                     b.Property<DateTime>("ReservationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("StateOfReservation")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<int>("TableNumber")
                         .HasColumnType("int");
 
@@ -690,7 +645,6 @@ namespace Restaurants_REST_API.Migrations
                             IdClient = 1,
                             IdRestauration = 1,
                             ReservationDate = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            StateOfReservation = "New",
                             TableNumber = 1
                         },
                         new
@@ -699,7 +653,6 @@ namespace Restaurants_REST_API.Migrations
                             IdClient = 3,
                             IdRestauration = 1,
                             ReservationDate = new DateTime(2023, 11, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            StateOfReservation = "Canceled",
                             TableNumber = 2
                         },
                         new
@@ -708,7 +661,6 @@ namespace Restaurants_REST_API.Migrations
                             IdClient = 2,
                             IdRestauration = 1,
                             ReservationDate = new DateTime(2023, 2, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            StateOfReservation = "Finished",
                             TableNumber = 1
                         });
                 });
@@ -729,11 +681,6 @@ namespace Restaurants_REST_API.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("StateOfRestaurant")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.HasKey("IdRestaurant");
 
                     b.HasIndex("IdAddress");
@@ -745,35 +692,14 @@ namespace Restaurants_REST_API.Migrations
                         {
                             IdRestaurant = 1,
                             IdAddress = 1,
-                            Name = "Pod Lasem",
-                            StateOfRestaurant = "Working"
+                            Name = "Pod Lasem"
                         },
                         new
                         {
                             IdRestaurant = 2,
                             IdAddress = 2,
-                            Name = "Zapiecek",
-                            StateOfRestaurant = "Under construction"
+                            Name = "Zapiecek"
                         });
-                });
-
-            modelBuilder.Entity("Restaurants_REST_API.Models.Complain", b =>
-                {
-                    b.HasOne("Restaurants_REST_API.Models.Reservation", "Reservation")
-                        .WithOne("Complain")
-                        .HasForeignKey("Restaurants_REST_API.Models.Complain", "IdReservation")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Restaurants_REST_API.Models.Restaurant", "Restaurant")
-                        .WithMany("Complains")
-                        .HasForeignKey("IdRestaurant")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Reservation");
-
-                    b.Navigation("Restaurant");
                 });
 
             modelBuilder.Entity("Restaurants_REST_API.Models.DishInRestaurant", b =>
@@ -916,16 +842,8 @@ namespace Restaurants_REST_API.Migrations
                     b.Navigation("EmployeeTypes");
                 });
 
-            modelBuilder.Entity("Restaurants_REST_API.Models.Reservation", b =>
-                {
-                    b.Navigation("Complain")
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Restaurants_REST_API.Models.Restaurant", b =>
                 {
-                    b.Navigation("Complains");
-
                     b.Navigation("Reservations");
 
                     b.Navigation("RestaurantDishes");

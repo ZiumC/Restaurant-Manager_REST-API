@@ -9,6 +9,8 @@ namespace Restaurants_REST_API.Models
 
         public string Name { get; set; }
 
+        public string StateOfRestaurant { get; set; }
+
         public int IdAddress { get; set; }
         [ForeignKey(nameof(IdAddress))]
         public virtual Address Address { get; set; }
@@ -18,5 +20,7 @@ namespace Restaurants_REST_API.Models
         public virtual ICollection<EmployeesInRestaurant> RestaurantEmployees { get; set; }
 
         public virtual ICollection<DishInRestaurant> RestaurantDishes { get; set; } 
+        
+        public virtual ICollection<Complain> Complains { get; set; }
     }
 }

@@ -37,9 +37,9 @@ namespace Restaurants_REST_API.DbContexts
                 a.HasData(new Address { IdAddress = 1, City = "Warsaw", Street = "John Paul II", NoBuilding = "11", NoLocal = "1" });
                 a.HasData(new Address { IdAddress = 2, City = "Warsaw", Street = "John Paul II", NoBuilding = "1", NoLocal = "2" });
                 a.HasData(new Address { IdAddress = 3, City = "Warsaw", Street = "Stawki", NoBuilding = "78", NoLocal = "32A" });
-                a.HasData(new Address { IdAddress = 4, City = "Warsaw", Street = "Romualda", NoBuilding = "14", NoLocal = "" });
+                a.HasData(new Address { IdAddress = 4, City = "Warsaw", Street = "Romualda", NoBuilding = "14", NoLocal = null });
                 a.HasData(new Address { IdAddress = 5, City = "Warsaw", Street = "Skret", NoBuilding = "B2", NoLocal = "21" });
-                a.HasData(new Address { IdAddress = 6, City = "Warsaw", Street = "Koszyk", NoBuilding = "A1", NoLocal = "A1" });
+                a.HasData(new Address { IdAddress = 6, City = "Warsaw", Street = "Koszyk", NoBuilding = "A1", NoLocal = null });
                 a.HasData(new Address { IdAddress = 7, City = "Warsaw", Street = "John Paul II", NoBuilding = "21", NoLocal = "37" });
             });
 
@@ -59,9 +59,10 @@ namespace Restaurants_REST_API.DbContexts
             {
                 r.HasKey(e => e.IdRestaurant);
                 r.Property(e => e.Name).IsRequired().HasMaxLength(100);
+                r.Property(e => e.StateOfRestaurant).IsRequired().HasMaxLength(50);
 
-                r.HasData(new Restaurant { IdRestaurant = 1, Name = "Pod Lasem", IdAddress = 1 });
-                r.HasData(new Restaurant { IdRestaurant = 2, Name = "Zapiecek", IdAddress = 2 });
+                r.HasData(new Restaurant { IdRestaurant = 1, Name = "Pod Lasem", StateOfRestaurant = "Working", IdAddress = 1 });
+                r.HasData(new Restaurant { IdRestaurant = 2, Name = "Zapiecek", StateOfRestaurant = "Under construction", IdAddress = 2 });
             });
 
             modelBuilder.Entity<Reservation>(r =>
@@ -69,20 +70,29 @@ namespace Restaurants_REST_API.DbContexts
                 r.HasKey(e => e.IdReservation);
                 r.Property(e => e.ReservationDate).IsRequired();
                 r.Property(e => e.TableNumber).IsRequired();
+                r.Property(e => e.StateOfReservation).IsRequired().HasMaxLength(50);
 
-                r.HasData(new Reservation { IdReservation = 1, ReservationDate = DateTime.Parse("2023-01-01"), TableNumber = 1, IdClient = 1, IdRestauration = 1 });
-                r.HasData(new Reservation { IdReservation = 2, ReservationDate = DateTime.Parse("2023-11-01"), TableNumber = 2, IdClient = 3, IdRestauration = 1 });
-                r.HasData(new Reservation { IdReservation = 3, ReservationDate = DateTime.Parse("2023-02-09"), TableNumber = 1, IdClient = 2, IdRestauration = 1 });
+                r.HasData(new Reservation { IdReservation = 1, ReservationDate = DateTime.Parse("2023-01-01"), TableNumber = 1, StateOfReservation = "New", IdClient = 1, IdRestauration = 1 });
+                r.HasData(new Reservation { IdReservation = 2, ReservationDate = DateTime.Parse("2023-11-01"), TableNumber = 2, StateOfReservation = "Canceled", IdClient = 3, IdRestauration = 1 });
+                r.HasData(new Reservation { IdReservation = 3, ReservationDate = DateTime.Parse("2023-02-09"), TableNumber = 1, StateOfReservation = "Finished", IdClient = 2, IdRestauration = 1 });
             });
 
+            modelBuilder.Entity<Complain>(c =>
+            {
+                c.HasKey(e => e.IdComplain);
+                c.Property(e => e.ComplainDate).IsRequired();
+                c.Property(e => e.StatusOfComplain).IsRequired().HasMaxLength(50);
 
+
+                c.HasData(new Complain { IdComplain = 1, ComplainDate = DateTime.Parse("2023-01-01"), StatusOfComplain = "New", IdReservation = 1, IdRestaurant = 1 });
+            }
+            );
 
             modelBuilder.Entity<Employee>(e =>
             {
                 e.HasKey(e => e.IdEmployee);
                 e.Property(e => e.Salary).IsRequired().HasColumnType("money");
                 e.Property(e => e.HiredDate).IsRequired();
-                e.Property(e => e.IsHealthBook).IsRequired().HasMaxLength(1);
                 e.Property(e => e.Name).IsRequired().HasMaxLength(50);
                 e.Property(e => e.Surname).IsRequired().HasMaxLength(50);
                 e.Property(e => e.PESEL).IsRequired().HasMaxLength(11);
@@ -93,7 +103,7 @@ namespace Restaurants_REST_API.DbContexts
                     IdEmployee = 1,
                     Salary = 3421,
                     HiredDate = DateTime.Parse("1999-01-04"),
-                    IsHealthBook = "Y",
+                    FirstPromotionChefDate = DateTime.Parse("2000-01-04"),
                     Name = "Michal",
                     Surname = "Nowak",
                     PESEL = "11122233344",
@@ -106,7 +116,7 @@ namespace Restaurants_REST_API.DbContexts
                     IdEmployee = 2,
                     Salary = 2217,
                     HiredDate = DateTime.Parse("2002-03-04"),
-                    IsHealthBook = "Y",
+                    FirstPromotionChefDate = null,
                     Name = "Kacper",
                     Surname = "Kawka",
                     PESEL = "22233344455",
@@ -119,7 +129,7 @@ namespace Restaurants_REST_API.DbContexts
                     IdEmployee = 3,
                     Salary = 2213,
                     HiredDate = DateTime.Parse("2004-02-11"),
-                    IsHealthBook = "Y",
+                    FirstPromotionChefDate = null,
                     Name = "Janusz",
                     Surname = "Jogurt",
                     PESEL = "33344455566",
@@ -132,7 +142,7 @@ namespace Restaurants_REST_API.DbContexts
                     IdEmployee = 4,
                     Salary = 2613,
                     HiredDate = DateTime.Parse("2005-05-12"),
-                    IsHealthBook = "Y",
+                    FirstPromotionChefDate = null,
                     Name = "Bozena",
                     Surname = "Lawenda",
                     PESEL = "44455566677",
@@ -145,7 +155,7 @@ namespace Restaurants_REST_API.DbContexts
                     IdEmployee = 5,
                     Salary = 2913,
                     HiredDate = DateTime.Parse("2010-11-02"),
-                    IsHealthBook = "Y",
+                    FirstPromotionChefDate = null,
                     Name = "Joanna",
                     Surname = "Skrzynka",
                     PESEL = "55566677788",
@@ -236,6 +246,7 @@ namespace Restaurants_REST_API.DbContexts
         public DbSet<Restaurant> Restaurants { get; set; }
         public DbSet<Client> Clients { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
+        public DbSet<Complain> Complains { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Certificate> Certificates { get; set; }
         public DbSet<EmployeeCertificates> EmployeeCertificates { get; set; }
