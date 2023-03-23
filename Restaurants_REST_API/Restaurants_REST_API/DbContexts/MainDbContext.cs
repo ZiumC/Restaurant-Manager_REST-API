@@ -59,10 +59,11 @@ namespace Restaurants_REST_API.DbContexts
             {
                 r.HasKey(e => e.IdRestaurant);
                 r.Property(e => e.Name).IsRequired().HasMaxLength(100);
+                r.Property(e => e.BonusBudget).HasColumnType("money");
                 r.Property(e => e.StateOfRestaurant).IsRequired().HasMaxLength(50);
 
-                r.HasData(new Restaurant { IdRestaurant = 1, Name = "Pod Lasem", StateOfRestaurant = "Working", IdAddress = 1 });
-                r.HasData(new Restaurant { IdRestaurant = 2, Name = "Zapiecek", StateOfRestaurant = "Under construction", IdAddress = 2 });
+                r.HasData(new Restaurant { IdRestaurant = 1, Name = "Pod Lasem", StateOfRestaurant = "Working", BonusBudget = null, IdAddress = 1 });
+                r.HasData(new Restaurant { IdRestaurant = 2, Name = "Zapiecek", StateOfRestaurant = "Under construction", BonusBudget = null, IdAddress = 2 });
             });
 
             modelBuilder.Entity<Reservation>(r =>
