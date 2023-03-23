@@ -8,6 +8,7 @@ namespace Restaurants_REST_API.Models
         public int IdEmployee { get; set; }
 
         public decimal Salary { get; set; }
+        public decimal BonusSalary { get; set; }
 
         public DateTime HiredDate { get; set; }
 
