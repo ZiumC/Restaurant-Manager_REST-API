@@ -8,6 +8,7 @@ namespace Restaurants_REST_API.Models
         public int IdRestaurant { get; set; }
 
         public string Name { get; set; }
+        public decimal? BonusBudget { get; set; }
 
         public string StateOfRestaurant { get; set; }
 
