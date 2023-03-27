@@ -45,6 +45,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 
                                               select new CertificateDTO
                                               {
+                                                  IdCertificate = cert.IdCertificate,
                                                   Name = cert.Name,
                                                   ExpirationDate = empCert.ExpirationDate
                                               }
@@ -95,6 +96,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 
                                               select new CertificateDTO
                                               {
+                                                  IdCertificate = cert.IdCertificate,
                                                   Name = cert.Name,
                                                   ExpirationDate = empCert.ExpirationDate
                                               }
@@ -145,6 +147,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 
                                               select new CertificateDTO
                                               {
+                                                  IdCertificate = cert.IdCertificate,
                                                   Name = cert.Name,
                                                   ExpirationDate = empCert.ExpirationDate
                                               }).ToList()
