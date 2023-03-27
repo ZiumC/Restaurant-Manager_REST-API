@@ -97,7 +97,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpGet]
-        [Route("/restaurant/id")]
+        [Route("restaurant/id")]
         public async Task<IActionResult> GetEmployeeByRestaurant(int id)
         {
 
