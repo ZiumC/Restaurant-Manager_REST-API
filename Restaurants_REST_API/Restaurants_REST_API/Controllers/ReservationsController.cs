@@ -68,5 +68,24 @@ namespace Restaurants_REST_API.Controllers
             return Ok(reservations);
         }
 
+        [HttpGet]
+        [Route("client/id")]
+        public async Task<IActionResult> GetReservationsByClient(int id)
+        {
+            if (id < 0)
+            {
+                return BadRequest($"Incorrect id, expected id grater than 0 but got {id}");
+            }
+
+            ClientDTO? client = await _reservationsApiService.GetReservationsByClientIdAsync(id);
+
+            if (client == null)
+            {
+                return NotFound($"Client {id} not found");
+            }
+
+            return Ok(client);
+        }
+
     }
 }
