@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Restaurants_REST_API.DTOs;
+using Restaurants_REST_API.Models;
 using Restaurants_REST_API.Services.Database_Service;
 
 namespace Restaurants_REST_API.Controllers
@@ -21,12 +22,28 @@ namespace Restaurants_REST_API.Controllers
         {
             var restaurants = await _restaurantsApiService.GetAllRestaurantsAsync();
 
-            if (restaurants == null || restaurants.Count() == 0)
+            if (restaurants.Count() == 0 || restaurants == null)
             {
                 return NotFound("Restaurants not found");
             }
 
             return Ok(restaurants);
+        }
+
+        [HttpGet]
+        [Route("id")]
+        public async Task<IActionResult> GetRestaurantBy(int id)
+        {
+            Restaurant? restaurant = await _restaurantsApiService.GetBasicRestaurantInfoByIdAsync(id);
+
+            if (restaurant == null)
+            {
+                return NotFound($"Restaurant not found");
+            }
+
+            RestaurantDTO restaurantDTO = await _restaurantsApiService.GetRestaurantDetailsByIdAsync(id);
+
+            return Ok(restaurantDTO);
         }
 
 
