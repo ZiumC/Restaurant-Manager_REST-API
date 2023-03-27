@@ -1,9 +1,19 @@
-﻿using Restaurants_REST_API.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Restaurants_REST_API.DbContexts;
+using Restaurants_REST_API.Models;
 
 namespace Restaurants_REST_API.Services.Database_Service
 {
     public class RestaurantApiService : IRestaurantApiService
     {
+
+        private readonly MainDbContext _context;
+
+        public RestaurantApiService(MainDbContext context)
+        {
+            _context = context;
+        }
+
         public Task<IEnumerable<Restaurant>> GetAllRestaurantsAsync()
         {
             throw new NotImplementedException();
@@ -26,6 +36,11 @@ namespace Restaurants_REST_API.Services.Database_Service
         public Task<Complain> GetComplainsByRestaurantIdAsync(int restaurantId)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<Restaurant?> CheckIfRestaurantExistByIdAsync(int restaurantId)
+        {
+            return await _context.Restaurants.Where(e => e.IdRestaurant == restaurantId).FirstOrDefaultAsync();
         }
     }
 }

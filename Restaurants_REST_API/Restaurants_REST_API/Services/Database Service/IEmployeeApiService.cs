@@ -18,6 +18,6 @@ namespace Restaurants_REST_API.Services.Database_Service
         //public Task<Employee> GetSupervisorDetailsByIdAsync(int id);
 
         public Task<Employee?> GetOwnerBasicDataAsync();
-        public Task<IEnumerable<Employee>> GetAllEmployeesByRestaurantIdAsync(int restaurantId);
+        public Task<IEnumerable<EmployeeDTO>> GetAllEmployeesByRestaurantIdAsync(int restaurantId);
     }
 }

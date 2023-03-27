@@ -2,7 +2,6 @@
 using Restaurants_REST_API.DbContexts;
 using Restaurants_REST_API.DTOs;
 using Restaurants_REST_API.Models;
-using System.Linq;
 
 namespace Restaurants_REST_API.Services.Database_Service
 {
@@ -77,7 +76,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                           where empCert.IdEmployee == employee.IdEmployee
                           select new EmployeeDTO
                           {
-                              IdEmployee = employee.IdEmployee, 
+                              IdEmployee = employee.IdEmployee,
                               FirstName = employee.Name,
                               Surname = employee.Surname,
                               PESEL = employee.PESEL,
@@ -176,9 +175,46 @@ namespace Restaurants_REST_API.Services.Database_Service
 
         }
 
-        public Task<IEnumerable<Employee>> GetAllEmployeesByRestaurantIdAsync(int restaurantId)
+        public async Task<IEnumerable<EmployeeDTO>> GetAllEmployeesByRestaurantIdAsync(int restaurantId)
         {
-            throw new NotImplementedException();
+            return await (from eir in _context.EmployeesInRestaurants
+                          join emp in _context.Employees
+                          on eir.IdEmployee equals emp.IdEmployee
+
+                          join addr in _context.Address
+                          on emp.IdAddress equals addr.IdAddress
+
+                          where eir.IdRestaurant == restaurantId
+
+                          select new EmployeeDTO
+                          {
+                              IdEmployee = emp.IdEmployee,
+                              FirstName = emp.Name,
+                              Surname = emp.Surname,
+                              PESEL = emp.PESEL,
+                              Salary = emp.Salary,
+                              HiredDate = emp.HiredDate,
+                              IsOwner = emp.IsOwner,
+                              FirstPromotionChefDate = emp.FirstPromotionChefDate,
+                              City = addr.City,
+                              Street = addr.Street,
+                              NoBuilding = addr.BuildingNumber,
+                              NoLocal = addr.LocalNumber,
+
+                              certificates = (from empCert in _context.EmployeeCertificates
+                                              join cert in _context.Certificates
+                                              on empCert.IdCertificate equals cert.IdCertificate
+
+                                              where empCert.IdEmployee == emp.IdEmployee
+
+                                              select new CertificateDTO
+                                              {
+                                                  IdCertificate = cert.IdCertificate,
+                                                  Name = cert.Name,
+                                                  ExpirationDate = empCert.ExpirationDate
+                                              }).ToList()
+                          }
+                          ).ToListAsync();
         }
 
     }

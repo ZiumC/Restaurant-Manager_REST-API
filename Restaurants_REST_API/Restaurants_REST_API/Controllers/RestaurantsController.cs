@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Restaurants_REST_API.Services.Database_Service;
 
 namespace Restaurants_REST_API.Controllers
 {
@@ -7,5 +8,13 @@ namespace Restaurants_REST_API.Controllers
     [ApiController]
     public class RestaurantsController : ControllerBase
     {
+        private readonly IRestaurantApiService _restaurantsApiService;
+
+        public RestaurantsController(IRestaurantApiService restaurantsApiService)
+        {
+            _restaurantsApiService = restaurantsApiService;
+        }
+
+
     }
 }
