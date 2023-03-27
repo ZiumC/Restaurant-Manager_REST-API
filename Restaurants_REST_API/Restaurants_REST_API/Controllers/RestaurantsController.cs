@@ -46,6 +46,19 @@ namespace Restaurants_REST_API.Controllers
             return Ok(restaurantDTO);
         }
 
+        [HttpGet]
+        [Route("/reservations")]
+        public async Task<IActionResult> GetReservations()
+        {
+            var reservations = await _restaurantsApiService.GetAllReservationsAsync();
+
+            if (reservations == null) {
+                return NotFound($"Reservations not found");
+            }
+
+            return Ok(reservations);
+        }
+
 
     }
 }

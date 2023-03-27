@@ -3,10 +3,10 @@
     public class ReservationDTO
     {
         public int IdReservation { get; set; }
-
         public DateTime ReservationDate { get; set; }
         public string Status { get; set; }
         public int? ReservationGrade { get; set; }
         public int TableNumber { get; set; }
+        public ComplainDTO? ReservationComplain { get; set; }
     }
 }
