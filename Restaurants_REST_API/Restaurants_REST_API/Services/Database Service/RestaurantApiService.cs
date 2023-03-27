@@ -22,5 +22,10 @@ namespace Restaurants_REST_API.Services.Database_Service
         {
             throw new NotImplementedException();
         }
+
+        public Task<Complain> GetComplainsByRestaurantIdAsync(int restaurantId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

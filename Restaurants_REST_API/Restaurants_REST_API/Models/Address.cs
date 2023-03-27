@@ -10,9 +10,9 @@ namespace Restaurants_REST_API.Models
 
         public string Street { get; set; }
 
-        public string NoBuilding { get; set; }
+        public string BuildingNumber { get; set; }
 
-        public string? NoLocal { get; set; }
+        public string? LocalNumber { get; set; }
 
 
         public virtual ICollection<Restaurant> Restaurants { get; set;}

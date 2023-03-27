@@ -31,16 +31,16 @@ namespace Restaurants_REST_API.DbContexts
                 a.HasKey(e => e.IdAddress);
                 a.Property(e => e.City).IsRequired().HasMaxLength(50);
                 a.Property(e => e.Street).IsRequired().HasMaxLength(50);
-                a.Property(e => e.NoBuilding).IsRequired().HasMaxLength(5);
-                a.Property(e => e.NoLocal).HasMaxLength(5);
+                a.Property(e => e.BuildingNumber).IsRequired().HasMaxLength(5);
+                a.Property(e => e.LocalNumber).HasMaxLength(5);
 
-                a.HasData(new Address { IdAddress = 1, City = "Warsaw", Street = "John Paul II", NoBuilding = "11", NoLocal = "1" });
-                a.HasData(new Address { IdAddress = 2, City = "Warsaw", Street = "John Paul II", NoBuilding = "1", NoLocal = "2" });
-                a.HasData(new Address { IdAddress = 3, City = "Warsaw", Street = "Stawki", NoBuilding = "78", NoLocal = "32A" });
-                a.HasData(new Address { IdAddress = 4, City = "Warsaw", Street = "Romualda", NoBuilding = "14", NoLocal = null });
-                a.HasData(new Address { IdAddress = 5, City = "Warsaw", Street = "Skret", NoBuilding = "B2", NoLocal = "21" });
-                a.HasData(new Address { IdAddress = 6, City = "Warsaw", Street = "Koszyk", NoBuilding = "A1", NoLocal = null });
-                a.HasData(new Address { IdAddress = 7, City = "Warsaw", Street = "John Paul II", NoBuilding = "21", NoLocal = "37" });
+                a.HasData(new Address { IdAddress = 1, City = "Warsaw", Street = "John Paul II", BuildingNumber = "11", LocalNumber = "1" });
+                a.HasData(new Address { IdAddress = 2, City = "Warsaw", Street = "John Paul II", BuildingNumber = "1", LocalNumber = "2" });
+                a.HasData(new Address { IdAddress = 3, City = "Warsaw", Street = "Stawki", BuildingNumber = "78", LocalNumber = "32A" });
+                a.HasData(new Address { IdAddress = 4, City = "Warsaw", Street = "Romualda", BuildingNumber = "14", LocalNumber = null });
+                a.HasData(new Address { IdAddress = 5, City = "Warsaw", Street = "Skret", BuildingNumber = "B2", LocalNumber = "21" });
+                a.HasData(new Address { IdAddress = 6, City = "Warsaw", Street = "Koszyk", BuildingNumber = "A1", LocalNumber = null });
+                a.HasData(new Address { IdAddress = 7, City = "Warsaw", Street = "John Paul II", BuildingNumber = "21", LocalNumber = "37" });
             });
 
 
