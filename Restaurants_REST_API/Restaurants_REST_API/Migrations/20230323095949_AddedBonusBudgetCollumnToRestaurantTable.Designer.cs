@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Restaurants_REST_API.DbContexts;
 
@@ -11,9 +12,10 @@ using Restaurants_REST_API.DbContexts;
 namespace Restaurants_REST_API.Migrations
 {
     [DbContext(typeof(MainDbContext))]
-    partial class MainDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230323095949_AddedBonusBudgetCollumnToRestaurantTable")]
+    partial class AddedBonusBudgetCollumnToRestaurantTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,17 +32,17 @@ namespace Restaurants_REST_API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdAddress"), 1L, 1);
 
-                    b.Property<string>("BuildingNumber")
-                        .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("nvarchar(5)");
-
                     b.Property<string>("City")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("LocalNumber")
+                    b.Property<string>("NoBuilding")
+                        .IsRequired()
+                        .HasMaxLength(5)
+                        .HasColumnType("nvarchar(5)");
+
+                    b.Property<string>("NoLocal")
                         .HasMaxLength(5)
                         .HasColumnType("nvarchar(5)");
 
@@ -57,55 +59,55 @@ namespace Restaurants_REST_API.Migrations
                         new
                         {
                             IdAddress = 1,
-                            BuildingNumber = "11",
                             City = "Warsaw",
-                            LocalNumber = "1",
+                            NoBuilding = "11",
+                            NoLocal = "1",
                             Street = "John Paul II"
                         },
                         new
                         {
                             IdAddress = 2,
-                            BuildingNumber = "1",
                             City = "Warsaw",
-                            LocalNumber = "2",
+                            NoBuilding = "1",
+                            NoLocal = "2",
                             Street = "John Paul II"
                         },
                         new
                         {
                             IdAddress = 3,
-                            BuildingNumber = "78",
                             City = "Warsaw",
-                            LocalNumber = "32A",
+                            NoBuilding = "78",
+                            NoLocal = "32A",
                             Street = "Stawki"
                         },
                         new
                         {
                             IdAddress = 4,
-                            BuildingNumber = "14",
                             City = "Warsaw",
+                            NoBuilding = "14",
                             Street = "Romualda"
                         },
                         new
                         {
                             IdAddress = 5,
-                            BuildingNumber = "B2",
                             City = "Warsaw",
-                            LocalNumber = "21",
+                            NoBuilding = "B2",
+                            NoLocal = "21",
                             Street = "Skret"
                         },
                         new
                         {
                             IdAddress = 6,
-                            BuildingNumber = "A1",
                             City = "Warsaw",
+                            NoBuilding = "A1",
                             Street = "Koszyk"
                         },
                         new
                         {
                             IdAddress = 7,
-                            BuildingNumber = "21",
                             City = "Warsaw",
-                            LocalNumber = "37",
+                            NoBuilding = "21",
+                            NoLocal = "37",
                             Street = "John Paul II"
                         });
                 });
@@ -364,9 +366,6 @@ namespace Restaurants_REST_API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdEmployee"), 1L, 1);
 
-                    b.Property<decimal>("BonusSalary")
-                        .HasColumnType("money");
-
                     b.Property<DateTime?>("FirstPromotionChefDate")
                         .HasColumnType("datetime2");
 
@@ -409,7 +408,6 @@ namespace Restaurants_REST_API.Migrations
                         new
                         {
                             IdEmployee = 1,
-                            BonusSalary = 150m,
                             FirstPromotionChefDate = new DateTime(2000, 1, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             HiredDate = new DateTime(1999, 1, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IdAddress = 3,
@@ -422,7 +420,6 @@ namespace Restaurants_REST_API.Migrations
                         new
                         {
                             IdEmployee = 2,
-                            BonusSalary = 150m,
                             HiredDate = new DateTime(2002, 3, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IdAddress = 4,
                             IsOwner = "N",
@@ -434,7 +431,6 @@ namespace Restaurants_REST_API.Migrations
                         new
                         {
                             IdEmployee = 3,
-                            BonusSalary = 150m,
                             HiredDate = new DateTime(2004, 2, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IdAddress = 5,
                             IsOwner = "N",
@@ -446,7 +442,6 @@ namespace Restaurants_REST_API.Migrations
                         new
                         {
                             IdEmployee = 4,
-                            BonusSalary = 150m,
                             HiredDate = new DateTime(2005, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IdAddress = 6,
                             IsOwner = "N",
@@ -458,7 +453,6 @@ namespace Restaurants_REST_API.Migrations
                         new
                         {
                             IdEmployee = 5,
-                            BonusSalary = 150m,
                             HiredDate = new DateTime(2010, 11, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IdAddress = 7,
                             IsOwner = "N",
@@ -666,9 +660,6 @@ namespace Restaurants_REST_API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdReservation"), 1L, 1);
 
-                    b.Property<int?>("GradeOfReservation")
-                        .HasColumnType("int");
-
                     b.Property<int>("IdClient")
                         .HasColumnType("int");
 
@@ -716,7 +707,6 @@ namespace Restaurants_REST_API.Migrations
                         new
                         {
                             IdReservation = 3,
-                            GradeOfReservation = 4,
                             IdClient = 2,
                             IdRestauration = 1,
                             ReservationDate = new DateTime(2023, 2, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
