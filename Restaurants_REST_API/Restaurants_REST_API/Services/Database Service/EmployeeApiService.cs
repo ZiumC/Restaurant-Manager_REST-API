@@ -18,8 +18,6 @@ namespace Restaurants_REST_API.Services.Database_Service
         {
 
             return await (from emp in _context.Employees
-                          join addr in _context.Address
-                          on emp.IdAddress equals addr.IdAddress
 
                           select new EmployeeDTO
                           {
@@ -31,13 +29,21 @@ namespace Restaurants_REST_API.Services.Database_Service
                               HiredDate = emp.HiredDate,
                               IsOwner = emp.IsOwner,
                               FirstPromotionChefDate = emp.FirstPromotionChefDate,
-                              City = addr.City,
-                              Street = addr.Street,
-                              NoBuilding = addr.BuildingNumber,
-                              NoLocal = addr.LocalNumber,
 
+                              Address = (from addr in _context.Address
+                                         where addr.IdAddress == emp.IdAddress
 
-                              certificates = (from empCert in _context.EmployeeCertificates
+                                         select new AddressDTO
+                                         {
+                                             IdAddress = addr.IdAddress,
+                                             City = addr.City,
+                                             Street = addr.Street,
+                                             BuildingNumber = addr.BuildingNumber,
+                                             LocalNumber = addr.LocalNumber,
+                                         }
+                                         ).First(),
+
+                              Certificates = (from empCert in _context.EmployeeCertificates
                                               join cert in _context.Certificates
                                               on empCert.IdCertificate equals cert.IdCertificate
 
@@ -84,12 +90,17 @@ namespace Restaurants_REST_API.Services.Database_Service
                               HiredDate = employee.HiredDate,
                               IsOwner = employee.IsOwner,
                               FirstPromotionChefDate = employee.FirstPromotionChefDate,
-                              City = address.City,
-                              Street = address.Street,
-                              NoBuilding = address.BuildingNumber,
-                              NoLocal = address.LocalNumber,
 
-                              certificates = (from empCert in _context.EmployeeCertificates
+                              Address = new AddressDTO
+                              {
+                                  IdAddress = address.IdAddress,
+                                  City = address.City,
+                                  Street = address.Street,
+                                  BuildingNumber = address.BuildingNumber,
+                                  LocalNumber = address.LocalNumber
+                              },
+
+                              Certificates = (from empCert in _context.EmployeeCertificates
                                               join cert in _context.Certificates
                                               on empCert.IdCertificate equals cert.IdCertificate
 
@@ -136,12 +147,21 @@ namespace Restaurants_REST_API.Services.Database_Service
                               HiredDate = emp.HiredDate,
                               IsOwner = emp.IsOwner,
                               FirstPromotionChefDate = emp.FirstPromotionChefDate,
-                              City = addr.City,
-                              Street = addr.Street,
-                              NoBuilding = addr.BuildingNumber,
-                              NoLocal = addr.LocalNumber,
 
-                              certificates = (from empCert in _context.EmployeeCertificates
+                              Address = (from addr in _context.Address
+                                         where addr.IdAddress == emp.IdAddress
+
+                                         select new AddressDTO
+                                         {
+                                             IdAddress = addr.IdAddress,
+                                             City = addr.City,
+                                             Street = addr.Street,
+                                             BuildingNumber = addr.BuildingNumber,
+                                             LocalNumber = addr.LocalNumber,
+                                         }
+                                         ).First(),
+
+                              Certificates = (from empCert in _context.EmployeeCertificates
                                               join cert in _context.Certificates
                                               on empCert.IdCertificate equals cert.IdCertificate
 
@@ -196,12 +216,21 @@ namespace Restaurants_REST_API.Services.Database_Service
                               HiredDate = emp.HiredDate,
                               IsOwner = emp.IsOwner,
                               FirstPromotionChefDate = emp.FirstPromotionChefDate,
-                              City = addr.City,
-                              Street = addr.Street,
-                              NoBuilding = addr.BuildingNumber,
-                              NoLocal = addr.LocalNumber,
 
-                              certificates = (from empCert in _context.EmployeeCertificates
+                              Address = (from addr in _context.Address
+                                         where addr.IdAddress == emp.IdAddress
+
+                                         select new AddressDTO
+                                         {
+                                             IdAddress = addr.IdAddress,
+                                             City = addr.City,
+                                             Street = addr.Street,
+                                             BuildingNumber = addr.BuildingNumber,
+                                             LocalNumber = addr.LocalNumber,
+                                         }
+                                         ).First(),
+
+                              Certificates = (from empCert in _context.EmployeeCertificates
                                               join cert in _context.Certificates
                                               on empCert.IdCertificate equals cert.IdCertificate
 

@@ -12,10 +12,7 @@ namespace Restaurants_REST_API.DTOs
         public DateTime HiredDate { get; set; }
         public DateTime? FirstPromotionChefDate { get; set; }
         public string IsOwner { get; set; }
-        public string City { get; set; }
-        public string Street { get; set; }
-        public string NoBuilding { get; set; }
-        public string? NoLocal { get; set; }
-        public List<CertificateDTO> certificates { get; set;}
+        public AddressDTO Address { get; set; }
+        public List<CertificateDTO>? Certificates { get; set;}
     }
 }
