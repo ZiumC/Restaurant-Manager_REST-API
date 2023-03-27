@@ -15,7 +15,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             _context = context;
         }
 
-        public async Task<IEnumerable<RestaurantDTO>> GetAllRestaurantsAsync()
+        public async Task<IEnumerable<RestaurantDTO>?> GetAllRestaurantsAsync()
         {
             return await (from rest in _context.Restaurants
                           join addr in _context.Address
@@ -72,7 +72,17 @@ namespace Restaurants_REST_API.Services.Database_Service
                                                             ReservationDate = r.ReservationDate,
                                                             Status = r.ReservationStatus,
                                                             ReservationGrade = r.ReservationGrade,
-                                                            TableNumber = r.TableNumber
+                                                            TableNumber = r.TableNumber,
+                                                            ReservationComplain = (from c in _context.Complains
+                                                                                   where c.IdReservation == r.IdReservation
+
+                                                                                   select new ComplainDTO
+                                                                                   {
+                                                                                       IdComplain = c.IdComplain,
+                                                                                       ComplainDate = c.ComplainDate,
+                                                                                       Status = c.ComplainStatus
+                                                                                   }
+                                                                                   ).FirstOrDefault()
                                                         }
                                                         ).ToList(),
 
@@ -151,7 +161,17 @@ namespace Restaurants_REST_API.Services.Database_Service
                                                             ReservationDate = r.ReservationDate,
                                                             Status = r.ReservationStatus,
                                                             ReservationGrade = r.ReservationGrade,
-                                                            TableNumber = r.TableNumber
+                                                            TableNumber = r.TableNumber,
+                                                            ReservationComplain = (from c in _context.Complains
+                                                                                   where c.IdReservation == r.IdReservation
+
+                                                                                   select new ComplainDTO
+                                                                                   {
+                                                                                       IdComplain = c.IdComplain,
+                                                                                       ComplainDate = c.ComplainDate,
+                                                                                       Status = c.ComplainStatus
+                                                                                   }
+                                                                                   ).FirstOrDefault()
                                                         }
                                                         ).ToList(),
 
@@ -170,9 +190,31 @@ namespace Restaurants_REST_API.Services.Database_Service
                           ).FirstAsync();
         }
 
-        public Task<IEnumerable<Reservation>> GetAllReservationsAsync()
+        public async Task<IEnumerable<ReservationDTO>?> GetAllReservationsAsync()
         {
-            throw new NotImplementedException();
+            return await (from r in _context.Reservations
+
+                          select new ReservationDTO
+                          {
+                              IdReservation = r.IdReservation,
+                              ReservationDate = r.ReservationDate,
+                              Status = r.ReservationStatus,
+                              ReservationGrade = r.ReservationGrade,
+                              TableNumber = r.TableNumber,
+
+                              ReservationComplain = (from c in _context.Complains
+                                                     where c.IdReservation == r.IdReservation
+
+                                                     select new ComplainDTO
+                                                     {
+                                                         IdComplain = c.IdComplain,
+                                                         ComplainDate = c.ComplainDate,
+                                                         Status = c.ComplainStatus
+                                                     }
+                                                   ).FirstOrDefault()
+                          }
+
+                          ).ToListAsync();
         }
 
         public Task<Reservation> GetReservationByIdAsync(int reservationId)
