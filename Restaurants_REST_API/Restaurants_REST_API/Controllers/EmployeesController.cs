@@ -33,7 +33,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpGet]
-        [Route("employees/id")]
+        [Route("/id")]
         public async Task<IActionResult> GetEmployeeBy(int id)
         {
             var employee = await _employeeApiService.GetBasicEmployeeDataByIdAsync(id);
@@ -98,7 +98,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpGet]
-        [Route("/employees/restaurant/id")]
+        [Route("/restaurant/id")]
         public async Task<IActionResult> GetEmployeeByRestaurantId(int id)
         {
 

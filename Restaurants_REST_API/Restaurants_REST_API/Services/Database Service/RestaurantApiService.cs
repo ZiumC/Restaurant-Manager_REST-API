@@ -32,8 +32,8 @@ namespace Restaurants_REST_API.Services.Database_Service
                                   IdAddress = addr.IdAddress,
                                   City = addr.City,
                                   Street = addr.Street,
-                                  NoBuilding = addr.BuildingNumber,
-                                  NoLocal = addr.LocalNumber
+                                  BuildingNumber = addr.BuildingNumber,
+                                  LocalNumber = addr.LocalNumber
                               },
 
                               RestaurantDishes = (from rd in _context.RestaurantDishes
@@ -71,7 +71,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                                                             IdReservation = r.IdReservation,
                                                             ReservationDate = r.ReservationDate,
                                                             Status = r.StateOfReservation,
-                                                            GradeOfReservation = r.GradeOfReservation,
+                                                            ReservationGrade = r.GradeOfReservation,
                                                             TableNumber = r.TableNumber
                                                         }
                                                         ).ToList(),
