@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<IEmployeeApiService, EmployeeApiService>();
 builder.Services.AddScoped<IRestaurantApiService, RestaurantApiService>();
+builder.Services.AddScoped<IReservationApiService, ReservationApiService>();
 builder.Services.AddDbContext<MainDbContext>(opt => opt.UseSqlServer("name=ConnectionStrings:Default"));
 builder.Services.AddControllers();
  //Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
