@@ -22,8 +22,8 @@ namespace Restaurants_REST_API.Services.Database_Service
                           select new EmployeeDTO
                           {
                               IdEmployee = emp.IdEmployee,
-                              FirstName = emp.Name,
-                              Surname = emp.Surname,
+                              FirstName = emp.FirstName,
+                              Surname = emp.LastName,
                               PESEL = emp.PESEL,
                               Salary = emp.Salary,
                               HiredDate = emp.HiredDate,
@@ -83,8 +83,8 @@ namespace Restaurants_REST_API.Services.Database_Service
                           select new EmployeeDTO
                           {
                               IdEmployee = employee.IdEmployee,
-                              FirstName = employee.Name,
-                              Surname = employee.Surname,
+                              FirstName = employee.FirstName,
+                              Surname = employee.LastName,
                               PESEL = employee.PESEL,
                               Salary = employee.Salary,
                               HiredDate = employee.HiredDate,
@@ -140,8 +140,8 @@ namespace Restaurants_REST_API.Services.Database_Service
                           select new EmployeeDTO
                           {
                               IdEmployee = emp.IdEmployee,
-                              FirstName = emp.Name,
-                              Surname = emp.Surname,
+                              FirstName = emp.FirstName,
+                              Surname = emp.LastName,
                               PESEL = emp.PESEL,
                               Salary = emp.Salary,
                               HiredDate = emp.HiredDate,
@@ -209,8 +209,8 @@ namespace Restaurants_REST_API.Services.Database_Service
                           select new EmployeeDTO
                           {
                               IdEmployee = emp.IdEmployee,
-                              FirstName = emp.Name,
-                              Surname = emp.Surname,
+                              FirstName = emp.FirstName,
+                              Surname = emp.LastName,
                               PESEL = emp.PESEL,
                               Salary = emp.Salary,
                               HiredDate = emp.HiredDate,

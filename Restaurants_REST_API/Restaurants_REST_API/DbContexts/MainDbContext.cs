@@ -60,10 +60,10 @@ namespace Restaurants_REST_API.DbContexts
                 r.HasKey(e => e.IdRestaurant);
                 r.Property(e => e.Name).IsRequired().HasMaxLength(100);
                 r.Property(e => e.BonusBudget).HasColumnType("money");
-                r.Property(e => e.StateOfRestaurant).IsRequired().HasMaxLength(50);
+                r.Property(e => e.RestaurantStatus).IsRequired().HasMaxLength(50);
 
-                r.HasData(new Restaurant { IdRestaurant = 1, Name = "Pod Lasem", StateOfRestaurant = "Working", BonusBudget = null, IdAddress = 1 });
-                r.HasData(new Restaurant { IdRestaurant = 2, Name = "Zapiecek", StateOfRestaurant = "Under construction", BonusBudget = null, IdAddress = 2 });
+                r.HasData(new Restaurant { IdRestaurant = 1, Name = "Pod Lasem", RestaurantStatus = "Working", BonusBudget = null, IdAddress = 1 });
+                r.HasData(new Restaurant { IdRestaurant = 2, Name = "Zapiecek", RestaurantStatus = "Under construction", BonusBudget = null, IdAddress = 2 });
             });
 
             modelBuilder.Entity<Reservation>(r =>
@@ -71,15 +71,15 @@ namespace Restaurants_REST_API.DbContexts
                 r.HasKey(e => e.IdReservation);
                 r.Property(e => e.ReservationDate).IsRequired();
                 r.Property(e => e.TableNumber).IsRequired();
-                r.Property(e => e.StateOfReservation).IsRequired().HasMaxLength(50);
+                r.Property(e => e.ReservationStatus).IsRequired().HasMaxLength(50);
 
                 r.HasData(new Reservation
                 {
                     IdReservation = 1,
                     ReservationDate = DateTime.Parse("2023-01-01"),
                     TableNumber = 1,
-                    StateOfReservation = "New",
-                    GradeOfReservation = null,
+                    ReservationStatus = "New",
+                    ReservationGrade = null,
                     IdClient = 1,
                     IdRestauration = 1
                 });
@@ -88,8 +88,8 @@ namespace Restaurants_REST_API.DbContexts
                     IdReservation = 2,
                     ReservationDate = DateTime.Parse("2023-11-01"),
                     TableNumber = 2,
-                    StateOfReservation = "Canceled",
-                    GradeOfReservation = null,
+                    ReservationStatus = "Canceled",
+                    ReservationGrade = null,
                     IdClient = 3,
                     IdRestauration = 1
                 });
@@ -98,8 +98,8 @@ namespace Restaurants_REST_API.DbContexts
                     IdReservation = 3,
                     ReservationDate = DateTime.Parse("2023-02-09"),
                     TableNumber = 1,
-                    StateOfReservation = "Finished",
-                    GradeOfReservation = 4,
+                    ReservationStatus = "Finished",
+                    ReservationGrade = 4,
                     IdClient = 2,
                     IdRestauration = 1
                 });
@@ -109,9 +109,9 @@ namespace Restaurants_REST_API.DbContexts
             {
                 c.HasKey(e => e.IdComplain);
                 c.Property(e => e.ComplainDate).IsRequired();
-                c.Property(e => e.StatusOfComplain).IsRequired().HasMaxLength(50);
+                c.Property(e => e.ComplainStatus).IsRequired().HasMaxLength(50);
 
-                c.HasData(new Complain { IdComplain = 1, ComplainDate = DateTime.Parse("2023-01-01"), StatusOfComplain = "New", IdReservation = 1, IdRestaurant = 1 });
+                c.HasData(new Complain { IdComplain = 1, ComplainDate = DateTime.Parse("2023-01-01"), ComplainStatus = "New", IdReservation = 1, IdRestaurant = 1 });
             }
             );
 
@@ -121,8 +121,8 @@ namespace Restaurants_REST_API.DbContexts
                 e.Property(e => e.Salary).IsRequired().HasColumnType("money");
                 e.Property(e => e.BonusSalary).IsRequired().HasColumnType("money");
                 e.Property(e => e.HiredDate).IsRequired();
-                e.Property(e => e.Name).IsRequired().HasMaxLength(50);
-                e.Property(e => e.Surname).IsRequired().HasMaxLength(50);
+                e.Property(e => e.FirstName).IsRequired().HasMaxLength(50);
+                e.Property(e => e.LastName).IsRequired().HasMaxLength(50);
                 e.Property(e => e.PESEL).IsRequired().HasMaxLength(11);
                 e.Property(e => e.IsOwner).IsRequired().HasMaxLength(1);
 
@@ -133,8 +133,8 @@ namespace Restaurants_REST_API.DbContexts
                     BonusSalary = 150,
                     HiredDate = DateTime.Parse("1999-01-04"),
                     FirstPromotionChefDate = DateTime.Parse("2000-01-04"),
-                    Name = "Michal",
-                    Surname = "Nowak",
+                    FirstName = "Michal",
+                    LastName = "Nowak",
                     PESEL = "11122233344",
                     IsOwner = "Y",
                     IdAddress = 3
@@ -147,8 +147,8 @@ namespace Restaurants_REST_API.DbContexts
                     BonusSalary = 150,
                     HiredDate = DateTime.Parse("2002-03-04"),
                     FirstPromotionChefDate = null,
-                    Name = "Kacper",
-                    Surname = "Kawka",
+                    FirstName = "Kacper",
+                    LastName = "Kawka",
                     PESEL = "22233344455",
                     IsOwner = "N",
                     IdAddress = 4
@@ -161,8 +161,8 @@ namespace Restaurants_REST_API.DbContexts
                     BonusSalary = 150,
                     HiredDate = DateTime.Parse("2004-02-11"),
                     FirstPromotionChefDate = null,
-                    Name = "Janusz",
-                    Surname = "Jogurt",
+                    FirstName = "Janusz",
+                    LastName = "Jogurt",
                     PESEL = "33344455566",
                     IsOwner = "N",
                     IdAddress = 5
@@ -175,8 +175,8 @@ namespace Restaurants_REST_API.DbContexts
                     BonusSalary = 150,
                     HiredDate = DateTime.Parse("2005-05-12"),
                     FirstPromotionChefDate = null,
-                    Name = "Bozena",
-                    Surname = "Lawenda",
+                    FirstName = "Bozena",
+                    LastName = "Lawenda",
                     PESEL = "44455566677",
                     IsOwner = "N",
                     IdAddress = 6
@@ -189,8 +189,8 @@ namespace Restaurants_REST_API.DbContexts
                     BonusSalary = 150,
                     HiredDate = DateTime.Parse("2010-11-02"),
                     FirstPromotionChefDate = null,
-                    Name = "Joanna",
-                    Surname = "Skrzynka",
+                    FirstName = "Joanna",
+                    LastName = "Skrzynka",
                     PESEL = "55566677788",
                     IsOwner = "N",
                     IdAddress = 7

@@ -6,8 +6,7 @@ namespace Restaurants_REST_API.Models
     {
         public int IdComplain { get; set; }
         public DateTime ComplainDate { get; set; }
-
-        public string StatusOfComplain { get; set; }
+        public string ComplainStatus { get; set; }
 
 
         public int IdRestaurant { get; set; }

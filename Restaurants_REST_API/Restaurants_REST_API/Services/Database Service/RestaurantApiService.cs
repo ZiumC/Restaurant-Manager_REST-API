@@ -25,7 +25,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                           {
                               IdRestaurant = rest.IdRestaurant,
                               Name = rest.Name,
-                              Status = rest.StateOfRestaurant,
+                              Status = rest.RestaurantStatus,
                               BonusBudget = rest.BonusBudget,
                               Address = new AddressDTO
                               {
@@ -70,8 +70,8 @@ namespace Restaurants_REST_API.Services.Database_Service
                                                         {
                                                             IdReservation = r.IdReservation,
                                                             ReservationDate = r.ReservationDate,
-                                                            Status = r.StateOfReservation,
-                                                            ReservationGrade = r.GradeOfReservation,
+                                                            Status = r.ReservationStatus,
+                                                            ReservationGrade = r.ReservationGrade,
                                                             TableNumber = r.TableNumber
                                                         }
                                                         ).ToList(),
@@ -83,7 +83,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                                                      {
                                                          IdComplain = c.IdComplain,
                                                          ComplainDate = c.ComplainDate,
-                                                         Status = c.StatusOfComplain
+                                                         Status = c.ComplainStatus
                                                      }
                                                      ).ToList()
 

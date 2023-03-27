@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Restaurants_REST_API.DbContexts;
 
@@ -11,9 +12,10 @@ using Restaurants_REST_API.DbContexts;
 namespace Restaurants_REST_API.Migrations
 {
     [DbContext(typeof(MainDbContext))]
-    partial class MainDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230327151459_RenamedCollumnsInReservationTable")]
+    partial class RenamedCollumnsInReservationTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -744,7 +746,7 @@ namespace Restaurants_REST_API.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("RestaurantStatus")
+                    b.Property<string>("StateOfRestaurant")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -761,14 +763,14 @@ namespace Restaurants_REST_API.Migrations
                             IdRestaurant = 1,
                             IdAddress = 1,
                             Name = "Pod Lasem",
-                            RestaurantStatus = "Working"
+                            StateOfRestaurant = "Working"
                         },
                         new
                         {
                             IdRestaurant = 2,
                             IdAddress = 2,
                             Name = "Zapiecek",
-                            RestaurantStatus = "Under construction"
+                            StateOfRestaurant = "Under construction"
                         });
                 });
 
