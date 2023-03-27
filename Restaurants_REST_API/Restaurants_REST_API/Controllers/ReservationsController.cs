@@ -36,6 +36,11 @@ namespace Restaurants_REST_API.Controllers
         [Route("id")]
         public async Task<IActionResult> GetReservationBy(int id)
         {
+            if (id < 0)
+            {
+                return BadRequest($"Incorrect id, expected id grater than 0 but got {id}");
+            }
+
             ReservationDTO? reservation = await _reservationsApiService.GetReservationByIdAsync(id);
 
             if (reservation == null)
@@ -50,6 +55,10 @@ namespace Restaurants_REST_API.Controllers
         [Route("restaurant/id")]
         public async Task<IActionResult> GetReservationsByRestaurant(int id)
         {
+            if (id < 0)
+            {
+                return BadRequest($"Incorrect id, expected id grater than 0 but got {id}");
+            }
 
             Restaurant? restaurant = await _restaurantsApiService.GetBasicRestaurantInfoByIdAsync(id);
 

@@ -22,7 +22,7 @@ namespace Restaurants_REST_API.Controllers
         {
             var restaurants = await _restaurantsApiService.GetAllRestaurantsAsync();
 
-            if (restaurants.Count() == 0 || restaurants == null)
+            if (restaurants == null || restaurants.Count() == 0)
             {
                 return NotFound("Restaurants not found");
             }
@@ -34,6 +34,11 @@ namespace Restaurants_REST_API.Controllers
         [Route("id")]
         public async Task<IActionResult> GetRestaurantBy(int id)
         {
+            if (id < 0)
+            {
+                return BadRequest($"Incorrect id, expected id grater than 0 but got {id}");
+            }
+
             Restaurant? restaurant = await _restaurantsApiService.GetBasicRestaurantInfoByIdAsync(id);
 
             if (restaurant == null)

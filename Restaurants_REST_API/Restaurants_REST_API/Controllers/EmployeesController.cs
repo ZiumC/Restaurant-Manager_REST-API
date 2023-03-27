@@ -35,6 +35,11 @@ namespace Restaurants_REST_API.Controllers
         [Route("id")]
         public async Task<IActionResult> GetEmployeeBy(int id)
         {
+            if (id < 0)
+            {
+                return BadRequest($"Incorrect id, expected id grater than 0 but got {id}");
+            }
+
             var employee = await _employeeApiService.GetBasicEmployeeDataByIdAsync(id);
 
             if (employee == null)
@@ -67,6 +72,11 @@ namespace Restaurants_REST_API.Controllers
         [Route("/supervisors/id")]
         public async Task<IActionResult> GetSupervisors(int id)
         {
+            if (id < 0)
+            {
+                return BadRequest($"Incorrect id, expected id grater than 0 but got {id}");
+            }
+
             var supervisorsIdList = await _employeeApiService.GetSupervisorsIdAsync();
 
             if (supervisorsIdList == null)
@@ -100,6 +110,10 @@ namespace Restaurants_REST_API.Controllers
         [Route("restaurant/id")]
         public async Task<IActionResult> GetEmployeeByRestaurant(int id)
         {
+            if (id < 0)
+            {
+                return BadRequest($"Incorrect id, expected id grater than 0 but got {id}");
+            }
 
             Restaurant? restaurant = await _restaurantsApiService.GetBasicRestaurantInfoByIdAsync(id);
 
