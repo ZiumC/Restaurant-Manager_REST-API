@@ -33,6 +33,20 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpGet]
+        [Route("id")]
+        public async Task<IActionResult> GetReservationBy(int id)
+        {
+            ReservationDTO? reservation = await _reservationsApiService.GetReservationByIdAsync(id);
+
+            if (reservation == null)
+            {
+                return NotFound($"Reservation {id} not found");
+            }
+
+            return Ok(reservation);
+        }
+
+        [HttpGet]
         [Route("restaurant/id")]
         public async Task<IActionResult> GetReservationsByRestaurant(int id)
         {

@@ -43,35 +43,56 @@ namespace Restaurants_REST_API.Services.Database_Service
 
         public async Task<IEnumerable<ReservationDTO>?> GetReservationsByRestaurantIdAsync(int restaurantId)
         {
-            return await(from r in _context.Reservations
+            return await (from r in _context.Reservations
 
-                         where r.IdRestauration == restaurantId
+                          where r.IdRestauration == restaurantId
 
-                         select new ReservationDTO
-                         {
-                             IdReservation = r.IdReservation,
-                             ReservationDate = r.ReservationDate,
-                             Status = r.ReservationStatus,
-                             ReservationGrade = r.ReservationGrade,
-                             TableNumber = r.TableNumber,
+                          select new ReservationDTO
+                          {
+                              IdReservation = r.IdReservation,
+                              ReservationDate = r.ReservationDate,
+                              Status = r.ReservationStatus,
+                              ReservationGrade = r.ReservationGrade,
+                              TableNumber = r.TableNumber,
 
-                             ReservationComplain = (from c in _context.Complains
-                                                    where c.IdReservation == r.IdReservation
+                              ReservationComplain = (from c in _context.Complains
+                                                     where c.IdReservation == r.IdReservation
 
-                                                    select new ComplainDTO
-                                                    {
-                                                        IdComplain = c.IdComplain,
-                                                        ComplainDate = c.ComplainDate,
-                                                        Status = c.ComplainStatus
-                                                    }
-                                                  ).FirstOrDefault()
-                         }
+                                                     select new ComplainDTO
+                                                     {
+                                                         IdComplain = c.IdComplain,
+                                                         ComplainDate = c.ComplainDate,
+                                                         Status = c.ComplainStatus
+                                                     }
+                                                   ).FirstOrDefault()
+                          }
 
                           ).ToListAsync();
         }
-        public Task<ComplainDTO> GetComplainsByRestaurantIdAsync(int restaurantId)
+        public async Task<ReservationDTO?> GetReservationByIdAsync(int reservationId)
         {
-            throw new NotImplementedException();
+            return await (from r in _context.Reservations
+                          where r.IdReservation == reservationId
+
+                          select new ReservationDTO
+                          {
+                              IdReservation = r.IdReservation,
+                              ReservationDate = r.ReservationDate,
+                              Status = r.ReservationStatus,
+                              ReservationGrade = r.ReservationGrade,
+                              TableNumber = r.TableNumber,
+                              ReservationComplain = (from c in _context.Complains
+                                                     where c.IdReservation == reservationId
+
+                                                     select new ComplainDTO
+                                                     {
+                                                         IdComplain = c.IdComplain,
+                                                         ComplainDate = c.ComplainDate,
+                                                         Status = c.ComplainStatus
+                                                     }
+                                                   ).FirstOrDefault()
+                          }
+                          ).FirstOrDefaultAsync();
         }
     }
 }
