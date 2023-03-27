@@ -24,6 +24,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 
                           select new EmployeeDTO
                           {
+                              IdEmployee = emp.IdEmployee,
                               FirstName = emp.Name,
                               Surname = emp.Surname,
                               PESEL = emp.PESEL,
@@ -76,6 +77,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                           where empCert.IdEmployee == employee.IdEmployee
                           select new EmployeeDTO
                           {
+                              IdEmployee = employee.IdEmployee, 
                               FirstName = employee.Name,
                               Surname = employee.Surname,
                               PESEL = employee.PESEL,
@@ -127,6 +129,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 
                           select new EmployeeDTO
                           {
+                              IdEmployee = emp.IdEmployee,
                               FirstName = emp.Name,
                               Surname = emp.Surname,
                               PESEL = emp.PESEL,
