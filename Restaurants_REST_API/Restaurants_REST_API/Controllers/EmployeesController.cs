@@ -10,10 +10,13 @@ namespace Restaurants_REST_API.Controllers
     public class EmployeesController : ControllerBase
     {
         private readonly IEmployeeApiService _employeeApiService;
+        private readonly IRestaurantApiService _restaurantsApiService;
 
-        public EmployeesController(IEmployeeApiService employeeApiService)
+        public EmployeesController(IEmployeeApiService employeeApiService, IRestaurantApiService restaurantsApiService)
         {
             _employeeApiService = employeeApiService;
+            _restaurantsApiService = restaurantsApiService;
+            _restaurantsApiService = restaurantsApiService;
         }
 
         [HttpGet]
@@ -30,7 +33,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpGet]
-        [Route("/id")]
+        [Route("employees/id")]
         public async Task<IActionResult> GetEmployeeBy(int id)
         {
             var employee = await _employeeApiService.GetBasicEmployeeDataByIdAsync(id);
@@ -82,17 +85,38 @@ namespace Restaurants_REST_API.Controllers
 
         [HttpGet]
         [Route("/owner")]
-        public async Task<IActionResult> GetOwnerDerails() 
+        public async Task<IActionResult> GetOwnerDerails()
         {
             Employee? ownerBasicData = await _employeeApiService.GetOwnerBasicDataAsync();
 
             if (ownerBasicData == null)
             {
-                 return NotFound($"Owner not found");
+                return NotFound($"Owner not found");
             }
 
             return Ok(await _employeeApiService.GetDetailedEmployeeDataAsync(ownerBasicData));
         }
 
+        [HttpGet]
+        [Route("/employees/restaurant/id")]
+        public async Task<IActionResult> GetEmployeeByRestaurantId(int id)
+        {
+
+            Restaurant? restaurant = await _restaurantsApiService.CheckIfRestaurantExistByIdAsync(id);
+
+            if (restaurant == null)
+            {
+                return NotFound($"Restaurant not found");
+            }
+
+            var employeesByRestaurant = await _employeeApiService.GetAllEmployeesByRestaurantIdAsync(id);
+
+            if (employeesByRestaurant.Count() == 0)
+            {
+                return NotFound($"Employees not found");
+            }
+
+            return Ok(employeesByRestaurant);
+        }
     }
 }
