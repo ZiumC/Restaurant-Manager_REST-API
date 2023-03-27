@@ -94,5 +94,41 @@ namespace Restaurants_REST_API.Services.Database_Service
                           }
                           ).FirstOrDefaultAsync();
         }
+
+        public async Task<ClientDTO?> GetReservationsByClientIdAsync(int clientId)
+        {
+            return await (from cli in _context.Clients
+                          where cli.IdClient == clientId
+
+                          select new ClientDTO
+                          {
+                              IdClient = cli.IdClient,
+                              Name = cli.Name,
+                              IsBusinessman = cli.IsBusinessman,
+                              ClientReservations = (from r in _context.Reservations
+                                                    where r.IdClient == clientId
+
+                                                    select new ReservationDTO
+                                                    {
+                                                        IdReservation = r.IdReservation,
+                                                        ReservationDate = r.ReservationDate,
+                                                        Status = r.ReservationStatus,
+                                                        ReservationGrade = r.ReservationGrade,
+                                                        TableNumber = r.TableNumber,
+                                                        ReservationComplain = (from c in _context.Complains
+                                                                               where c.IdReservation == r.IdReservation
+
+                                                                               select new ComplainDTO
+                                                                               {
+                                                                                   IdComplain = c.IdComplain,
+                                                                                   ComplainDate = c.ComplainDate,
+                                                                                   Status = c.ComplainStatus
+                                                                               }
+                                                                               ).FirstOrDefault()
+                                                    }
+                                                    ).ToList()
+                          }
+                          ).FirstOrDefaultAsync();
+        }
     }
 }
