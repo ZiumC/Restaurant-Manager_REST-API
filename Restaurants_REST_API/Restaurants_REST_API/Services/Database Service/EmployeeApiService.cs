@@ -33,8 +33,8 @@ namespace Restaurants_REST_API.Services.Database_Service
                               FirstPromotionChefDate = emp.FirstPromotionChefDate,
                               City = addr.City,
                               Street = addr.Street,
-                              NoBuilding = addr.NoBuilding,
-                              NoLocal = addr.NoLocal,
+                              NoBuilding = addr.BuildingNumber,
+                              NoLocal = addr.LocalNumber,
 
 
                               certificates = (from empCert in _context.EmployeeCertificates
@@ -84,8 +84,8 @@ namespace Restaurants_REST_API.Services.Database_Service
                               FirstPromotionChefDate = employee.FirstPromotionChefDate,
                               City = address.City,
                               Street = address.Street,
-                              NoBuilding = address.NoBuilding,
-                              NoLocal = address.NoLocal,
+                              NoBuilding = address.BuildingNumber,
+                              NoLocal = address.LocalNumber,
 
                               certificates = (from empCert in _context.EmployeeCertificates
                                               join cert in _context.Certificates
@@ -134,8 +134,8 @@ namespace Restaurants_REST_API.Services.Database_Service
                               FirstPromotionChefDate = emp.FirstPromotionChefDate,
                               City = addr.City,
                               Street = addr.Street,
-                              NoBuilding = addr.NoBuilding,
-                              NoLocal = addr.NoLocal,
+                              NoBuilding = addr.BuildingNumber,
+                              NoLocal = addr.LocalNumber,
 
                               certificates = (from empCert in _context.EmployeeCertificates
                                               join cert in _context.Certificates

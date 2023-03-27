@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Restaurants_REST_API.DbContexts;
 
@@ -11,9 +12,10 @@ using Restaurants_REST_API.DbContexts;
 namespace Restaurants_REST_API.Migrations
 {
     [DbContext(typeof(MainDbContext))]
-    partial class MainDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230321141513_RenamedCollumnsInAddressTable")]
+    partial class RenamedCollumnsInAddressTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -364,9 +366,6 @@ namespace Restaurants_REST_API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdEmployee"), 1L, 1);
 
-                    b.Property<decimal>("BonusSalary")
-                        .HasColumnType("money");
-
                     b.Property<DateTime?>("FirstPromotionChefDate")
                         .HasColumnType("datetime2");
 
@@ -409,7 +408,6 @@ namespace Restaurants_REST_API.Migrations
                         new
                         {
                             IdEmployee = 1,
-                            BonusSalary = 150m,
                             FirstPromotionChefDate = new DateTime(2000, 1, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             HiredDate = new DateTime(1999, 1, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IdAddress = 3,
@@ -422,7 +420,6 @@ namespace Restaurants_REST_API.Migrations
                         new
                         {
                             IdEmployee = 2,
-                            BonusSalary = 150m,
                             HiredDate = new DateTime(2002, 3, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IdAddress = 4,
                             IsOwner = "N",
@@ -434,7 +431,6 @@ namespace Restaurants_REST_API.Migrations
                         new
                         {
                             IdEmployee = 3,
-                            BonusSalary = 150m,
                             HiredDate = new DateTime(2004, 2, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IdAddress = 5,
                             IsOwner = "N",
@@ -446,7 +442,6 @@ namespace Restaurants_REST_API.Migrations
                         new
                         {
                             IdEmployee = 4,
-                            BonusSalary = 150m,
                             HiredDate = new DateTime(2005, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IdAddress = 6,
                             IsOwner = "N",
@@ -458,7 +453,6 @@ namespace Restaurants_REST_API.Migrations
                         new
                         {
                             IdEmployee = 5,
-                            BonusSalary = 150m,
                             HiredDate = new DateTime(2010, 11, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IdAddress = 7,
                             IsOwner = "N",
@@ -666,9 +660,6 @@ namespace Restaurants_REST_API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdReservation"), 1L, 1);
 
-                    b.Property<int?>("GradeOfReservation")
-                        .HasColumnType("int");
-
                     b.Property<int>("IdClient")
                         .HasColumnType("int");
 
@@ -716,7 +707,6 @@ namespace Restaurants_REST_API.Migrations
                         new
                         {
                             IdReservation = 3,
-                            GradeOfReservation = 4,
                             IdClient = 2,
                             IdRestauration = 1,
                             ReservationDate = new DateTime(2023, 2, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -732,9 +722,6 @@ namespace Restaurants_REST_API.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdRestaurant"), 1L, 1);
-
-                    b.Property<decimal?>("BonusBudget")
-                        .HasColumnType("money");
 
                     b.Property<int>("IdAddress")
                         .HasColumnType("int");
