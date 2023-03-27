@@ -8,8 +8,7 @@ namespace Restaurants_REST_API.Services.Database_Service
         public Task<IEnumerable<RestaurantDTO>?> GetAllRestaurantsAsync();
         public Task<Restaurant?> GetBasicRestaurantInfoByIdAsync(int restaurantId);
         public Task<RestaurantDTO> GetRestaurantDetailsByIdAsync(int restaurantId);
-        public Task<IEnumerable<ReservationDTO>?> GetAllReservationsAsync();
-        public Task<Reservation> GetReservationByIdAsync(int reservationId);
-        public Task<Complain> GetComplainsByRestaurantIdAsync(int restaurantId);
+        //public Task<IEnumerable<ReservationDTO>?> GetAllReservationsAsync();
+        
     }
 }

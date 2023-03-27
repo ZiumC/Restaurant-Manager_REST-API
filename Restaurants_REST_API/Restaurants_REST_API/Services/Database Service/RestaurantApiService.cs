@@ -217,7 +217,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                           ).ToListAsync();
         }
 
-        public Task<Reservation> GetReservationByIdAsync(int reservationId)
+        public Task<Reservation> GetReservationsByRestaurantIdAsync(int restaurantId)
         {
             throw new NotImplementedException();
         }
