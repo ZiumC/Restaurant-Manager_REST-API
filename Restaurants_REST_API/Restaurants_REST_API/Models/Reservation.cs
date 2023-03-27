@@ -7,12 +7,9 @@ namespace Restaurants_REST_API.Models
     public class Reservation
     {
         public int IdReservation { get; set; }
-
         public DateTime ReservationDate { get; set; }
-
-        public string StateOfReservation { get; set; } 
-        public int? GradeOfReservation { get; set; } 
-
+        public string ReservationStatus { get; set; } 
+        public int? ReservationGrade { get; set; } 
         public int TableNumber { get; set; }
 
 

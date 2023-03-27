@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Restaurants_REST_API.DbContexts;
 
@@ -11,9 +12,10 @@ using Restaurants_REST_API.DbContexts;
 namespace Restaurants_REST_API.Migrations
 {
     [DbContext(typeof(MainDbContext))]
-    partial class MainDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230327151218_RenamedCollumnsInEmployeeTable")]
+    partial class RenamedCollumnsInEmployeeTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -666,6 +668,9 @@ namespace Restaurants_REST_API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdReservation"), 1L, 1);
 
+                    b.Property<int?>("GradeOfReservation")
+                        .HasColumnType("int");
+
                     b.Property<int>("IdClient")
                         .HasColumnType("int");
 
@@ -675,10 +680,7 @@ namespace Restaurants_REST_API.Migrations
                     b.Property<DateTime>("ReservationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("ReservationGrade")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ReservationStatus")
+                    b.Property<string>("StateOfReservation")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -701,7 +703,7 @@ namespace Restaurants_REST_API.Migrations
                             IdClient = 1,
                             IdRestauration = 1,
                             ReservationDate = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ReservationStatus = "New",
+                            StateOfReservation = "New",
                             TableNumber = 1
                         },
                         new
@@ -710,17 +712,17 @@ namespace Restaurants_REST_API.Migrations
                             IdClient = 3,
                             IdRestauration = 1,
                             ReservationDate = new DateTime(2023, 11, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ReservationStatus = "Canceled",
+                            StateOfReservation = "Canceled",
                             TableNumber = 2
                         },
                         new
                         {
                             IdReservation = 3,
+                            GradeOfReservation = 4,
                             IdClient = 2,
                             IdRestauration = 1,
                             ReservationDate = new DateTime(2023, 2, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ReservationGrade = 4,
-                            ReservationStatus = "Finished",
+                            StateOfReservation = "Finished",
                             TableNumber = 1
                         });
                 });
@@ -744,7 +746,7 @@ namespace Restaurants_REST_API.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("RestaurantStatus")
+                    b.Property<string>("StateOfRestaurant")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -761,14 +763,14 @@ namespace Restaurants_REST_API.Migrations
                             IdRestaurant = 1,
                             IdAddress = 1,
                             Name = "Pod Lasem",
-                            RestaurantStatus = "Working"
+                            StateOfRestaurant = "Working"
                         },
                         new
                         {
                             IdRestaurant = 2,
                             IdAddress = 2,
                             Name = "Zapiecek",
-                            RestaurantStatus = "Under construction"
+                            StateOfRestaurant = "Under construction"
                         });
                 });
 

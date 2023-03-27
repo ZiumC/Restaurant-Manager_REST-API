@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Restaurants_REST_API.DbContexts;
 
@@ -11,9 +12,10 @@ using Restaurants_REST_API.DbContexts;
 namespace Restaurants_REST_API.Migrations
 {
     [DbContext(typeof(MainDbContext))]
-    partial class MainDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230327150912_RenamedCollumnInComplainTable")]
+    partial class RenamedCollumnInComplainTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -367,11 +369,6 @@ namespace Restaurants_REST_API.Migrations
                     b.Property<decimal>("BonusSalary")
                         .HasColumnType("money");
 
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<DateTime?>("FirstPromotionChefDate")
                         .HasColumnType("datetime2");
 
@@ -386,7 +383,7 @@ namespace Restaurants_REST_API.Migrations
                         .HasMaxLength(1)
                         .HasColumnType("nvarchar(1)");
 
-                    b.Property<string>("LastName")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -399,6 +396,11 @@ namespace Restaurants_REST_API.Migrations
                     b.Property<decimal>("Salary")
                         .HasColumnType("money");
 
+                    b.Property<string>("Surname")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.HasKey("IdEmployee");
 
                     b.HasIndex("IdAddress");
@@ -410,62 +412,62 @@ namespace Restaurants_REST_API.Migrations
                         {
                             IdEmployee = 1,
                             BonusSalary = 150m,
-                            FirstName = "Michal",
                             FirstPromotionChefDate = new DateTime(2000, 1, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             HiredDate = new DateTime(1999, 1, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IdAddress = 3,
                             IsOwner = "Y",
-                            LastName = "Nowak",
+                            Name = "Michal",
                             PESEL = "11122233344",
-                            Salary = 3421m
+                            Salary = 3421m,
+                            Surname = "Nowak"
                         },
                         new
                         {
                             IdEmployee = 2,
                             BonusSalary = 150m,
-                            FirstName = "Kacper",
                             HiredDate = new DateTime(2002, 3, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IdAddress = 4,
                             IsOwner = "N",
-                            LastName = "Kawka",
+                            Name = "Kacper",
                             PESEL = "22233344455",
-                            Salary = 2217m
+                            Salary = 2217m,
+                            Surname = "Kawka"
                         },
                         new
                         {
                             IdEmployee = 3,
                             BonusSalary = 150m,
-                            FirstName = "Janusz",
                             HiredDate = new DateTime(2004, 2, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IdAddress = 5,
                             IsOwner = "N",
-                            LastName = "Jogurt",
+                            Name = "Janusz",
                             PESEL = "33344455566",
-                            Salary = 2213m
+                            Salary = 2213m,
+                            Surname = "Jogurt"
                         },
                         new
                         {
                             IdEmployee = 4,
                             BonusSalary = 150m,
-                            FirstName = "Bozena",
                             HiredDate = new DateTime(2005, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IdAddress = 6,
                             IsOwner = "N",
-                            LastName = "Lawenda",
+                            Name = "Bozena",
                             PESEL = "44455566677",
-                            Salary = 2613m
+                            Salary = 2613m,
+                            Surname = "Lawenda"
                         },
                         new
                         {
                             IdEmployee = 5,
                             BonusSalary = 150m,
-                            FirstName = "Joanna",
                             HiredDate = new DateTime(2010, 11, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IdAddress = 7,
                             IsOwner = "N",
-                            LastName = "Skrzynka",
+                            Name = "Joanna",
                             PESEL = "55566677788",
-                            Salary = 2913m
+                            Salary = 2913m,
+                            Surname = "Skrzynka"
                         });
                 });
 
@@ -666,6 +668,9 @@ namespace Restaurants_REST_API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdReservation"), 1L, 1);
 
+                    b.Property<int?>("GradeOfReservation")
+                        .HasColumnType("int");
+
                     b.Property<int>("IdClient")
                         .HasColumnType("int");
 
@@ -675,10 +680,7 @@ namespace Restaurants_REST_API.Migrations
                     b.Property<DateTime>("ReservationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("ReservationGrade")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ReservationStatus")
+                    b.Property<string>("StateOfReservation")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -701,7 +703,7 @@ namespace Restaurants_REST_API.Migrations
                             IdClient = 1,
                             IdRestauration = 1,
                             ReservationDate = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ReservationStatus = "New",
+                            StateOfReservation = "New",
                             TableNumber = 1
                         },
                         new
@@ -710,17 +712,17 @@ namespace Restaurants_REST_API.Migrations
                             IdClient = 3,
                             IdRestauration = 1,
                             ReservationDate = new DateTime(2023, 11, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ReservationStatus = "Canceled",
+                            StateOfReservation = "Canceled",
                             TableNumber = 2
                         },
                         new
                         {
                             IdReservation = 3,
+                            GradeOfReservation = 4,
                             IdClient = 2,
                             IdRestauration = 1,
                             ReservationDate = new DateTime(2023, 2, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ReservationGrade = 4,
-                            ReservationStatus = "Finished",
+                            StateOfReservation = "Finished",
                             TableNumber = 1
                         });
                 });
@@ -744,7 +746,7 @@ namespace Restaurants_REST_API.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("RestaurantStatus")
+                    b.Property<string>("StateOfRestaurant")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -761,14 +763,14 @@ namespace Restaurants_REST_API.Migrations
                             IdRestaurant = 1,
                             IdAddress = 1,
                             Name = "Pod Lasem",
-                            RestaurantStatus = "Working"
+                            StateOfRestaurant = "Working"
                         },
                         new
                         {
                             IdRestaurant = 2,
                             IdAddress = 2,
                             Name = "Zapiecek",
-                            RestaurantStatus = "Under construction"
+                            StateOfRestaurant = "Under construction"
                         });
                 });
 

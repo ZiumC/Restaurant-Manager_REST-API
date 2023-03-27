@@ -6,11 +6,9 @@ namespace Restaurants_REST_API.Models
     public class Restaurant
     {
         public int IdRestaurant { get; set; }
-
         public string Name { get; set; }
+        public string RestaurantStatus { get; set; }
         public decimal? BonusBudget { get; set; }
-
-        public string StateOfRestaurant { get; set; }
 
         public int IdAddress { get; set; }
         [ForeignKey(nameof(IdAddress))]
