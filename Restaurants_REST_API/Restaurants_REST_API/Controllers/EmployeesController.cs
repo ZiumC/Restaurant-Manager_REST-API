@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Restaurants_REST_API.DTOs;
 using Restaurants_REST_API.Models;
 using Restaurants_REST_API.Services.Database_Service;
+using Restaurants_REST_API.Services.ValidationService;
 
 namespace Restaurants_REST_API.Controllers
 {
@@ -130,6 +132,45 @@ namespace Restaurants_REST_API.Controllers
             }
 
             return Ok(employeesByRestaurant);
+        }
+
+        [HttpPost]
+        [Route("/add")]
+        public async Task<IActionResult> AddNewEmployee(EmployeeDTO newEmployee)
+        {
+
+            if (newEmployee == null)
+            {
+                return BadRequest("Employee must be specified");
+            }
+
+            if (!EmployeeValidator.isEmptyNameOf(newEmployee)) 
+            {
+                return BadRequest("Name can't be empty");
+            }
+
+            if (!EmployeeValidator.isCorrectPeselOf(newEmployee)) 
+            {
+                return BadRequest("PESEL isn't correct");
+            }
+
+            if (!EmployeeValidator.isCorrectOwnerFieldOf(newEmployee)) 
+            {
+                return BadRequest("isOwner isn't correct");
+            }
+
+            if (!EmployeeValidator.isCorrectSalaryOf(newEmployee)) 
+            {
+                return BadRequest("Salary can't be less or equal to 0");
+            }
+
+            if (!EmployeeValidator.isCorrectAddressOf(newEmployee.Address)) 
+            {
+                return BadRequest("Address isn't correct");
+            }
+
+
+            return Ok();
         }
     }
 }
