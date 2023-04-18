@@ -65,5 +65,18 @@ namespace Restaurants_REST_API.Services.ValidationService
 
             return true;
         }
+
+        public static bool isCorrectCertificatesOf(EmployeeDTO empToCheck) 
+        {
+            foreach (CertificateDTO empCert in empToCheck.Certificates) 
+            {
+                if (empCert.Name.Replace("\\s", "").Equals("")) 
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
     }
 }

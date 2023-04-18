@@ -19,6 +19,7 @@ namespace Restaurants_REST_API.DTOs
         public string PESEL { get; set; }
         [Required]
         public decimal Salary { get; set; }
+        public decimal BonusSalary { get; set; }
         public DateTime HiredDate { get; set; }
         public DateTime? FirstPromotionChefDate { get; set; }
         [Required]

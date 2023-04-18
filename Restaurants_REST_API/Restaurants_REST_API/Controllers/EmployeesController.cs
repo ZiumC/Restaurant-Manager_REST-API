@@ -141,33 +141,42 @@ namespace Restaurants_REST_API.Controllers
 
             if (newEmployee == null)
             {
-                return BadRequest("Employee must be specified");
+                return BadRequest("Employee should be specified");
             }
 
-            if (!EmployeeValidator.isEmptyNameOf(newEmployee)) 
+            if (!EmployeeValidator.isEmptyNameOf(newEmployee))
             {
                 return BadRequest("Name can't be empty");
             }
 
-            if (!EmployeeValidator.isCorrectPeselOf(newEmployee)) 
+            if (!EmployeeValidator.isCorrectPeselOf(newEmployee))
             {
                 return BadRequest("PESEL isn't correct");
             }
 
-            if (!EmployeeValidator.isCorrectOwnerFieldOf(newEmployee)) 
+            if (!EmployeeValidator.isCorrectOwnerFieldOf(newEmployee))
             {
                 return BadRequest("isOwner isn't correct");
             }
 
-            if (!EmployeeValidator.isCorrectSalaryOf(newEmployee)) 
+            if (!EmployeeValidator.isCorrectSalaryOf(newEmployee))
             {
-                return BadRequest("Salary can't be less or equal to 0");
+                return BadRequest("Salary can't be less or equal 0");
             }
 
-            if (!EmployeeValidator.isCorrectAddressOf(newEmployee.Address)) 
+            if (!EmployeeValidator.isCorrectAddressOf(newEmployee.Address))
             {
                 return BadRequest("Address isn't correct");
             }
+
+            if (newEmployee.Certificates != null && newEmployee.Certificates.Count > 0)
+            {
+                if (!EmployeeValidator.isCorrectCertificatesOf(newEmployee))
+                {
+                    return BadRequest("One or more certificates is invalid");
+                }
+            }
+
 
 
             return Ok();
