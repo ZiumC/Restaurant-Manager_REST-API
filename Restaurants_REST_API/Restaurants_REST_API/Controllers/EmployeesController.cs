@@ -177,9 +177,13 @@ namespace Restaurants_REST_API.Controllers
                 }
             }
 
+            bool isEmpAdded = await _employeeApiService.AddNewEmployee(newEmployee);
+            if (!isEmpAdded)
+            {
+                return BadRequest("Unable to add new Employee");
+            }
 
-
-            return Ok();
+            return Ok("New Employee has been added");
         }
     }
 }

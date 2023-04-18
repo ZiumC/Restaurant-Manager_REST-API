@@ -2,12 +2,15 @@
 using Restaurants_REST_API.DbContexts;
 using Restaurants_REST_API.DTOs;
 using Restaurants_REST_API.Models;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace Restaurants_REST_API.Services.Database_Service
 {
     public class EmployeeApiService : IEmployeeApiService
     {
         private readonly MainDbContext _context;
+        private readonly decimal _basicBonus = 150;
 
         public EmployeeApiService(MainDbContext context)
         {
@@ -249,6 +252,59 @@ namespace Restaurants_REST_API.Services.Database_Service
                           }
                           ).ToListAsync();
         }
+        public Task<bool> AddNewEmployee(EmployeeDTO newEmployee)
+        {
+            var bonusSal = newEmployee.BonusSalary;
+            if (bonusSal < _basicBonus)
+            {
+                bonusSal = +_basicBonus;
+            }
 
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    var newAddress = _context.Address.Add
+                        (
+                            new Address
+                            {
+                                City = newEmployee.Address.City,
+                                Street = newEmployee.Address.Street,
+                                BuildingNumber = newEmployee.Address.BuildingNumber,
+                                LocalNumber = newEmployee.Address.LocalNumber
+                            }
+                    );
+
+                    _context.SaveChanges();
+
+                    var newEmp = _context.Add
+                        (
+                            new Employee
+                            {
+                                FirstName = newEmployee.FirstName,
+                                LastName = newEmployee.Surname,
+                                PESEL = newEmployee.PESEL,
+                                HiredDate = newEmployee.HiredDate,
+                                FirstPromotionChefDate = newEmployee.FirstPromotionChefDate,
+                                Salary = newEmployee.Salary,
+                                BonusSalary = bonusSal,
+                                IsOwner = newEmployee.IsOwner,
+                                IdAddress = newAddress.Entity.IdAddress
+                            }
+                        );
+
+
+                    _context.SaveChanges();
+                    transaction.Commit();
+                    return Task.FromResult(true);
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    return Task.FromResult(false);
+                }
+
+            }
+        }
     }
 }
