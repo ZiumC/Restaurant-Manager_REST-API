@@ -311,12 +311,9 @@ namespace Restaurants_REST_API.Services.Database_Service
                                        ExpirationDate = empCertificate.ExpirationDate
                                    }
                                 );
-                           await _context.SaveChangesAsync();
+                            await _context.SaveChangesAsync();
                         }
                     }
-
-                    await transaction.CommitAsync();
-                    return true;
                 }
                 catch (Exception ex)
                 {
@@ -325,7 +322,33 @@ namespace Restaurants_REST_API.Services.Database_Service
                     return false;
                 }
 
+                await transaction.CommitAsync();
+                return true;
             }
+        }
+
+
+        public async Task<bool> AddNewEmployeeTypeAsync(string name)
+        {
+            try
+            {
+                var newType = _context.Add
+                (
+                    new EmployeeType
+                    {
+                        Name = name
+                    }
+                );
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return false;
+            }
+
+            return true;
         }
     }
 }
