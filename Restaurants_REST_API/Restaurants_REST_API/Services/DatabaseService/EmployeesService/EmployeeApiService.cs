@@ -253,6 +253,11 @@ namespace Restaurants_REST_API.Services.Database_Service
         }
 
 
+        public async Task<IEnumerable<string>> GetAllEmployeeTypesAsync() 
+        {
+            return await _context.EmployeeTypes.Select(x => x.Name).ToListAsync();
+        }
+
         public async Task<bool> AddNewEmployeeAsync(EmployeeDTO newEmployee, decimal empBonusSal, bool certificatesExist)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
