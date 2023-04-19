@@ -219,6 +219,12 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Length name of employee type should be between 3 and 50");
             }
 
+            IEnumerable<string> allTypes = await _employeeApiService.GetAllEmployeeTypesAsync();
+            if (allTypes.Contains(name)) 
+            {
+                return BadRequest($"Employee type {name} already exist");
+            }
+
             bool isTypeHasBeenAdded = await _employeeApiService.AddNewEmployeeTypeAsync(name);
             if (!isTypeHasBeenAdded)
             {
