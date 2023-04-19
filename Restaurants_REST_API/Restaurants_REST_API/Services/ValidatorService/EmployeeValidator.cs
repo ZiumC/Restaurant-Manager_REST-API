@@ -32,13 +32,13 @@ namespace Restaurants_REST_API.Services.ValidationService
 
         public static bool isCorrectOwnerFieldOf(EmployeeDTO empToCheck)
         {
-            if (empToCheck.IsOwner.Replace("\\s", "") == "") 
+            if (empToCheck.IsOwner.Replace("\\s", "") == "")
             {
                 return false;
             }
 
             string isOwner = empToCheck.IsOwner.ToLower();
-            if (isOwner.Equals("y") || isOwner.Equals("n")) 
+            if (isOwner.Equals("y") || isOwner.Equals("n"))
             {
                 return true;
             }
@@ -66,17 +66,69 @@ namespace Restaurants_REST_API.Services.ValidationService
             return true;
         }
 
-        public static bool isCorrectCertificatesOf(EmployeeDTO empToCheck) 
+        public static bool isCorrectCertificatesOf(EmployeeDTO empToCheck)
         {
-            foreach (CertificateDTO empCert in empToCheck.Certificates) 
+            foreach (CertificateDTO empCert in empToCheck.Certificates)
             {
-                if (empCert.Name.Replace("\\s", "").Equals("")) 
+                if (empCert.Name.Replace("\\s", "").Equals(""))
                 {
                     return false;
                 }
             }
 
             return true;
+        }
+
+        public static bool isEmployeeExistIn(IEnumerable<EmployeeDTO> allEmployees, EmployeeDTO empToCheck)
+        {
+            List<bool> newEmpEquals = new List<bool>();
+            foreach (EmployeeDTO emp in allEmployees)
+            {
+                bool empExist = true;
+                if (!emp.FirstName.Equals(empToCheck.FirstName))
+                {
+                    empExist = false;
+                }
+
+                if (!emp.Surname.Equals(empToCheck.Surname))
+                {
+                    empExist = false;
+                }
+
+                if (!emp.PESEL.Equals(empToCheck.PESEL)) 
+                {
+                    empExist = false;
+                }
+
+                if (!emp.IsOwner.Equals(emp.IsOwner)) 
+                {
+                    empExist = false;
+                }
+
+                if (!emp.Address.City.Equals(empToCheck.Address.City))
+                {
+                    empExist = false;
+                }
+
+                if (!emp.Address.Street.Equals(empToCheck.Address.Street))
+                {
+                    empExist = false;
+                }
+
+                if (!emp.Address.BuildingNumber.Equals(empToCheck.Address.BuildingNumber))
+                {
+                    empExist = false;
+                }
+
+                if (!emp.Address.BuildingNumber.Equals(empToCheck.Address.BuildingNumber))
+                {
+                    empExist = false;
+                }
+
+                newEmpEquals.Add(empExist);
+            }
+
+            return newEmpEquals.Contains(true);
         }
     }
 }

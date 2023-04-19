@@ -316,14 +316,12 @@ namespace Restaurants_REST_API.Services.Database_Service
                     }
 
                     await transaction.CommitAsync();
-                    //return Task.FromResult(true);
                     return true;
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.ToString());
                     await transaction.RollbackAsync();
-                    //return Task.FromResult(false);
                     return false;
                 }
 
