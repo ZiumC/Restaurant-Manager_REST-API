@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Restaurants_REST_API.DTOs;
-using Restaurants_REST_API.Models;
+using Restaurants_REST_API.Models.Database;
 using Restaurants_REST_API.Services.Database_Service;
 
 namespace Restaurants_REST_API.Controllers

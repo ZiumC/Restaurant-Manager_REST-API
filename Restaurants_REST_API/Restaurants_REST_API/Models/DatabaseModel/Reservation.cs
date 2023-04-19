@@ -2,14 +2,14 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Net;
 
-namespace Restaurants_REST_API.Models
+namespace Restaurants_REST_API.Models.Database
 {
     public class Reservation
     {
         public int IdReservation { get; set; }
         public DateTime ReservationDate { get; set; }
-        public string ReservationStatus { get; set; } 
-        public int? ReservationGrade { get; set; } 
+        public string ReservationStatus { get; set; }
+        public int? ReservationGrade { get; set; }
         public int TableNumber { get; set; }
 
 

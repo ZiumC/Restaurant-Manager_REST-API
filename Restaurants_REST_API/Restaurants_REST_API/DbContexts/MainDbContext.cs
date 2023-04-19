@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Restaurants_REST_API.Models;
+using Restaurants_REST_API.Models.Database;
 using System.ComponentModel.DataAnnotations;
 
 namespace Restaurants_REST_API.DbContexts

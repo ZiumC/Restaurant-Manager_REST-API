@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Restaurants_REST_API.Models
+namespace Restaurants_REST_API.Models.Database
 {
     public class Complain
     {

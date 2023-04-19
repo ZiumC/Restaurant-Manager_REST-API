@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Restaurants_REST_API.DbContexts;
 using Restaurants_REST_API.DTOs;
-using Restaurants_REST_API.Models;
+using Restaurants_REST_API.Models.Database;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -10,7 +10,6 @@ namespace Restaurants_REST_API.Services.Database_Service
     public class EmployeeApiService : IEmployeeApiService
     {
         private readonly MainDbContext _context;
-        private readonly decimal _basicBonus = 150;
 
         public EmployeeApiService(MainDbContext context)
         {
@@ -252,15 +251,11 @@ namespace Restaurants_REST_API.Services.Database_Service
                           }
                           ).ToListAsync();
         }
-        public Task<bool> AddNewEmployee(EmployeeDTO newEmployee)
-        {
-            var bonusSal = newEmployee.BonusSalary;
-            if (bonusSal < _basicBonus)
-            {
-                bonusSal = +_basicBonus;
-            }
 
-            using (var transaction = _context.Database.BeginTransaction())
+
+        public async Task<bool> AddNewEmployeeAsync(EmployeeDTO newEmployee, decimal empBonusSal, bool certificatesExist)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync())
             {
                 try
                 {
@@ -274,8 +269,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                                 LocalNumber = newEmployee.Address.LocalNumber
                             }
                     );
-
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
 
                     var newEmp = _context.Add
                         (
@@ -287,21 +281,50 @@ namespace Restaurants_REST_API.Services.Database_Service
                                 HiredDate = newEmployee.HiredDate,
                                 FirstPromotionChefDate = newEmployee.FirstPromotionChefDate,
                                 Salary = newEmployee.Salary,
-                                BonusSalary = bonusSal,
-                                IsOwner = newEmployee.IsOwner,
+                                BonusSalary = empBonusSal,
+                                IsOwner = newEmployee.IsOwner.ToUpper(),
                                 IdAddress = newAddress.Entity.IdAddress
                             }
                         );
+                    await _context.SaveChangesAsync();
 
+                    if (certificatesExist)
+                    {
+                        //inside EmployeesController certificates are checked if they are NOT NULL and are correct
+                        foreach (CertificateDTO empCertificate in newEmployee.Certificates)
+                        {
+                            var newCertificate = _context.Add
+                                (
+                                    new Certificate
+                                    {
+                                        Name = empCertificate.Name
+                                    }
+                                );
+                            await _context.SaveChangesAsync();
 
-                    _context.SaveChanges();
-                    transaction.Commit();
-                    return Task.FromResult(true);
+                            var newEmpCertificate = _context.Add
+                                (
+                                   new EmployeeCertificates
+                                   {
+                                       IdCertificate = newCertificate.Entity.IdCertificate,
+                                       IdEmployee = newEmp.Entity.IdEmployee,
+                                       ExpirationDate = empCertificate.ExpirationDate
+                                   }
+                                );
+                           await _context.SaveChangesAsync();
+                        }
+                    }
+
+                    await transaction.CommitAsync();
+                    //return Task.FromResult(true);
+                    return true;
                 }
                 catch (Exception ex)
                 {
-                    transaction.Rollback();
-                    return Task.FromResult(false);
+                    Console.WriteLine(ex.ToString());
+                    await transaction.RollbackAsync();
+                    //return Task.FromResult(false);
+                    return false;
                 }
 
             }

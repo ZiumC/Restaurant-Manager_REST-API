@@ -1,5 +1,5 @@
 ﻿using Restaurants_REST_API.DTOs;
-using Restaurants_REST_API.Models;
+using Restaurants_REST_API.Models.Database;
 
 namespace Restaurants_REST_API.Services.Database_Service
 {
@@ -19,6 +19,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 
         public Task<Employee?> GetOwnerBasicDataAsync();
         public Task<IEnumerable<EmployeeDTO>> GetAllEmployeesByRestaurantIdAsync(int restaurantId);
-        public Task<bool> AddNewEmployee(EmployeeDTO newEmployee);
+
+        public Task<bool> AddNewEmployeeAsync(EmployeeDTO newEmployee, decimal empBonusSal, bool certificatesExist);
     }
 }

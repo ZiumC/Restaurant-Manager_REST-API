@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Restaurants_REST_API.Models
+namespace Restaurants_REST_API.Models.Database
 {
     public class Employee
     {
@@ -10,7 +10,7 @@ namespace Restaurants_REST_API.Models
         public string LastName { get; set; }
         public string PESEL { get; set; }
         public DateTime HiredDate { get; set; }
-        public DateTime? FirstPromotionChefDate  { get; set; }
+        public DateTime? FirstPromotionChefDate { get; set; }
         public decimal Salary { get; set; }
         public decimal BonusSalary { get; set; }
         public string IsOwner { get; set; }

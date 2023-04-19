@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Restaurants_REST_API.Models
+namespace Restaurants_REST_API.Models.Database
 {
     public class EmployeesInRestaurant
     {
         public int IdRestaurantWorker { get; set; }
-        
+
 
         public int IdEmployee { get; set; }
         [ForeignKey(nameof(IdEmployee))]
