@@ -55,7 +55,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpGet]
-        [Route("/supervisors")]
+        [Route("supervisors")]
         public async Task<IActionResult> GetSupervisors()
         {
             var supervisorsId = await _employeeApiService.GetSupervisorsIdAsync();
@@ -73,7 +73,7 @@ namespace Restaurants_REST_API.Controllers
          * GetSupervisorDetailsByIdAsync(int id) in interface IEmployeeApiService would very similar!
          */
         [HttpGet]
-        [Route("/supervisors/id")]
+        [Route("supervisors/id")]
         public async Task<IActionResult> GetSupervisors(int id)
         {
             if (id < 0)
@@ -97,7 +97,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpGet]
-        [Route("/owner")]
+        [Route("owner")]
         public async Task<IActionResult> GetOwnerDerails()
         {
             Employee? ownerBasicData = await _employeeApiService.GetOwnerBasicDataAsync();
@@ -137,7 +137,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpPost]
-        [Route("/add")]
+        [Route("add")]
         public async Task<IActionResult> AddNewEmployee(EmployeeDTO newEmployee)
         {
             //validating new employee
@@ -203,6 +203,29 @@ namespace Restaurants_REST_API.Controllers
             }
 
             return BadRequest("Unable to add new Employee");
+        }
+
+        [HttpPost]
+        [Route("type")]
+        public async Task<IActionResult> AddNewTypeOfEmployee(string name)
+        {
+            if (name.Replace("\\s", "").Equals(""))
+            {
+                return BadRequest("Employee type can't be empty");
+            }
+
+            if (name.Count() > 50 || name.Count() < 3)
+            {
+                return BadRequest("Length name of employee type should be between 3 and 50");
+            }
+
+            bool isTypeHasBeenAdded = await _employeeApiService.AddNewEmployeeTypeAsync(name);
+            if (!isTypeHasBeenAdded)
+            {
+                return BadRequest("Unable to add new type");
+            }
+
+            return Ok("New employee type has been added");
         }
     }
 }
