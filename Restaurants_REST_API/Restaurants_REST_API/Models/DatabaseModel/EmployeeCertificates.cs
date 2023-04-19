@@ -1,14 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Restaurants_REST_API.Models
+namespace Restaurants_REST_API.Models.Database
 {
     public class EmployeeCertificates
     {
 
-        public int IdEmployeeCertificate { get; set; }   
+        public int IdEmployeeCertificate { get; set; }
 
         public DateTime ExpirationDate { get; set; }
-    
+
 
         public int IdEmployee { get; set; }
         [ForeignKey(nameof(IdEmployee))]

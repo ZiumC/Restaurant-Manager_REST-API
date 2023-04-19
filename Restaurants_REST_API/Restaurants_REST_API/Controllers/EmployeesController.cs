@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Restaurants_REST_API.DTOs;
 using Restaurants_REST_API.Models;
+using Restaurants_REST_API.Models.Database;
 using Restaurants_REST_API.Services.Database_Service;
 using Restaurants_REST_API.Services.ValidationService;
 
@@ -13,6 +14,7 @@ namespace Restaurants_REST_API.Controllers
     {
         private readonly IEmployeeApiService _employeeApiService;
         private readonly IRestaurantApiService _restaurantsApiService;
+        private readonly decimal _basicBonus = 150;
 
         public EmployeesController(IEmployeeApiService employeeApiService, IRestaurantApiService restaurantsApiService)
         {
@@ -138,7 +140,7 @@ namespace Restaurants_REST_API.Controllers
         [Route("/add")]
         public async Task<IActionResult> AddNewEmployee(EmployeeDTO newEmployee)
         {
-
+            //validating new employee
             if (newEmployee == null)
             {
                 return BadRequest("Employee should be specified");
@@ -169,21 +171,33 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Address isn't correct");
             }
 
+            bool certificatesExist = false;
             if (newEmployee.Certificates != null && newEmployee.Certificates.Count > 0)
             {
+                certificatesExist = true;
                 if (!EmployeeValidator.isCorrectCertificatesOf(newEmployee))
                 {
                     return BadRequest("One or more certificates is invalid");
                 }
             }
 
-            bool isEmpAdded = await _employeeApiService.AddNewEmployee(newEmployee);
-            if (!isEmpAdded)
+            //need to check if emp exist in db
+
+            //checking if newEmp has bonus sal less than minimum value
+            var bonusSal = newEmployee.BonusSalary;
+            if (bonusSal < _basicBonus)
             {
-                return BadRequest("Unable to add new Employee");
+                bonusSal = +_basicBonus;
             }
 
-            return Ok("New Employee has been added");
+            bool isEmpAdded = await _employeeApiService.AddNewEmployeeAsync(newEmployee, bonusSal, certificatesExist);
+
+            if (isEmpAdded)
+            {
+                return Ok("New Employee has been added");
+            }
+
+            return BadRequest("Unable to add new Employee");
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Restaurants_REST_API.Models
+namespace Restaurants_REST_API.Models.Database
 {
     public class Address
     {
@@ -15,7 +15,7 @@ namespace Restaurants_REST_API.Models
         public string? LocalNumber { get; set; }
 
 
-        public virtual ICollection<Restaurant> Restaurants { get; set;}
-        public virtual ICollection<Employee> Employees { get; set;}
+        public virtual ICollection<Restaurant> Restaurants { get; set; }
+        public virtual ICollection<Employee> Employees { get; set; }
     }
 }

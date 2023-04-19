@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Restaurants_REST_API.Models
+namespace Restaurants_REST_API.Models.Database
 {
     public class Restaurant
     {
@@ -18,8 +18,8 @@ namespace Restaurants_REST_API.Models
 
         public virtual ICollection<EmployeesInRestaurant> RestaurantEmployees { get; set; }
 
-        public virtual ICollection<DishInRestaurant> RestaurantDishes { get; set; } 
-        
+        public virtual ICollection<DishInRestaurant> RestaurantDishes { get; set; }
+
         public virtual ICollection<Complain> Complains { get; set; }
     }
 }
