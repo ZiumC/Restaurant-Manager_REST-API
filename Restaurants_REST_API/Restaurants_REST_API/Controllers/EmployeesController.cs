@@ -182,6 +182,11 @@ namespace Restaurants_REST_API.Controllers
             }
 
             //need to check if emp exist in db
+            var allEmployees = await _employeeApiService.GetAllEmployeesAsync();
+            if (EmployeeValidator.isEmployeeExistIn(allEmployees, newEmployee))
+            {
+                return BadRequest("Employee already exist");
+            }
 
             //checking if newEmp has bonus sal less than minimum value
             var bonusSal = newEmployee.BonusSalary;
