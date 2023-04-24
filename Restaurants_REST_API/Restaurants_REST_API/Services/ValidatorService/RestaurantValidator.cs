@@ -1,4 +1,5 @@
 ﻿using Restaurants_REST_API.DTOs;
+using Restaurants_REST_API.Models.Database;
 using System.Text.RegularExpressions;
 
 namespace Restaurants_REST_API.Services.ValidatorService
@@ -61,6 +62,40 @@ namespace Restaurants_REST_API.Services.ValidatorService
             }
 
             return newRestaurantEquals.Contains(true);
+        }
+
+        public static bool isDishExistIn(List<RestaurantDTO> allRestaurants, DishDTO newDish)
+        {
+
+
+            List<bool> restaurantDishEquals = new List<bool>();
+            foreach (RestaurantDTO restaurant in allRestaurants)
+            {
+
+                if (restaurant.RestaurantDishes == null)
+                {
+                    return false;
+                }
+
+                foreach (Dish dish in restaurant.RestaurantDishes)
+                {
+                    bool dishExist = true;
+
+                    if (!dish.Name.Equals(newDish.Name))
+                    {
+                        dishExist = false;
+                    }
+
+                    if (dish.Price != newDish.Price)
+                    {
+                        dishExist = false;
+                    }
+
+                    restaurantDishEquals.Add(dishExist);
+                }
+            }
+
+            return restaurantDishEquals.Contains(true);
         }
     }
 }

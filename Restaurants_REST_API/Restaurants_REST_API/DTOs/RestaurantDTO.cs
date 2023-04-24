@@ -7,7 +7,7 @@ namespace Restaurants_REST_API.DTOs
     {
         public int IdRestaurant { get; set; }
         [Required]
-        [MaxLength(50)]
+        [MaxLength(100)]
         [MinLength(5)]
         public string Name { get; set; }
         [Required]

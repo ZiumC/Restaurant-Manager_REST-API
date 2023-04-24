@@ -88,7 +88,56 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("something went wrong restaruant wasn't added");
             }
             return Ok("Restaurant has been added");
+        }
 
+        [HttpPost]
+        [Route("add-dish")]
+        public async Task<IActionResult> AddNewDish(DishDTO newDish)
+        {
+            if (newDish == null)
+            {
+                return BadRequest("Dish must be specified");
+            }
+
+            if (newDish.IdRestaurants == null)
+            {
+                return BadRequest("Dish must have specified one or more restaurants");
+            }
+
+            if (RestaurantValidator.isEmptyNameOf(newDish.Name))
+            {
+                return BadRequest("Dish name can't be empty");
+            }
+
+            if (newDish.IdRestaurants.Count() > 0)
+            {
+                List<RestaurantDTO> restaurants = new List<RestaurantDTO>();
+
+                foreach (int idRestaurant in newDish.IdRestaurants)
+                {
+                    var allRestaurantsId = await _restaurantsApiService.GetAllRestaurantsIdAsync();
+
+                    if (!allRestaurantsId.Contains(idRestaurant))
+                    {
+                        return NotFound($"Given restaurant id={idRestaurant} is invalid");
+                    }
+
+                    restaurants.Add(await _restaurantsApiService.GetRestaurantDetailsByIdAsync(idRestaurant));
+                }
+
+                if (RestaurantValidator.isDishExistIn(restaurants, newDish))
+                {
+                    return BadRequest("Dish already exist in one or many restaurants");
+                }
+            }
+
+            bool isDishAdded = await _restaurantsApiService.AddNewDishToRestaurantsAsync(newDish);
+            if (!isDishAdded)
+            {
+                return BadRequest("Something went wrong unable to add new dish");
+            }
+
+            return Ok("Dish has been added");
         }
 
     }
