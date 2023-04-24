@@ -217,6 +217,11 @@ namespace Restaurants_REST_API.Services.Database_Service
                           ).ToListAsync();
         }
 
+        public async Task<IEnumerable<int>> GetAllRestaurantsIdAsync()
+        {
+            return await _context.Restaurants.Select(e => e.IdRestaurant).ToListAsync();
+        }
+
         //public Task<Reservation> GetReservationsByRestaurantIdAsync(int restaurantId)
         //{
         //    throw new NotImplementedException();
@@ -250,9 +255,9 @@ namespace Restaurants_REST_API.Services.Database_Service
                     );
                     await _context.SaveChangesAsync();
 
-                    var newDatabaseRestaurant = _context.Add
+                    var newDatabaseRestaurant = _context.Restaurants.Add
                         (
-                           new Restaurant 
+                           new Restaurant
                            {
                                Name = newRestaurant.Name,
                                RestaurantStatus = newRestaurant.Status,
@@ -273,5 +278,48 @@ namespace Restaurants_REST_API.Services.Database_Service
                 return true;
             }
         }
+
+        public async Task<bool> AddNewDishToRestaurantsAsync(DishDTO newDish)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var newDatabaseDish = _context.Dishes.Add
+                        (
+                            new Dish
+                            {
+                                Name = newDish.Name,
+                                Price = newDish.Price
+                            }
+                        );
+                    await _context.SaveChangesAsync();
+
+                    foreach (int idRestaurant in newDish.IdRestaurants)
+                    {
+                        var newDishInRestaurant = _context.RestaurantDishes.Add
+                            (
+                                    new DishInRestaurant
+                                    {
+                                        IdDish = newDatabaseDish.Entity.IdDish,
+                                        IdRestaurant = idRestaurant
+                                    }
+                            );
+                        await _context.SaveChangesAsync();
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    await transaction.RollbackAsync();
+                    return false;
+                }
+
+                await transaction.CommitAsync();
+                return true;
+            }
+        }
+
     }
 }
