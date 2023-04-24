@@ -5,6 +5,7 @@ using Restaurants_REST_API.Models;
 using Restaurants_REST_API.Models.Database;
 using Restaurants_REST_API.Services.Database_Service;
 using Restaurants_REST_API.Services.ValidationService;
+using Restaurants_REST_API.Services.ValidatorService;
 
 namespace Restaurants_REST_API.Controllers
 {
@@ -144,7 +145,7 @@ namespace Restaurants_REST_API.Controllers
             if (newEmployee == null)
             {
                 return BadRequest("Employee should be specified");
-            }
+            } 
 
             if (EmployeeValidator.isEmptyNameOf(newEmployee))
             {
@@ -166,9 +167,9 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Salary can't be less or equal 0");
             }
 
-            if (!EmployeeValidator.isCorrectAddressOf(newEmployee.Address))
+            if (AddressValidator.isEmptyAddressOf(newEmployee.Address))
             {
-                return BadRequest("Address isn't correct");
+                return BadRequest("Address can't be empty");
             }
 
             bool certificatesExist = false;
