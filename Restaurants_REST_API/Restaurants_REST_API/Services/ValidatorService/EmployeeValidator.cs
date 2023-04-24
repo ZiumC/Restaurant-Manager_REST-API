@@ -46,26 +46,6 @@ namespace Restaurants_REST_API.Services.ValidationService
             return false;
         }
 
-        public static bool isCorrectAddressOf(AddressDTO empAddress)
-        {
-            if (empAddress.City.Replace("\\s", "") == "")
-            {
-                return false;
-            }
-
-            if (empAddress.Street.Replace("\\s", "") == "")
-            {
-                return false;
-            }
-
-            if (empAddress.BuildingNumber.Replace("\\s", "") == "")
-            {
-                return false;
-            }
-
-            return true;
-        }
-
         public static bool isCorrectCertificatesOf(EmployeeDTO empToCheck)
         {
             foreach (CertificateDTO empCert in empToCheck.Certificates)

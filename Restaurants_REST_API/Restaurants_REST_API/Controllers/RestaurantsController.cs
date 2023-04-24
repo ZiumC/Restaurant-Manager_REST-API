@@ -56,15 +56,24 @@ namespace Restaurants_REST_API.Controllers
         [Route("add")]
         public async Task<IActionResult> AddNewRestaurant(RestaurantDTO newRestaurant)
         {
-
             if (newRestaurant == null)
             {
                 return BadRequest("Restaurant must be specified");
             }
 
-            if (RestaurantValidator.isEmptyNameOf(newRestaurant))
+            if (RestaurantValidator.isEmptyNameOf(newRestaurant.Name))
             {
                 return BadRequest("Restaurant name can't be empty");
+            }
+
+            if (AddressValidator.isEmptyAddressOf(newRestaurant.Address))
+            {
+                return BadRequest("Restaurant adress can't be empty");
+            }
+
+            if (RestaurantValidator.isEmptyNameOf(newRestaurant.Status))
+            {
+                return BadRequest("Restaurant statuc can't be empty");
             }
 
             bool isAddedCorrectly = await _restaurantsApiService.AddNewRestaurantAsync(newRestaurant);
