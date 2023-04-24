@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Restaurants_REST_API.DTOs;
 using Restaurants_REST_API.Models.Database;
 using Restaurants_REST_API.Services.Database_Service;
+using Restaurants_REST_API.Services.ValidatorService;
 
 namespace Restaurants_REST_API.Controllers
 {
@@ -49,6 +50,31 @@ namespace Restaurants_REST_API.Controllers
             RestaurantDTO restaurantDTO = await _restaurantsApiService.GetRestaurantDetailsByIdAsync(id);
 
             return Ok(restaurantDTO);
+        }
+
+        [HttpPost]
+        [Route("add")]
+        public async Task<IActionResult> AddNewRestaurant(RestaurantDTO newRestaurant)
+        {
+
+            if (newRestaurant == null)
+            {
+                return BadRequest("Restaurant must be specified");
+            }
+
+            if (RestaurantValidator.isEmptyNameOf(newRestaurant))
+            {
+                return BadRequest("Restaurant name can't be empty");
+            }
+
+            bool isAddedCorrectly = await _restaurantsApiService.AddNewRestaurantAsync(newRestaurant);
+
+            if (!isAddedCorrectly)
+            {
+                return BadRequest("Restaruant wasn't added");
+            }
+            return Ok();
+
         }
 
     }

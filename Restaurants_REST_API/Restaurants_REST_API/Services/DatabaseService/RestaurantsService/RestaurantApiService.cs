@@ -56,7 +56,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 
                                                    where eir.IdRestaurant == rest.IdRestaurant
 
-                                                   select new RestaurantWorersDTO
+                                                   select new RestaurantWorkersDTO
                                                    {
                                                        IdEmployee = eir.IdEmployee,
                                                        EmployeeType = et.Name
@@ -145,7 +145,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 
                                                    where eir.IdRestaurant == restaurantId
 
-                                                   select new RestaurantWorersDTO
+                                                   select new RestaurantWorkersDTO
                                                    {
                                                        IdEmployee = eir.IdEmployee,
                                                        EmployeeType = et.Name
@@ -217,19 +217,61 @@ namespace Restaurants_REST_API.Services.Database_Service
                           ).ToListAsync();
         }
 
-        public Task<Reservation> GetReservationsByRestaurantIdAsync(int restaurantId)
-        {
-            throw new NotImplementedException();
-        }
+        //public Task<Reservation> GetReservationsByRestaurantIdAsync(int restaurantId)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        public Task<Complain> GetComplainsByRestaurantIdAsync(int restaurantId)
-        {
-            throw new NotImplementedException();
-        }
+        //public Task<Complain> GetComplainsByRestaurantIdAsync(int restaurantId)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         public async Task<Restaurant?> GetBasicRestaurantInfoByIdAsync(int restaurantId)
         {
             return await _context.Restaurants.Where(e => e.IdRestaurant == restaurantId).FirstOrDefaultAsync();
+        }
+
+        public async Task<bool> AddNewRestaurantAsync(RestaurantDTO newRestaurant)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var newDatabaseAddress = _context.Address.Add
+                        (
+                            new Address
+                            {
+                                City = newRestaurant.Address.City,
+                                Street = newRestaurant.Address.Street,
+                                BuildingNumber = newRestaurant.Address.BuildingNumber,
+                                LocalNumber = newRestaurant.Address.LocalNumber
+                            }
+                    );
+                    await _context.SaveChangesAsync();
+
+                    var newDatabaseRestaurant = _context.Add
+                        (
+                           new Restaurant 
+                           {
+                               Name = newRestaurant.Name,
+                               RestaurantStatus = newRestaurant.Status,
+                               BonusBudget = newRestaurant.BonusBudget,
+                               IdAddress = newDatabaseAddress.Entity.IdAddress
+                           }
+                        );
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    await transaction.RollbackAsync();
+                    return false;
+                }
+
+                await transaction.CommitAsync();
+                return true;
+            }
         }
     }
 }

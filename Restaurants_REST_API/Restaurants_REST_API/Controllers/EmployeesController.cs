@@ -197,16 +197,16 @@ namespace Restaurants_REST_API.Controllers
 
             bool isEmpAdded = await _employeeApiService.AddNewEmployeeAsync(newEmployee, bonusSal, certificatesExist);
 
-            if (isEmpAdded)
+            if (!isEmpAdded)
             {
-                return Ok("New Employee has been added");
+                return BadRequest("Unable to add new Employee");
             }
+            return Ok("New Employee has been added");
 
-            return BadRequest("Unable to add new Employee");
         }
 
         [HttpPost]
-        [Route("type")]
+        [Route("add-type")]
         public async Task<IActionResult> AddNewTypeOfEmployee(string name)
         {
             if (name.Replace("\\s", "").Equals(""))
@@ -220,7 +220,7 @@ namespace Restaurants_REST_API.Controllers
             }
 
             IEnumerable<string> allTypes = await _employeeApiService.GetAllEmployeeTypesAsync();
-            if (allTypes.Contains(name)) 
+            if (allTypes.Contains(name))
             {
                 return BadRequest($"Employee type {name} already exist");
             }
