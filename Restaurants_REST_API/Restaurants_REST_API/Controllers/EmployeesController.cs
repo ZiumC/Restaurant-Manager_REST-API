@@ -200,7 +200,7 @@ namespace Restaurants_REST_API.Controllers
 
             if (!isEmpAdded)
             {
-                return BadRequest("Unable to add new Employee");
+                return BadRequest("Something went wrong unable to add new Employee");
             }
             return Ok("New Employee has been added");
 

@@ -83,12 +83,11 @@ namespace Restaurants_REST_API.Controllers
             }
 
             bool isRestaurantAdded = await _restaurantsApiService.AddNewRestaurantAsync(newRestaurant);
-
             if (!isRestaurantAdded)
             {
-                return BadRequest("Restaruant wasn't added");
+                return BadRequest("something went wrong restaruant wasn't added");
             }
-            return Ok();
+            return Ok("Restaurant has been added");
 
         }
 
