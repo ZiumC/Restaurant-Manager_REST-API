@@ -10,14 +10,14 @@ namespace Restaurants_REST_API.Services.ValidationService
         {
             if (empToCheck.FirstName.Replace("\\s", "") == "")
             {
-                return false;
+                return true;
             }
 
             if (empToCheck.Surname.Replace("\\s", "") == "")
             {
-                return false;
+                return true;
             }
-            return true;
+            return false;
         }
 
         public static bool isCorrectPeselOf(EmployeeDTO empToCheck)

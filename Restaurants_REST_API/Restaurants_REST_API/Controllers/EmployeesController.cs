@@ -146,7 +146,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Employee should be specified");
             }
 
-            if (!EmployeeValidator.isEmptyNameOf(newEmployee))
+            if (EmployeeValidator.isEmptyNameOf(newEmployee))
             {
                 return BadRequest("Name can't be empty");
             }
