@@ -16,8 +16,6 @@ namespace Restaurants_REST_API.DTOs
         public string Status { get; set; }
         public decimal? BonusBudget { get; set; }
         [Required]
-        [MaxLength(50)]
-        [MinLength(5)]
         public AddressDTO Address { get; set; }
         public List<Dish>? RestaurantDishes { get; set; }
         public List<RestaurantWorkersDTO>? RestaurantWorkers { get; set; }
