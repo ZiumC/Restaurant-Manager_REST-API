@@ -76,9 +76,15 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Restaurant statuc can't be empty");
             }
 
-            bool isAddedCorrectly = await _restaurantsApiService.AddNewRestaurantAsync(newRestaurant);
+            var allRestaurants = await _restaurantsApiService.GetAllRestaurantsAsync();
+            if (RestaurantValidator.isRestaurantExistIn(allRestaurants, newRestaurant))
+            {
+                return BadRequest("Restaurant already exist");
+            }
 
-            if (!isAddedCorrectly)
+            bool isRestaurantAdded = await _restaurantsApiService.AddNewRestaurantAsync(newRestaurant);
+
+            if (!isRestaurantAdded)
             {
                 return BadRequest("Restaruant wasn't added");
             }
