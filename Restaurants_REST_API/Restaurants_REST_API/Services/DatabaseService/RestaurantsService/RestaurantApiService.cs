@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Restaurants_REST_API.DbContexts;
 using Restaurants_REST_API.DTOs.GetDTOs;
+using Restaurants_REST_API.DTOs.PostDTOs;
 using Restaurants_REST_API.Models.Database;
 
 namespace Restaurants_REST_API.Services.Database_Service
@@ -237,7 +238,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             return await _context.Restaurants.Where(e => e.IdRestaurant == restaurantId).FirstOrDefaultAsync();
         }
 
-        public async Task<bool> AddNewRestaurantAsync(GetRestaurantDTO newRestaurant)
+        public async Task<bool> AddNewRestaurantAsync(PostRestaurantDTO newRestaurant)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
