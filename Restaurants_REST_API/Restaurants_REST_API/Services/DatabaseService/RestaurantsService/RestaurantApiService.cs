@@ -217,11 +217,6 @@ namespace Restaurants_REST_API.Services.Database_Service
                           ).ToListAsync();
         }
 
-        public async Task<IEnumerable<int>> GetAllRestaurantsIdAsync()
-        {
-            return await _context.Restaurants.Select(e => e.IdRestaurant).ToListAsync();
-        }
-
         //public Task<Reservation> GetReservationsByRestaurantIdAsync(int restaurantId)
         //{
         //    throw new NotImplementedException();
@@ -232,7 +227,7 @@ namespace Restaurants_REST_API.Services.Database_Service
         //    throw new NotImplementedException();
         //}
 
-        public async Task<Restaurant?> GetBasicRestaurantInfoByIdAsync(int restaurantId)
+        public async Task<Restaurant?> GetBasicRestaurantDataByIdAsync(int restaurantId)
         {
             return await _context.Restaurants.Where(e => e.IdRestaurant == restaurantId).FirstOrDefaultAsync();
         }
@@ -321,5 +316,9 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
         }
 
+        public Task<bool> HireNewEmployeeAsync(EmployeeHiredDTO employeeHired)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -21,9 +21,9 @@ namespace Restaurants_REST_API.Services.ValidatorService
             return false;
         }
 
-        public static bool isRestaurantExistIn(IEnumerable<RestaurantDTO>? allRestaurants, RestaurantDTO newRestaurant)
+        public static bool isRestaurantExistIn(IEnumerable<RestaurantDTO?> allRestaurants, RestaurantDTO newRestaurant)
         {
-            if (allRestaurants == null)
+            if (allRestaurants == null || allRestaurants.Count() == 0)
             {
                 return false;
             }
@@ -96,6 +96,19 @@ namespace Restaurants_REST_API.Services.ValidatorService
             }
 
             return restaurantDishEquals.Contains(true);
+        }
+
+        public static bool isCorrectEmployeeTypeOf(string typeToCheck, IEnumerable<string> allTypes)
+        {
+            foreach (string type in allTypes)
+            {
+                if (type.ToLower().Equals(typeToCheck.ToLower()))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

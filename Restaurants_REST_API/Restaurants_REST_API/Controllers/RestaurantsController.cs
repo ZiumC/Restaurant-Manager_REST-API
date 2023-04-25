@@ -12,16 +12,18 @@ namespace Restaurants_REST_API.Controllers
     public class RestaurantsController : ControllerBase
     {
         private readonly IRestaurantApiService _restaurantsApiService;
+        private readonly IEmployeeApiService _employeeApiService;
 
-        public RestaurantsController(IRestaurantApiService restaurantsApiService)
+        public RestaurantsController(IRestaurantApiService restaurantsApiService, IEmployeeApiService employeeApiService)
         {
             _restaurantsApiService = restaurantsApiService;
+            _employeeApiService = employeeApiService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetRestaurants()
+        public async Task<IActionResult> GetAllRestaurants()
         {
-            var restaurants = await _restaurantsApiService.GetAllRestaurantsAsync();
+            IEnumerable<RestaurantDTO?> restaurants = await _restaurantsApiService.GetAllRestaurantsAsync();
 
             if (restaurants == null || restaurants.Count() == 0)
             {
@@ -40,7 +42,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest($"Incorrect id, expected id grater than 0 but got {id}");
             }
 
-            Restaurant? restaurant = await _restaurantsApiService.GetBasicRestaurantInfoByIdAsync(id);
+            Restaurant? restaurant = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(id);
 
             if (restaurant == null)
             {
@@ -76,7 +78,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Restaurant statuc can't be empty");
             }
 
-            var allRestaurants = await _restaurantsApiService.GetAllRestaurantsAsync();
+            IEnumerable<RestaurantDTO?> allRestaurants = await _restaurantsApiService.GetAllRestaurantsAsync();
             if (RestaurantValidator.isRestaurantExistIn(allRestaurants, newRestaurant))
             {
                 return BadRequest("Restaurant already exist");
@@ -115,9 +117,9 @@ namespace Restaurants_REST_API.Controllers
 
                 foreach (int idRestaurant in newDish.IdRestaurants)
                 {
-                    var allRestaurantsId = await _restaurantsApiService.GetAllRestaurantsIdAsync();
+                    Restaurant? restaurant = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(idRestaurant);
 
-                    if (!allRestaurantsId.Contains(idRestaurant))
+                    if (restaurant == null)
                     {
                         return NotFound($"Given restaurant id={idRestaurant} is invalid");
                     }
@@ -138,6 +140,52 @@ namespace Restaurants_REST_API.Controllers
             }
 
             return Ok("Dish has been added");
+        }
+
+        [HttpPost]
+        [Route("add-emp")]
+        public async Task<IActionResult> AddNewEmployeeToRestaurant(EmployeeHiredDTO employeeHire)
+        {
+            if (employeeHire == null)
+            {
+                return BadRequest("Data can't be empty");
+            }
+
+            Restaurant? restaurant = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(employeeHire.RestaurantId);
+            if (restaurant == null)
+            {
+                return NotFound($"Restaurant id={employeeHire.RestaurantId} doesn't exist");
+            }
+
+            Employee? existEmployee = await _employeeApiService.GetBasicEmployeeDataByIdAsync(employeeHire.EmployeeId);
+            if (existEmployee == null)
+            {
+                return NotFound($"Employee id={employeeHire.EmployeeId} doesn't exist");
+            }
+
+            if (RestaurantValidator.isEmptyNameOf(employeeHire.EmployeeType))
+            {
+                return BadRequest("Employee type can't be empty");
+            }
+
+            IEnumerable<string> allTypes = await _employeeApiService.GetAllEmployeeTypesAsync();
+            if (allTypes.Count() < 0)
+            {
+                return NotFound("Employee types doesn't found");
+            }
+
+            if (!RestaurantValidator.isCorrectEmployeeTypeOf(employeeHire.EmployeeType, allTypes))
+            {
+                return NotFound("Employee type doesn't exist");
+            }
+
+            bool isEmployeeHired = await _restaurantsApiService.HireNewEmployeeAsync(employeeHire);
+            if (!isEmployeeHired)
+            {
+                return BadRequest("Something went wrong unable to hire employee");
+            }
+
+            return Ok($"Employee has been hired as {employeeHire.EmployeeType}");
         }
 
     }
