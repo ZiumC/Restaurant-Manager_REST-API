@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Restaurants_REST_API.DbContexts;
-using Restaurants_REST_API.DTOs;
+using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.Models.Database;
 using System.Collections.Generic;
 using System.Net;
@@ -17,12 +17,12 @@ namespace Restaurants_REST_API.Services.Database_Service
             _context = context;
         }
 
-        public async Task<IEnumerable<EmployeeDTO>> GetAllEmployeesAsync()
+        public async Task<IEnumerable<GetEmployeeDTO>> GetAllEmployeesAsync()
         {
 
             return await (from emp in _context.Employees
 
-                          select new EmployeeDTO
+                          select new GetEmployeeDTO
                           {
                               IdEmployee = emp.IdEmployee,
                               FirstName = emp.FirstName,
@@ -37,7 +37,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                               Address = (from addr in _context.Address
                                          where addr.IdAddress == emp.IdAddress
 
-                                         select new AddressDTO
+                                         select new GetAddressDTO
                                          {
                                              IdAddress = addr.IdAddress,
                                              City = addr.City,
@@ -53,7 +53,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 
                                               where empCert.IdEmployee == emp.IdEmployee
 
-                                              select new CertificateDTO
+                                              select new GetCertificateDTO
                                               {
                                                   IdCertificate = cert.IdCertificate,
                                                   Name = cert.Name,
@@ -72,14 +72,14 @@ namespace Restaurants_REST_API.Services.Database_Service
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<EmployeeDTO> GetDetailedEmployeeDataAsync(Employee employee)
+        public async Task<GetEmployeeDTO> GetDetailedEmployeeDataAsync(Employee employee)
         {
 
             Address address = await _context.Address
                 .Where(a => a.IdAddress == employee.IdAddress)
                 .FirstAsync();
 
-            return new EmployeeDTO
+            return new GetEmployeeDTO
             {
                 IdEmployee = employee.IdEmployee,
                 FirstName = employee.FirstName,
@@ -90,7 +90,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                 HiredDate = employee.HiredDate,
                 FirstPromotionChefDate = employee.FirstPromotionChefDate,
                 IsOwner = employee.IsOwner,
-                Address = new AddressDTO
+                Address = new GetAddressDTO
                 {
                     IdAddress = address.IdAddress,
                     City = address.City,
@@ -105,7 +105,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 
                                       where empCert.IdEmployee == employee.IdEmployee
 
-                                      select new CertificateDTO
+                                      select new GetCertificateDTO
                                       {
                                           IdCertificate = cert.IdCertificate,
                                           Name = cert.Name,
@@ -128,7 +128,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                          ).ToListAsync();
         }
 
-        public async Task<IEnumerable<EmployeeDTO>> GetSupervisorsDetailsAsync(List<int> supervisorsID)
+        public async Task<IEnumerable<GetEmployeeDTO>> GetSupervisorsDetailsAsync(List<int> supervisorsID)
         {
 
             return await (from emp in _context.Employees
@@ -137,7 +137,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 
                           where supervisorsID.Contains(emp.IdEmployee)
 
-                          select new EmployeeDTO
+                          select new GetEmployeeDTO
                           {
                               IdEmployee = emp.IdEmployee,
                               FirstName = emp.FirstName,
@@ -152,7 +152,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                               Address = (from addr in _context.Address
                                          where addr.IdAddress == emp.IdAddress
 
-                                         select new AddressDTO
+                                         select new GetAddressDTO
                                          {
                                              IdAddress = addr.IdAddress,
                                              City = addr.City,
@@ -168,7 +168,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 
                                               where empCert.IdEmployee == emp.IdEmployee
 
-                                              select new CertificateDTO
+                                              select new GetCertificateDTO
                                               {
                                                   IdCertificate = cert.IdCertificate,
                                                   Name = cert.Name,
@@ -196,7 +196,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 
         }
 
-        public async Task<IEnumerable<EmployeeDTO>> GetAllEmployeesByRestaurantIdAsync(int restaurantId)
+        public async Task<IEnumerable<GetEmployeeDTO>> GetAllEmployeesByRestaurantIdAsync(int restaurantId)
         {
             return await (from eir in _context.EmployeesInRestaurants
                           join emp in _context.Employees
@@ -207,7 +207,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 
                           where eir.IdRestaurant == restaurantId
 
-                          select new EmployeeDTO
+                          select new GetEmployeeDTO
                           {
                               IdEmployee = emp.IdEmployee,
                               FirstName = emp.FirstName,
@@ -222,7 +222,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                               Address = (from addr in _context.Address
                                          where addr.IdAddress == emp.IdAddress
 
-                                         select new AddressDTO
+                                         select new GetAddressDTO
                                          {
                                              IdAddress = addr.IdAddress,
                                              City = addr.City,
@@ -238,7 +238,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 
                                               where empCert.IdEmployee == emp.IdEmployee
 
-                                              select new CertificateDTO
+                                              select new GetCertificateDTO
                                               {
                                                   IdCertificate = cert.IdCertificate,
                                                   Name = cert.Name,
@@ -255,7 +255,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                 .Select(x => new EmployeeType { IdType = x.IdType, Name = x.Name }).ToListAsync();
         }
 
-        public async Task<bool> AddNewEmployeeAsync(EmployeeDTO newEmployee, decimal empBonusSal, bool certificatesExist)
+        public async Task<bool> AddNewEmployeeAsync(GetEmployeeDTO newEmployee, decimal empBonusSal, bool certificatesExist)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -292,7 +292,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                     if (certificatesExist)
                     {
                         //inside EmployeesController certificates are checked if they are NOT NULL and are correct
-                        foreach (CertificateDTO empCertificate in newEmployee.Certificates)
+                        foreach (GetCertificateDTO empCertificate in newEmployee.Certificates)
                         {
                             var newCertificate = _context.Add
                                 (

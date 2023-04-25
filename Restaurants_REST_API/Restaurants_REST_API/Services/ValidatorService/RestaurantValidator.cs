@@ -1,4 +1,4 @@
-﻿using Restaurants_REST_API.DTOs;
+﻿using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.Models.Database;
 using System.Text.RegularExpressions;
 
@@ -21,7 +21,7 @@ namespace Restaurants_REST_API.Services.ValidatorService
             return false;
         }
 
-        public static bool isRestaurantExistIn(IEnumerable<RestaurantDTO?> allRestaurants, RestaurantDTO newRestaurant)
+        public static bool isRestaurantExistIn(IEnumerable<GetRestaurantDTO?> allRestaurants, GetRestaurantDTO newRestaurant)
         {
             if (allRestaurants == null || allRestaurants.Count() == 0)
             {
@@ -30,7 +30,7 @@ namespace Restaurants_REST_API.Services.ValidatorService
 
             List<bool> newRestaurantEquals = new List<bool>();
 
-            foreach (RestaurantDTO restaurant in allRestaurants)
+            foreach (GetRestaurantDTO restaurant in allRestaurants)
             {
                 bool restaurantExist = true;
                 if (!restaurant.Name.Equals(newRestaurant.Name))
@@ -64,12 +64,12 @@ namespace Restaurants_REST_API.Services.ValidatorService
             return newRestaurantEquals.Contains(true);
         }
 
-        public static bool isDishExistIn(List<RestaurantDTO> allRestaurants, DishDTO newDish)
+        public static bool isDishExistIn(List<GetRestaurantDTO> allRestaurants, GetDishDTO newDish)
         {
 
 
             List<bool> restaurantDishEquals = new List<bool>();
-            foreach (RestaurantDTO restaurant in allRestaurants)
+            foreach (GetRestaurantDTO restaurant in allRestaurants)
             {
 
                 if (restaurant.RestaurantDishes == null)

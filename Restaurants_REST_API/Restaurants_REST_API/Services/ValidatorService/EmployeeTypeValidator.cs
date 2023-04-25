@@ -1,4 +1,4 @@
-﻿using Restaurants_REST_API.DTOs;
+﻿using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.Models.Database;
 
 namespace Restaurants_REST_API.Services.ValidatorService
@@ -17,7 +17,7 @@ namespace Restaurants_REST_API.Services.ValidatorService
             return false;
         }
 
-        public static bool isEmployeeAlreadyHasTypeIn(RestaurantDTO restaurantDTO, int empId, string typeName)
+        public static bool isEmployeeAlreadyHasTypeIn(GetRestaurantDTO restaurantDTO, int empId, string typeName)
         {
 
             if (restaurantDTO.RestaurantWorkers == null || restaurantDTO.RestaurantWorkers.Count() == 0)
@@ -25,7 +25,7 @@ namespace Restaurants_REST_API.Services.ValidatorService
                 return false;
             }
 
-            foreach (RestaurantWorkersDTO worker in restaurantDTO.RestaurantWorkers)
+            foreach (GetRestaurantWorkersDTO worker in restaurantDTO.RestaurantWorkers)
             {
                 if (worker.IdEmployee == empId && worker.EmployeeType.ToLower().Equals(typeName.ToLower()))
                 {

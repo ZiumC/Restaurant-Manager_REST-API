@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Restaurants_REST_API.DTOs
+namespace Restaurants_REST_API.DTOs.GetDTOs
 {
-    public class ReservationDTO
+    public class GetReservationDTO
     {
         public int IdReservation { get; set; }
         [Required]
@@ -11,6 +11,6 @@ namespace Restaurants_REST_API.DTOs
         public int? ReservationGrade { get; set; }
         [Required]
         public int HowManyPeoples { get; set; }
-        public ComplainDTO? ReservationComplain { get; set; }
+        public GetComplainDTO? ReservationComplain { get; set; }
     }
 }
