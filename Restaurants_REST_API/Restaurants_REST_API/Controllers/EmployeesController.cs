@@ -6,6 +6,7 @@ using Restaurants_REST_API.Models.Database;
 using Restaurants_REST_API.Services.Database_Service;
 using Restaurants_REST_API.Services.ValidationService;
 using Restaurants_REST_API.Services.ValidatorService;
+using Restaurants_REST_API.DTOs.PostDTOs;
 
 namespace Restaurants_REST_API.Controllers
 {
@@ -139,30 +140,25 @@ namespace Restaurants_REST_API.Controllers
 
         [HttpPost]
         [Route("add")]
-        public async Task<IActionResult> AddNewEmployee(GetEmployeeDTO newEmployee)
+        public async Task<IActionResult> AddNewEmployee(PostEmployeeDTO? newEmployee)
         {
             //validating new employee
             if (newEmployee == null)
             {
                 return BadRequest("Employee should be specified");
-            } 
-
-            if (EmployeeValidator.isEmptyNameOf(newEmployee))
-            {
-                return BadRequest("Name can't be empty");
             }
 
-            if (!EmployeeValidator.isCorrectPeselOf(newEmployee))
+            if (EmployeeValidator.isEmptyNameOf(newEmployee.FirstName) || EmployeeValidator.isEmptyNameOf(newEmployee.LastName))
+            {
+                return BadRequest("First or last name can't be empty");
+            }
+
+            if (!EmployeeValidator.isCorrectPeselOf(newEmployee.PESEL))
             {
                 return BadRequest("PESEL isn't correct");
             }
 
-            if (!EmployeeValidator.isCorrectOwnerFieldOf(newEmployee))
-            {
-                return BadRequest("isOwner isn't correct");
-            }
-
-            if (!EmployeeValidator.isCorrectSalaryOf(newEmployee))
+            if (!EmployeeValidator.isCorrectSalaryOf(newEmployee.Salary))
             {
                 return BadRequest("Salary can't be less or equal 0");
             }
@@ -173,7 +169,7 @@ namespace Restaurants_REST_API.Controllers
             }
 
             bool certificatesExist = false;
-            if (newEmployee.Certificates != null && newEmployee.Certificates.Count > 0)
+            if (newEmployee.Certificates != null && newEmployee.Certificates.Count() > 0)
             {
                 certificatesExist = true;
                 if (!EmployeeValidator.isCorrectCertificatesOf(newEmployee))
@@ -190,13 +186,12 @@ namespace Restaurants_REST_API.Controllers
             }
 
             //checking if newEmp has bonus sal less than minimum value
-            var bonusSal = newEmployee.BonusSalary;
-            if (bonusSal < _basicBonus)
+            if (newEmployee.BonusSalary < _basicBonus)
             {
-                bonusSal = +_basicBonus;
+                return BadRequest($"Default value of bonus salary is {_basicBonus} but found {newEmployee.BonusSalary}");
             }
 
-            bool isEmpAdded = await _employeeApiService.AddNewEmployeeAsync(newEmployee, bonusSal, certificatesExist);
+            bool isEmpAdded = await _employeeApiService.AddNewEmployeeAsync(newEmployee, certificatesExist);
 
             if (!isEmpAdded)
             {

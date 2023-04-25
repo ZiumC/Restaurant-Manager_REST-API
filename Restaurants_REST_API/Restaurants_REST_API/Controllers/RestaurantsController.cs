@@ -67,11 +67,11 @@ namespace Restaurants_REST_API.Controllers
             {
                 return BadRequest("Restaurant name can't be empty");
             }
-
-            if (AddressValidator.isEmptyAddressOf(newRestaurant.Address))
-            {
-                return BadRequest("Restaurant adress can't be empty");
-            }
+            //i fix it later
+            //if (AddressValidator.isEmptyAddressOf(newRestaurant.Address))
+            //{
+            //    return BadRequest("Restaurant adress can't be empty");
+            //}
 
             if (RestaurantValidator.isEmptyNameOf(newRestaurant.Status))
             {
