@@ -12,37 +12,37 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
             _context = context;
         }
 
-        public Task<bool> AddNewComplainAsync(ComplainDTO newComplain)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> AddNewReservationAsync(ReservationDTO newReserwation)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<ReservationDTO?>> GetAllReservationsAsync()
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<IEnumerable<int>> GetAllReservationsIdAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<ClientDTO> GetClientDataByIdAsync(int id)
+        public Task<IEnumerable<ReservationDTO?>> GetAllReservationsByClientIdAsync(int clientId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ReservationDTO> GetReservationDetailsByIdAsync(int id)
+        public Task<ClientDTO?> GetClientDataByIdAsync(int reservationId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> UpdateReservationByIdAsync(int id)
+        public Task<ReservationDTO> GetReservationDetailsByIdAsync(int reservationId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> AddNewComplainByReservationIdAsync(int reservationId, ComplainDTO newComplain)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> AddNewReservationByRestaurantIdAsync(int restaurantId, ReservationDTO newReserwation)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> UpdateReservationByIdAsync(int reservationId)
         {
             throw new NotImplementedException();
         }
