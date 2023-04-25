@@ -10,7 +10,7 @@ namespace Restaurants_REST_API.DTOs
         public string Status { get; set; }
         public int? ReservationGrade { get; set; }
         [Required]
-        public int TableNumber { get; set; }
+        public int HowManyPeoples { get; set; }
         public ComplainDTO? ReservationComplain { get; set; }
     }
 }
