@@ -23,7 +23,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                               ReservationDate = r.ReservationDate,
                               Status = r.ReservationStatus,
                               ReservationGrade = r.ReservationGrade,
-                              TableNumber = r.TableNumber,
+                              TableNumber = r.HowManyPeoples,
 
                               ReservationComplain = (from c in _context.Complains
                                                      where c.IdReservation == r.IdReservation
@@ -53,7 +53,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                               ReservationDate = r.ReservationDate,
                               Status = r.ReservationStatus,
                               ReservationGrade = r.ReservationGrade,
-                              TableNumber = r.TableNumber,
+                              TableNumber = r.HowManyPeoples,
 
                               ReservationComplain = (from c in _context.Complains
                                                      where c.IdReservation == r.IdReservation
@@ -80,7 +80,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                               ReservationDate = r.ReservationDate,
                               Status = r.ReservationStatus,
                               ReservationGrade = r.ReservationGrade,
-                              TableNumber = r.TableNumber,
+                              TableNumber = r.HowManyPeoples,
                               ReservationComplain = (from c in _context.Complains
                                                      where c.IdReservation == reservationId
 
@@ -114,7 +114,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                                                         ReservationDate = r.ReservationDate,
                                                         Status = r.ReservationStatus,
                                                         ReservationGrade = r.ReservationGrade,
-                                                        TableNumber = r.TableNumber,
+                                                        TableNumber = r.HowManyPeoples,
                                                         ReservationComplain = (from c in _context.Complains
                                                                                where c.IdReservation == r.IdReservation
 
