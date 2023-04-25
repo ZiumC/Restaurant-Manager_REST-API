@@ -12,7 +12,7 @@ namespace Restaurants_REST_API.DTOs
         [Required]
         [MaxLength(50)]
         [MinLength(3)]
-        public string Surname { get; set; }
+        public string LastName { get; set; }
         [Required]
         [MaxLength(11)]
         [MinLength(11)]
@@ -26,6 +26,6 @@ namespace Restaurants_REST_API.DTOs
         public string IsOwner { get; set; }
         [Required]
         public AddressDTO Address { get; set; }
-        public List<CertificateDTO>? Certificates { get; set;}
+        public List<CertificateDTO?>? Certificates { get; set;}
     }
 }

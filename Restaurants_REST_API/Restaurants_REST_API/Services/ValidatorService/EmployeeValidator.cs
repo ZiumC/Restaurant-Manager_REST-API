@@ -13,7 +13,7 @@ namespace Restaurants_REST_API.Services.ValidationService
                 return true;
             }
 
-            if (empToCheck.Surname.Replace("\\s", "") == "")
+            if (empToCheck.LastName.Replace("\\s", "") == "")
             {
                 return true;
             }
@@ -70,7 +70,7 @@ namespace Restaurants_REST_API.Services.ValidationService
                     empExist = false;
                 }
 
-                if (!emp.Surname.Equals(empToCheck.Surname))
+                if (!emp.LastName.Equals(empToCheck.LastName))
                 {
                     empExist = false;
                 }

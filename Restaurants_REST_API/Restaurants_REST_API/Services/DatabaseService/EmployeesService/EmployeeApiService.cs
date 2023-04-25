@@ -26,7 +26,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                           {
                               IdEmployee = emp.IdEmployee,
                               FirstName = emp.FirstName,
-                              Surname = emp.LastName,
+                              LastName = emp.LastName,
                               PESEL = emp.PESEL,
                               Salary = emp.Salary,
                               BonusSalary = emp.BonusSalary,
@@ -79,48 +79,98 @@ namespace Restaurants_REST_API.Services.Database_Service
                 .Where(a => a.IdAddress == employee.IdAddress)
                 .FirstAsync();
 
-            return await (from empCert in _context.EmployeeCertificates
-                          join cert in _context.Certificates
-                          on empCert.IdCertificate equals cert.IdCertificate
+            //IEnumerable<CertificateDTO?>? empCertificates = await (from empCert in _context.EmployeeCertificates
+            //                                                       join cert in _context.Certificates
+            //                                                       on empCert.IdCertificate equals cert.IdCertificate
 
-                          where empCert.IdEmployee == employee.IdEmployee
-                          select new EmployeeDTO
-                          {
-                              IdEmployee = employee.IdEmployee,
-                              FirstName = employee.FirstName,
-                              Surname = employee.LastName,
-                              PESEL = employee.PESEL,
-                              Salary = employee.Salary,
-                              BonusSalary = employee.BonusSalary,
-                              HiredDate = employee.HiredDate,
-                              IsOwner = employee.IsOwner,
-                              FirstPromotionChefDate = employee.FirstPromotionChefDate,
+            //                                                       where empCert.IdEmployee == employee.IdEmployee
 
-                              Address = new AddressDTO
-                              {
-                                  IdAddress = address.IdAddress,
-                                  City = address.City,
-                                  Street = address.Street,
-                                  BuildingNumber = address.BuildingNumber,
-                                  LocalNumber = address.LocalNumber
-                              },
+            //                                                       select new CertificateDTO
+            //                                                       {
+            //                                                           IdCertificate = cert.IdCertificate,
+            //                                                           Name = cert.Name,
+            //                                                           ExpirationDate = empCert.ExpirationDate
 
-                              Certificates = (from empCert in _context.EmployeeCertificates
-                                              join cert in _context.Certificates
-                                              on empCert.IdCertificate equals cert.IdCertificate
+            //                                                       }).ToListAsync();
+            return new EmployeeDTO
+            {
+                IdEmployee = employee.IdEmployee,
+                FirstName = employee.FirstName,
+                LastName = employee.LastName,
+                PESEL = employee.PESEL,
+                Salary = employee.Salary,
+                BonusSalary = employee.BonusSalary,
+                HiredDate = employee.HiredDate,
+                FirstPromotionChefDate = employee.FirstPromotionChefDate,
+                IsOwner = employee.IsOwner,
+                Address = new AddressDTO
+                {
+                    IdAddress = address.IdAddress,
+                    City = address.City,
+                    Street = address.Street,
+                    BuildingNumber = address.BuildingNumber,
+                    LocalNumber = address.LocalNumber
+                },
 
-                                              where empCert.IdEmployee == employee.IdEmployee
+                Certificates = await (from empCert in _context.EmployeeCertificates
+                                      join cert in _context.Certificates
+                                      on empCert.IdCertificate equals cert.IdCertificate
 
-                                              select new CertificateDTO
-                                              {
-                                                  IdCertificate = cert.IdCertificate,
-                                                  Name = cert.Name,
-                                                  ExpirationDate = empCert.ExpirationDate
-                                              }
-                                              ).ToList()
+                                      where empCert.IdEmployee == employee.IdEmployee
 
-                          }).FirstAsync();
+                                      select new CertificateDTO
+                                      {
+                                          IdCertificate = cert.IdCertificate,
+                                          Name = cert.Name,
+                                          ExpirationDate = empCert.ExpirationDate
+
+                                      }).ToListAsync()
+
+            };
+
+            //return await (from empCert in _context.EmployeeCertificates
+            //              join cert in _context.Certificates
+            //              on empCert.IdCertificate equals cert.IdCertificate
+
+            //              where empCert.IdEmployee == employee.IdEmployee
+            //              select new EmployeeDTO
+            //              {
+            //                  IdEmployee = employee.IdEmployee,
+            //                  FirstName = employee.FirstName,
+            //                  Surname = employee.LastName,
+            //                  PESEL = employee.PESEL,
+            //                  Salary = employee.Salary,
+            //                  BonusSalary = employee.BonusSalary,
+            //                  HiredDate = employee.HiredDate,
+            //                  IsOwner = employee.IsOwner,
+            //                  FirstPromotionChefDate = employee.FirstPromotionChefDate,
+
+            //                  Address = new AddressDTO
+            //                  {
+            //                      IdAddress = address.IdAddress,
+            //                      City = address.City,
+            //                      Street = address.Street,
+            //                      BuildingNumber = address.BuildingNumber,
+            //                      LocalNumber = address.LocalNumber
+            //                  },
+
+            //Certificates = (from empCert in _context.EmployeeCertificates
+            //                join cert in _context.Certificates
+            //                on empCert.IdCertificate equals cert.IdCertificate
+
+            //                where empCert.IdEmployee == employee.IdEmployee
+
+            //                select new CertificateDTO
+            //                {
+            //                    IdCertificate = cert.IdCertificate,
+            //                    Name = cert.Name,
+            //                    ExpirationDate = empCert.ExpirationDate
+            //                }
+            //                ).ToList()
+
+            //}).FirstAsync();
         }
+
         public async Task<IEnumerable<int>?> GetSupervisorsIdAsync()
         {
             return await (from eir in _context.EmployeesInRestaurants
@@ -146,7 +196,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                           {
                               IdEmployee = emp.IdEmployee,
                               FirstName = emp.FirstName,
-                              Surname = emp.LastName,
+                              LastName = emp.LastName,
                               PESEL = emp.PESEL,
                               Salary = emp.Salary,
                               BonusSalary = emp.BonusSalary,
@@ -216,7 +266,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                           {
                               IdEmployee = emp.IdEmployee,
                               FirstName = emp.FirstName,
-                              Surname = emp.LastName,
+                              LastName = emp.LastName,
                               PESEL = emp.PESEL,
                               Salary = emp.Salary,
                               BonusSalary = emp.BonusSalary,
@@ -283,13 +333,12 @@ namespace Restaurants_REST_API.Services.Database_Service
                             new Employee
                             {
                                 FirstName = newEmployee.FirstName,
-                                LastName = newEmployee.Surname,
+                                LastName = newEmployee.LastName,
                                 PESEL = newEmployee.PESEL,
                                 HiredDate = newEmployee.HiredDate,
-                                FirstPromotionChefDate = newEmployee.FirstPromotionChefDate,
                                 Salary = newEmployee.Salary,
                                 BonusSalary = empBonusSal,
-                                IsOwner = newEmployee.IsOwner.ToUpper(),
+                                IsOwner = "N",
                                 IdAddress = newAddress.Entity.IdAddress
                             }
                         );
