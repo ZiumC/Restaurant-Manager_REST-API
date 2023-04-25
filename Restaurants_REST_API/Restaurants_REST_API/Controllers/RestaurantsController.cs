@@ -194,13 +194,22 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound("Employee type doesn't exist");
             }
 
+            //at this stage i am certain that type name exist in database
+            string typeName = allTypes.Where(e => e.IdType == employeeHire.IdEmployeeType).Select(e => e.Name).First();
+            RestaurantDTO restaurantDetails = await _restaurantsApiService.GetRestaurantDetailsByIdAsync(employeeHire.IdRestaurant);
+            if (EmployeeTypeValidator.isEmployeeAlreadyHasTypeIn(restaurantDetails, employeeHire.IdEmployee, typeName))
+            {
+                return BadRequest($"Employee {existEmployee.FirstName} has type already in restaurant {restaurant.Name}");
+            }
+
             bool isEmployeeHired = await _restaurantsApiService.HireNewEmployeeAsync(employeeHire);
             if (!isEmployeeHired)
             {
                 return BadRequest("Something went wrong unable to hire employee");
             }
 
-            return Ok($"Employee has been hired as {employeeHire.IdEmployeeType}");
+
+            return Ok($"Employee has been hired as {typeName}");
         }
 
     }
