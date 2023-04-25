@@ -80,7 +80,8 @@ namespace Restaurants_REST_API.Services.Database_Service
                                                                                    {
                                                                                        IdComplain = c.IdComplain,
                                                                                        ComplainDate = c.ComplainDate,
-                                                                                       Status = c.ComplainStatus
+                                                                                       Status = c.ComplainStatus,
+                                                                                       Message = c.ComplainMessage
                                                                                    }
                                                                                    ).FirstOrDefault()
                                                         }
@@ -93,7 +94,8 @@ namespace Restaurants_REST_API.Services.Database_Service
                                                      {
                                                          IdComplain = c.IdComplain,
                                                          ComplainDate = c.ComplainDate,
-                                                         Status = c.ComplainStatus
+                                                         Status = c.ComplainStatus,
+                                                         Message = c.ComplainMessage
                                                      }
                                                      ).ToList()
 
@@ -169,7 +171,8 @@ namespace Restaurants_REST_API.Services.Database_Service
                                                                                    {
                                                                                        IdComplain = c.IdComplain,
                                                                                        ComplainDate = c.ComplainDate,
-                                                                                       Status = c.ComplainStatus
+                                                                                       Status = c.ComplainStatus,
+                                                                                       Message = c.ComplainMessage
                                                                                    }
                                                                                    ).FirstOrDefault()
                                                         }
@@ -182,7 +185,8 @@ namespace Restaurants_REST_API.Services.Database_Service
                                                      {
                                                          IdComplain = c.IdComplain,
                                                          ComplainDate = c.ComplainDate,
-                                                         Status = c.ComplainStatus
+                                                         Status = c.ComplainStatus,
+                                                         Message = c.ComplainMessage
                                                      }
                                                      ).ToList()
 
@@ -209,7 +213,8 @@ namespace Restaurants_REST_API.Services.Database_Service
                                                      {
                                                          IdComplain = c.IdComplain,
                                                          ComplainDate = c.ComplainDate,
-                                                         Status = c.ComplainStatus
+                                                         Status = c.ComplainStatus,
+                                                         Message = c.ComplainMessage
                                                      }
                                                    ).FirstOrDefault()
                           }

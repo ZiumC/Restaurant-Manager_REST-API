@@ -79,19 +79,6 @@ namespace Restaurants_REST_API.Services.Database_Service
                 .Where(a => a.IdAddress == employee.IdAddress)
                 .FirstAsync();
 
-            //IEnumerable<CertificateDTO?>? empCertificates = await (from empCert in _context.EmployeeCertificates
-            //                                                       join cert in _context.Certificates
-            //                                                       on empCert.IdCertificate equals cert.IdCertificate
-
-            //                                                       where empCert.IdEmployee == employee.IdEmployee
-
-            //                                                       select new CertificateDTO
-            //                                                       {
-            //                                                           IdCertificate = cert.IdCertificate,
-            //                                                           Name = cert.Name,
-            //                                                           ExpirationDate = empCert.ExpirationDate
-
-            //                                                       }).ToListAsync();
             return new EmployeeDTO
             {
                 IdEmployee = employee.IdEmployee,
@@ -127,48 +114,6 @@ namespace Restaurants_REST_API.Services.Database_Service
                                       }).ToListAsync()
 
             };
-
-            //return await (from empCert in _context.EmployeeCertificates
-            //              join cert in _context.Certificates
-            //              on empCert.IdCertificate equals cert.IdCertificate
-
-            //              where empCert.IdEmployee == employee.IdEmployee
-            //              select new EmployeeDTO
-            //              {
-            //                  IdEmployee = employee.IdEmployee,
-            //                  FirstName = employee.FirstName,
-            //                  Surname = employee.LastName,
-            //                  PESEL = employee.PESEL,
-            //                  Salary = employee.Salary,
-            //                  BonusSalary = employee.BonusSalary,
-            //                  HiredDate = employee.HiredDate,
-            //                  IsOwner = employee.IsOwner,
-            //                  FirstPromotionChefDate = employee.FirstPromotionChefDate,
-
-            //                  Address = new AddressDTO
-            //                  {
-            //                      IdAddress = address.IdAddress,
-            //                      City = address.City,
-            //                      Street = address.Street,
-            //                      BuildingNumber = address.BuildingNumber,
-            //                      LocalNumber = address.LocalNumber
-            //                  },
-
-            //Certificates = (from empCert in _context.EmployeeCertificates
-            //                join cert in _context.Certificates
-            //                on empCert.IdCertificate equals cert.IdCertificate
-
-            //                where empCert.IdEmployee == employee.IdEmployee
-
-            //                select new CertificateDTO
-            //                {
-            //                    IdCertificate = cert.IdCertificate,
-            //                    Name = cert.Name,
-            //                    ExpirationDate = empCert.ExpirationDate
-            //                }
-            //                ).ToList()
-
-            //}).FirstAsync();
         }
 
         public async Task<IEnumerable<int>?> GetSupervisorsIdAsync()
