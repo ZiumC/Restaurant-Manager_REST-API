@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Restaurants_REST_API.DTOs.GetDTOs
+namespace Restaurants_REST_API.DTOs.PostDTOs
 {
-    public class GetDishDTO
+    public class PostDishDTO
     {
         [Required]
         [MaxLength(100)]

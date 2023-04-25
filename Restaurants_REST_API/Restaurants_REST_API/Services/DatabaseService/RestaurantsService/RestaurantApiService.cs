@@ -280,7 +280,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
         }
 
-        public async Task<bool> AddNewDishToRestaurantsAsync(GetDishDTO newDish)
+        public async Task<bool> AddNewDishToRestaurantsAsync(PostDishDTO newDish)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
