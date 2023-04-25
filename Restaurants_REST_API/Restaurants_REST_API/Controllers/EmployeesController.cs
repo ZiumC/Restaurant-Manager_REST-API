@@ -215,13 +215,8 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Employee type can't be empty");
             }
 
-            if (name.Count() > 50 || name.Count() < 3)
-            {
-                return BadRequest("Length name of employee type should be between 3 and 50");
-            }
-
-            IEnumerable<string> allTypes = await _employeeApiService.GetAllEmployeeTypesAsync();
-            if (allTypes.Contains(name))
+            IEnumerable<EmployeeType?> allTypes = await _employeeApiService.GetAllEmployeeTypesAsync();
+            if (EmployeeTypeValidator.isTypeExistIn(allTypes, name))
             {
                 return BadRequest($"Employee type {name} already exist");
             }

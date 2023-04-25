@@ -2,6 +2,7 @@
 using Restaurants_REST_API.DbContexts;
 using Restaurants_REST_API.DTOs;
 using Restaurants_REST_API.Models.Database;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -253,9 +254,10 @@ namespace Restaurants_REST_API.Services.Database_Service
         }
 
 
-        public async Task<IEnumerable<string>> GetAllEmployeeTypesAsync() 
+        public async Task<IEnumerable<EmployeeType?>> GetAllEmployeeTypesAsync()
         {
-            return await _context.EmployeeTypes.Select(x => x.Name).ToListAsync();
+            return await _context.EmployeeTypes
+                .Select(x => new EmployeeType { IdType = x.IdType, Name = x.Name }).ToListAsync();
         }
 
         public async Task<bool> AddNewEmployeeAsync(EmployeeDTO newEmployee, decimal empBonusSal, bool certificatesExist)

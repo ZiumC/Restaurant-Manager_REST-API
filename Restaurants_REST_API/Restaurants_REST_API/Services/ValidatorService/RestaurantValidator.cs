@@ -97,18 +97,5 @@ namespace Restaurants_REST_API.Services.ValidatorService
 
             return restaurantDishEquals.Contains(true);
         }
-
-        public static bool isCorrectEmployeeTypeOf(string typeToCheck, IEnumerable<string> allTypes)
-        {
-            foreach (string type in allTypes)
-            {
-                if (type.ToLower().Equals(typeToCheck.ToLower()))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
     }
 }

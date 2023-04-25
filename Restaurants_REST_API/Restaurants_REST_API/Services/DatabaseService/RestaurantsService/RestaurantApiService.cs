@@ -316,9 +316,27 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
         }
 
-        public Task<bool> HireNewEmployeeAsync(EmployeeHiredDTO employeeHired)
+        public async Task<bool> HireNewEmployeeAsync(EmployeeHiredDTO employeeHire)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var newDatabaseEmployeeHired = _context.EmployeesInRestaurants.Add
+                    (
+                        new EmployeesInRestaurant
+                        {
+                            IdEmployee = employeeHire.IdEmployee,
+                            IdRestaurant = employeeHire.IdRestaurant,
+                            IdType = employeeHire.IdEmployeeType
+                        }
+                    );
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return false;
+            }
+            return true;
         }
     }
 }
