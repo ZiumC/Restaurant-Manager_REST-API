@@ -1,6 +1,6 @@
 ﻿using Restaurants_REST_API.DTOs.GetDTOs;
+using Restaurants_REST_API.DTOs.PostDTOs;
 using Restaurants_REST_API.Models.Database;
-using System.Text.RegularExpressions;
 
 namespace Restaurants_REST_API.Services.ValidatorService
 {
@@ -21,7 +21,7 @@ namespace Restaurants_REST_API.Services.ValidatorService
             return false;
         }
 
-        public static bool isRestaurantExistIn(IEnumerable<GetRestaurantDTO?> allRestaurants, GetRestaurantDTO newRestaurant)
+        public static bool isRestaurantExistIn(IEnumerable<GetRestaurantDTO?> allRestaurants, PostRestaurantDTO newRestaurant)
         {
             if (allRestaurants == null || allRestaurants.Count() == 0)
             {

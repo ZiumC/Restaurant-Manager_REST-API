@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Restaurants_REST_API.DTOs.GetDTOs;
+using Restaurants_REST_API.DTOs.PostDTOs;
 using Restaurants_REST_API.Models.Database;
 using Restaurants_REST_API.Services.Database_Service;
 using Restaurants_REST_API.Services.ValidatorService;
@@ -56,7 +57,7 @@ namespace Restaurants_REST_API.Controllers
 
         [HttpPost]
         [Route("add")]
-        public async Task<IActionResult> AddNewRestaurant(GetRestaurantDTO newRestaurant)
+        public async Task<IActionResult> AddNewRestaurant(PostRestaurantDTO newRestaurant)
         {
             if (newRestaurant == null)
             {
@@ -67,11 +68,11 @@ namespace Restaurants_REST_API.Controllers
             {
                 return BadRequest("Restaurant name can't be empty");
             }
-            //i fix it later
-            //if (AddressValidator.isEmptyAddressOf(newRestaurant.Address))
-            //{
-            //    return BadRequest("Restaurant adress can't be empty");
-            //}
+
+            if (AddressValidator.isEmptyAddressOf(newRestaurant.Address))
+            {
+                return BadRequest("Restaurant adress can't be empty");
+            }
 
             if (RestaurantValidator.isEmptyNameOf(newRestaurant.Status))
             {
