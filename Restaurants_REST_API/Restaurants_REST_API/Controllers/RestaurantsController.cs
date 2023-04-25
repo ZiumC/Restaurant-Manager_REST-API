@@ -150,7 +150,7 @@ namespace Restaurants_REST_API.Controllers
 
         [HttpPost]
         [Route("add-emp")]
-        public async Task<IActionResult> AddNewEmployeeToRestaurant(GetEmployeeHiredDTO employeeHire)
+        public async Task<IActionResult> AddNewEmployeeToRestaurant(PostEmployeeToRestaurantDTO employeeHire)
         {
             if (employeeHire == null)
             {
@@ -200,7 +200,7 @@ namespace Restaurants_REST_API.Controllers
             GetRestaurantDTO restaurantDetails = await _restaurantsApiService.GetRestaurantDetailsByIdAsync(employeeHire.IdRestaurant);
             if (EmployeeTypeValidator.isEmployeeAlreadyHasTypeIn(restaurantDetails, employeeHire.IdEmployee, typeName))
             {
-                return BadRequest($"Employee {existEmployee.FirstName} has type already in restaurant {restaurant.Name}");
+                return BadRequest($"Employee {existEmployee.FirstName} has already type of {typeName} in restaurant {restaurant.Name}");
             }
 
             bool isEmployeeHired = await _restaurantsApiService.HireNewEmployeeAsync(employeeHire);

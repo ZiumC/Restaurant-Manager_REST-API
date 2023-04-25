@@ -322,7 +322,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
         }
 
-        public async Task<bool> HireNewEmployeeAsync(GetEmployeeHiredDTO employeeHire)
+        public async Task<bool> HireNewEmployeeAsync(PostEmployeeToRestaurantDTO employeeHire)
         {
             try
             {
