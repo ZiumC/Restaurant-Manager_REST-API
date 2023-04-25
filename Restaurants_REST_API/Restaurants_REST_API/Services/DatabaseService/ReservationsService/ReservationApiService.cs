@@ -23,7 +23,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                               ReservationDate = r.ReservationDate,
                               Status = r.ReservationStatus,
                               ReservationGrade = r.ReservationGrade,
-                              TableNumber = r.HowManyPeoples,
+                              HowManyPeoples = r.HowManyPeoples,
 
                               ReservationComplain = (from c in _context.Complains
                                                      where c.IdReservation == r.IdReservation
@@ -32,7 +32,9 @@ namespace Restaurants_REST_API.Services.Database_Service
                                                      {
                                                          IdComplain = c.IdComplain,
                                                          ComplainDate = c.ComplainDate,
-                                                         Status = c.ComplainStatus
+                                                         Status = c.ComplainStatus,
+                                                         Message = c.ComplainMessage
+                                                            
                                                      }
                                                    ).FirstOrDefault()
                           }
@@ -53,7 +55,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                               ReservationDate = r.ReservationDate,
                               Status = r.ReservationStatus,
                               ReservationGrade = r.ReservationGrade,
-                              TableNumber = r.HowManyPeoples,
+                              HowManyPeoples = r.HowManyPeoples,
 
                               ReservationComplain = (from c in _context.Complains
                                                      where c.IdReservation == r.IdReservation
@@ -62,7 +64,8 @@ namespace Restaurants_REST_API.Services.Database_Service
                                                      {
                                                          IdComplain = c.IdComplain,
                                                          ComplainDate = c.ComplainDate,
-                                                         Status = c.ComplainStatus
+                                                         Status = c.ComplainStatus,
+                                                         Message = c.ComplainMessage
                                                      }
                                                    ).FirstOrDefault()
                           }
@@ -80,7 +83,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                               ReservationDate = r.ReservationDate,
                               Status = r.ReservationStatus,
                               ReservationGrade = r.ReservationGrade,
-                              TableNumber = r.HowManyPeoples,
+                              HowManyPeoples = r.HowManyPeoples,
                               ReservationComplain = (from c in _context.Complains
                                                      where c.IdReservation == reservationId
 
@@ -88,7 +91,8 @@ namespace Restaurants_REST_API.Services.Database_Service
                                                      {
                                                          IdComplain = c.IdComplain,
                                                          ComplainDate = c.ComplainDate,
-                                                         Status = c.ComplainStatus
+                                                         Status = c.ComplainStatus,
+                                                         Message = c.ComplainMessage
                                                      }
                                                    ).FirstOrDefault()
                           }
@@ -114,7 +118,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                                                         ReservationDate = r.ReservationDate,
                                                         Status = r.ReservationStatus,
                                                         ReservationGrade = r.ReservationGrade,
-                                                        TableNumber = r.HowManyPeoples,
+                                                        HowManyPeoples = r.HowManyPeoples,
                                                         ReservationComplain = (from c in _context.Complains
                                                                                where c.IdReservation == r.IdReservation
 
@@ -122,7 +126,8 @@ namespace Restaurants_REST_API.Services.Database_Service
                                                                                {
                                                                                    IdComplain = c.IdComplain,
                                                                                    ComplainDate = c.ComplainDate,
-                                                                                   Status = c.ComplainStatus
+                                                                                   Status = c.ComplainStatus,
+                                                                                   Message = c.ComplainMessage
                                                                                }
                                                                                ).FirstOrDefault()
                                                     }
