@@ -64,7 +64,7 @@ namespace Restaurants_REST_API.Services.ValidatorService
             return newRestaurantEquals.Contains(true);
         }
 
-        public static bool isDishExistIn(List<GetRestaurantDTO> allRestaurants, GetDishDTO newDish)
+        public static bool isDishExistIn(List<GetRestaurantDTO> allRestaurants, PostDishDTO newDish)
         {
 
 

@@ -95,7 +95,7 @@ namespace Restaurants_REST_API.Controllers
 
         [HttpPost]
         [Route("add-dish")]
-        public async Task<IActionResult> AddNewDish(GetDishDTO newDish)
+        public async Task<IActionResult> AddNewDish(PostDishDTO newDish)
         {
             if (newDish == null)
             {
