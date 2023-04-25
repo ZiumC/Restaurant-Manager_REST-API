@@ -70,14 +70,14 @@ namespace Restaurants_REST_API.DbContexts
             {
                 r.HasKey(e => e.IdReservation);
                 r.Property(e => e.ReservationDate).IsRequired();
-                r.Property(e => e.TableNumber).IsRequired();
+                r.Property(e => e.HowManyPeoples).IsRequired();
                 r.Property(e => e.ReservationStatus).IsRequired().HasMaxLength(50);
 
                 r.HasData(new Reservation
                 {
                     IdReservation = 1,
                     ReservationDate = DateTime.Parse("2023-01-01"),
-                    TableNumber = 1,
+                    HowManyPeoples = 1,
                     ReservationStatus = "New",
                     ReservationGrade = null,
                     IdClient = 1,
@@ -87,7 +87,7 @@ namespace Restaurants_REST_API.DbContexts
                 {
                     IdReservation = 2,
                     ReservationDate = DateTime.Parse("2023-11-01"),
-                    TableNumber = 2,
+                    HowManyPeoples = 4,
                     ReservationStatus = "Canceled",
                     ReservationGrade = null,
                     IdClient = 3,
@@ -97,7 +97,7 @@ namespace Restaurants_REST_API.DbContexts
                 {
                     IdReservation = 3,
                     ReservationDate = DateTime.Parse("2023-02-09"),
-                    TableNumber = 1,
+                    HowManyPeoples = 6,
                     ReservationStatus = "Finished",
                     ReservationGrade = 4,
                     IdClient = 2,
@@ -110,8 +110,27 @@ namespace Restaurants_REST_API.DbContexts
                 c.HasKey(e => e.IdComplain);
                 c.Property(e => e.ComplainDate).IsRequired();
                 c.Property(e => e.ComplainStatus).IsRequired().HasMaxLength(50);
+                c.Property(e => e.ComplainMessage).IsRequired().HasMaxLength(350);
 
-                c.HasData(new Complain { IdComplain = 1, ComplainDate = DateTime.Parse("2023-01-01"), ComplainStatus = "New", IdReservation = 1, IdRestaurant = 1 });
+                c.HasData(new Complain
+                {
+                    IdComplain = 1,
+                    ComplainDate = DateTime.Parse("2023-01-01"),
+                    ComplainStatus = "Canceled",
+                    ComplainMessage = "Zupa była za słona, obsługa była niemiła",
+                    IdReservation = 1,
+                    IdRestaurant = 1
+                });
+
+                c.HasData(new Complain
+                {
+                    IdComplain = 2,
+                    ComplainDate = DateTime.Parse("2023-11-08"),
+                    ComplainStatus = "New",
+                    ComplainMessage = "Na kotlecie była mucha",
+                    IdReservation = 3,
+                    IdRestaurant = 1
+                });
             }
             );
 
