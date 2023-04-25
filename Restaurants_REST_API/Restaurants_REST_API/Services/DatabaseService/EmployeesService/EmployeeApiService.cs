@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Restaurants_REST_API.DbContexts;
 using Restaurants_REST_API.DTOs.GetDTOs;
+using Restaurants_REST_API.DTOs.PostDTOs;
 using Restaurants_REST_API.Models.Database;
 using System.Collections.Generic;
 using System.Net;
@@ -255,13 +256,13 @@ namespace Restaurants_REST_API.Services.Database_Service
                 .Select(x => new EmployeeType { IdType = x.IdType, Name = x.Name }).ToListAsync();
         }
 
-        public async Task<bool> AddNewEmployeeAsync(GetEmployeeDTO newEmployee, decimal empBonusSal, bool certificatesExist)
+        public async Task<bool> AddNewEmployeeAsync(PostEmployeeDTO newEmployee, bool certificatesExist)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
                 try
                 {
-                    var newAddress = _context.Address.Add
+                    var newDatabaseAddress = _context.Address.Add
                         (
                             new Address
                             {
@@ -273,18 +274,18 @@ namespace Restaurants_REST_API.Services.Database_Service
                     );
                     await _context.SaveChangesAsync();
 
-                    var newEmp = _context.Add
+                    var newDatabaseEmployee = _context.Add
                         (
                             new Employee
                             {
                                 FirstName = newEmployee.FirstName,
                                 LastName = newEmployee.LastName,
                                 PESEL = newEmployee.PESEL,
-                                HiredDate = newEmployee.HiredDate,
+                                HiredDate = DateTime.Now,
                                 Salary = newEmployee.Salary,
-                                BonusSalary = empBonusSal,
+                                BonusSalary = newEmployee.BonusSalary,
                                 IsOwner = "N",
-                                IdAddress = newAddress.Entity.IdAddress
+                                IdAddress = newDatabaseAddress.Entity.IdAddress
                             }
                         );
                     await _context.SaveChangesAsync();
@@ -292,9 +293,9 @@ namespace Restaurants_REST_API.Services.Database_Service
                     if (certificatesExist)
                     {
                         //inside EmployeesController certificates are checked if they are NOT NULL and are correct
-                        foreach (GetCertificateDTO empCertificate in newEmployee.Certificates)
+                        foreach (PostCertificateDTO empCertificate in newEmployee.Certificates)
                         {
-                            var newCertificate = _context.Add
+                            var newDatabaseCertificate = _context.Add
                                 (
                                     new Certificate
                                     {
@@ -303,12 +304,12 @@ namespace Restaurants_REST_API.Services.Database_Service
                                 );
                             await _context.SaveChangesAsync();
 
-                            var newEmpCertificate = _context.Add
+                            var newDatabaseEmpCertificate = _context.Add
                                 (
                                    new EmployeeCertificates
                                    {
-                                       IdCertificate = newCertificate.Entity.IdCertificate,
-                                       IdEmployee = newEmp.Entity.IdEmployee,
+                                       IdCertificate = newDatabaseCertificate.Entity.IdCertificate,
+                                       IdEmployee = newDatabaseEmployee.Entity.IdEmployee,
                                        ExpirationDate = empCertificate.ExpirationDate
                                    }
                                 );

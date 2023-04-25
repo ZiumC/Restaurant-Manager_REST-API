@@ -1,4 +1,5 @@
 ﻿using Restaurants_REST_API.DTOs.GetDTOs;
+using Restaurants_REST_API.DTOs.PostDTOs;
 using System.Net;
 using System.Text.RegularExpressions;
 
@@ -6,49 +7,24 @@ namespace Restaurants_REST_API.Services.ValidationService
 {
     public class EmployeeValidator
     {
-        public static bool isEmptyNameOf(GetEmployeeDTO empToCheck)
+        public static bool isEmptyNameOf(string fieldToCheck)
         {
-            if (empToCheck.FirstName.Replace("\\s", "") == "")
-            {
-                return true;
-            }
-
-            if (empToCheck.LastName.Replace("\\s", "") == "")
-            {
-                return true;
-            }
-            return false;
+            return fieldToCheck.Replace("\\s", "") == "";
         }
 
-        public static bool isCorrectPeselOf(GetEmployeeDTO empToCheck)
+        public static bool isCorrectPeselOf(string peselToCheck)
         {
-            return Regex.IsMatch(empToCheck.PESEL, @"^\d+$");
+            return Regex.IsMatch(peselToCheck, @"^\d+$");
         }
 
-        public static bool isCorrectSalaryOf(GetEmployeeDTO empToCheck)
+        public static bool isCorrectSalaryOf(decimal salaryToCheck)
         {
-            return empToCheck.Salary > 0;
+            return salaryToCheck > 0;
         }
 
-        public static bool isCorrectOwnerFieldOf(GetEmployeeDTO empToCheck)
+        public static bool isCorrectCertificatesOf(PostEmployeeDTO empToCheck)
         {
-            if (empToCheck.IsOwner.Replace("\\s", "") == "")
-            {
-                return false;
-            }
-
-            string isOwner = empToCheck.IsOwner.ToLower();
-            if (isOwner.Equals("y") || isOwner.Equals("n"))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        public static bool isCorrectCertificatesOf(GetEmployeeDTO empToCheck)
-        {
-            foreach (GetCertificateDTO empCert in empToCheck.Certificates)
+            foreach (PostCertificateDTO empCert in empToCheck.Certificates)
             {
                 if (empCert.Name.Replace("\\s", "").Equals(""))
                 {
@@ -59,7 +35,7 @@ namespace Restaurants_REST_API.Services.ValidationService
             return true;
         }
 
-        public static bool isEmployeeExistIn(IEnumerable<GetEmployeeDTO> allEmployees, GetEmployeeDTO empToCheck)
+        public static bool isEmployeeExistIn(IEnumerable<GetEmployeeDTO> allEmployees, PostEmployeeDTO empToCheck)
         {
             List<bool> newEmpEquals = new List<bool>();
             foreach (GetEmployeeDTO emp in allEmployees)
