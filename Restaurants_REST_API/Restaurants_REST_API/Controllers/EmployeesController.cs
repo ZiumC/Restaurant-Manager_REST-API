@@ -120,7 +120,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest($"Incorrect id, expected id grater than 0 but got {id}");
             }
 
-            Restaurant? restaurant = await _restaurantsApiService.GetBasicRestaurantInfoByIdAsync(id);
+            Restaurant? restaurant = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(id);
 
             if (restaurant == null)
             {
