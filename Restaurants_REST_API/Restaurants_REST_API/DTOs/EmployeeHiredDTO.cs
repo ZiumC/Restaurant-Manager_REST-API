@@ -5,12 +5,12 @@ namespace Restaurants_REST_API.DTOs
     public class EmployeeHiredDTO
     {
         [Required]
-        public int EmployeeId { get; set; }
+        public int IdEmployee { get; set; }
 
         [Required]
-        public int RestaurantId { get; set; }
+        public int IdRestaurant { get; set; }
 
         [Required]
-        public string EmployeeType { get; set; }
+        public int IdEmployeeType { get; set; }
     }
 }

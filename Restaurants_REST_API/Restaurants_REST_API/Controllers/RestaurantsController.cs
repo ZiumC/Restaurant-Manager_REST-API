@@ -117,6 +117,11 @@ namespace Restaurants_REST_API.Controllers
 
                 foreach (int idRestaurant in newDish.IdRestaurants)
                 {
+                    if (!GeneralValidator.isCorrectId(idRestaurant))
+                    {
+                        return BadRequest("One or many restaurant id isn't correct");
+                    }
+
                     Restaurant? restaurant = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(idRestaurant);
 
                     if (restaurant == null)
@@ -151,30 +156,40 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Data can't be empty");
             }
 
-            Restaurant? restaurant = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(employeeHire.RestaurantId);
+            if (!GeneralValidator.isCorrectId(employeeHire.IdEmployee))
+            {
+                return BadRequest("Employee id isn't correct");
+            }
+
+            if (!GeneralValidator.isCorrectId(employeeHire.IdRestaurant))
+            {
+                return BadRequest("Restaurant id isn't correct");
+            }
+
+            if (!GeneralValidator.isCorrectId(employeeHire.IdEmployeeType))
+            {
+                return BadRequest("Restaurant id isn't correct");
+            }
+
+            Restaurant? restaurant = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(employeeHire.IdRestaurant);
             if (restaurant == null)
             {
-                return NotFound($"Restaurant id={employeeHire.RestaurantId} doesn't exist");
+                return NotFound($"Restaurant id={employeeHire.IdRestaurant} doesn't exist");
             }
 
-            Employee? existEmployee = await _employeeApiService.GetBasicEmployeeDataByIdAsync(employeeHire.EmployeeId);
+            Employee? existEmployee = await _employeeApiService.GetBasicEmployeeDataByIdAsync(employeeHire.IdEmployee);
             if (existEmployee == null)
             {
-                return NotFound($"Employee id={employeeHire.EmployeeId} doesn't exist");
+                return NotFound($"Employee id={employeeHire.IdEmployee} doesn't exist");
             }
 
-            if (RestaurantValidator.isEmptyNameOf(employeeHire.EmployeeType))
-            {
-                return BadRequest("Employee type can't be empty");
-            }
-
-            IEnumerable<string> allTypes = await _employeeApiService.GetAllEmployeeTypesAsync();
-            if (allTypes.Count() < 0)
+            IEnumerable<EmployeeType?> allTypes = await _employeeApiService.GetAllEmployeeTypesAsync();
+            if (allTypes == null || allTypes.Count() < 0)
             {
                 return NotFound("Employee types doesn't found");
             }
 
-            if (!RestaurantValidator.isCorrectEmployeeTypeOf(employeeHire.EmployeeType, allTypes))
+            if (!EmployeeTypeValidator.isCorrectEmployeeTypeOf(employeeHire.IdEmployeeType, allTypes))
             {
                 return NotFound("Employee type doesn't exist");
             }
@@ -185,7 +200,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Something went wrong unable to hire employee");
             }
 
-            return Ok($"Employee has been hired as {employeeHire.EmployeeType}");
+            return Ok($"Employee has been hired as {employeeHire.IdEmployeeType}");
         }
 
     }
