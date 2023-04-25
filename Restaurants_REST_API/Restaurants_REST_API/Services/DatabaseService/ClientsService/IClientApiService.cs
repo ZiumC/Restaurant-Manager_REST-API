@@ -4,12 +4,12 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
 {
     public interface IClientApiService
     {
-        public Task<ClientDTO> GetClientDataByIdAsync(int id);
-        public Task<ReservationDTO> GetReservationDetailsByIdAsync(int id);
+        public Task<ClientDTO?> GetClientDataByIdAsync(int reservationId);
+        public Task<ReservationDTO> GetReservationDetailsByIdAsync(int reservationId);
         public Task<IEnumerable<int>> GetAllReservationsIdAsync();
-        public Task<IEnumerable<ReservationDTO?>> GetAllReservationsAsync();
-        public Task<bool> AddNewReservationAsync(ReservationDTO newReserwation);
-        public Task<bool> AddNewComplainAsync(ComplainDTO newComplain);
-        public Task<bool> UpdateReservationByIdAsync(int id);
+        public Task<IEnumerable<ReservationDTO?>> GetAllReservationsByClientIdAsync(int clientId);
+        public Task<bool> AddNewReservationByRestaurantIdAsync(int restaurantId, ReservationDTO newReserwation);
+        public Task<bool> AddNewComplainByReservationIdAsync(int reservationId, ComplainDTO newComplain);
+        public Task<bool> UpdateReservationByIdAsync(int reservationId);
     }
 }
