@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Restaurants_REST_API.DTOs;
 using Restaurants_REST_API.Models;
+using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.Models.Database;
 using Restaurants_REST_API.Services.Database_Service;
 using Restaurants_REST_API.Services.ValidationService;
@@ -139,7 +139,7 @@ namespace Restaurants_REST_API.Controllers
 
         [HttpPost]
         [Route("add")]
-        public async Task<IActionResult> AddNewEmployee(EmployeeDTO newEmployee)
+        public async Task<IActionResult> AddNewEmployee(GetEmployeeDTO newEmployee)
         {
             //validating new employee
             if (newEmployee == null)

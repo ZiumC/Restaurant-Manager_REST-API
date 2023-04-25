@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Restaurants_REST_API.DTOs;
+using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.Models.Database;
 using Restaurants_REST_API.Services.Database_Service;
 
@@ -41,7 +41,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest($"Incorrect id, expected id grater than 0 but got {id}");
             }
 
-            ReservationDTO? reservation = await _reservationsApiService.GetReservationByIdAsync(id);
+            GetReservationDTO? reservation = await _reservationsApiService.GetReservationByIdAsync(id);
 
             if (reservation == null)
             {
@@ -86,7 +86,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest($"Incorrect id, expected id grater than 0 but got {id}");
             }
 
-            ClientDTO? client = await _reservationsApiService.GetReservationsByClientIdAsync(id);
+            GetClientDTO? client = await _reservationsApiService.GetReservationsByClientIdAsync(id);
 
             if (client == null)
             {

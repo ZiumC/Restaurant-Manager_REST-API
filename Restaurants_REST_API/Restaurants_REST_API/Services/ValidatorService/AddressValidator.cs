@@ -1,10 +1,10 @@
-﻿using Restaurants_REST_API.DTOs;
+﻿using Restaurants_REST_API.DTOs.GetDTOs;
 
 namespace Restaurants_REST_API.Services.ValidatorService
 {
     public class AddressValidator
     {
-        public static bool isEmptyAddressOf(AddressDTO newAddress)
+        public static bool isEmptyAddressOf(GetAddressDTO newAddress)
         {
             if (newAddress.City == null || newAddress.Street == null || newAddress.BuildingNumber == null)
             {

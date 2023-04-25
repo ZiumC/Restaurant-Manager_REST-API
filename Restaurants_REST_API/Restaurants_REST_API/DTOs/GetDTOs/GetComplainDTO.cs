@@ -1,6 +1,6 @@
-﻿namespace Restaurants_REST_API.DTOs
+﻿namespace Restaurants_REST_API.DTOs.GetDTOs
 {
-    public class ComplainDTO
+    public class GetComplainDTO
     {
         public int IdComplain { get; set; }
         public DateTime ComplainDate { get; set; }

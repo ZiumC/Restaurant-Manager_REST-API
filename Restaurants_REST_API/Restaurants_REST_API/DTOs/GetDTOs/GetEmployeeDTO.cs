@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Restaurants_REST_API.DTOs
+namespace Restaurants_REST_API.DTOs.GetDTOs
 {
-    public class EmployeeDTO
+    public class GetEmployeeDTO
     {
         public int IdEmployee { get; set; }
         [Required]
@@ -25,7 +25,7 @@ namespace Restaurants_REST_API.DTOs
         [Required]
         public string IsOwner { get; set; }
         [Required]
-        public AddressDTO Address { get; set; }
-        public List<CertificateDTO?>? Certificates { get; set;}
+        public GetAddressDTO Address { get; set; }
+        public List<GetCertificateDTO?>? Certificates { get; set; }
     }
 }

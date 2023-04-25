@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Restaurants_REST_API.DbContexts;
-using Restaurants_REST_API.DTOs;
+using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.Models.Database;
 
 namespace Restaurants_REST_API.Services.Database_Service
@@ -15,19 +15,19 @@ namespace Restaurants_REST_API.Services.Database_Service
             _context = context;
         }
 
-        public async Task<IEnumerable<RestaurantDTO>?> GetAllRestaurantsAsync()
+        public async Task<IEnumerable<GetRestaurantDTO>?> GetAllRestaurantsAsync()
         {
             return await (from rest in _context.Restaurants
                           join addr in _context.Address
                           on rest.IdAddress equals addr.IdAddress
 
-                          select new RestaurantDTO
+                          select new GetRestaurantDTO
                           {
                               IdRestaurant = rest.IdRestaurant,
                               Name = rest.Name,
                               Status = rest.RestaurantStatus,
                               BonusBudget = rest.BonusBudget,
-                              Address = new AddressDTO
+                              Address = new GetAddressDTO
                               {
                                   IdAddress = addr.IdAddress,
                                   City = addr.City,
@@ -56,7 +56,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 
                                                    where eir.IdRestaurant == rest.IdRestaurant
 
-                                                   select new RestaurantWorkersDTO
+                                                   select new GetRestaurantWorkersDTO
                                                    {
                                                        IdEmployee = eir.IdEmployee,
                                                        EmployeeType = et.Name
@@ -66,7 +66,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                               RestaurantReservations = (from r in _context.Reservations
                                                         where r.IdRestauration == rest.IdRestaurant
 
-                                                        select new ReservationDTO
+                                                        select new GetReservationDTO
                                                         {
                                                             IdReservation = r.IdReservation,
                                                             ReservationDate = r.ReservationDate,
@@ -76,7 +76,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                                                             ReservationComplain = (from c in _context.Complains
                                                                                    where c.IdReservation == r.IdReservation
 
-                                                                                   select new ComplainDTO
+                                                                                   select new GetComplainDTO
                                                                                    {
                                                                                        IdComplain = c.IdComplain,
                                                                                        ComplainDate = c.ComplainDate,
@@ -90,7 +90,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                               RestaurantComplains = (from c in _context.Complains
                                                      where c.IdRestaurant == rest.IdRestaurant
 
-                                                     select new ComplainDTO
+                                                     select new GetComplainDTO
                                                      {
                                                          IdComplain = c.IdComplain,
                                                          ComplainDate = c.ComplainDate,
@@ -104,7 +104,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                           }
                           ).ToListAsync();
         }
-        public async Task<RestaurantDTO> GetRestaurantDetailsByIdAsync(int restaurantId)
+        public async Task<GetRestaurantDTO> GetRestaurantDetailsByIdAsync(int restaurantId)
         {
             return await (from rest in _context.Restaurants
                           join addr in _context.Address
@@ -112,13 +112,13 @@ namespace Restaurants_REST_API.Services.Database_Service
 
                           where rest.IdRestaurant == restaurantId
 
-                          select new RestaurantDTO
+                          select new GetRestaurantDTO
                           {
                               IdRestaurant = rest.IdRestaurant,
                               Name = rest.Name,
                               Status = rest.RestaurantStatus,
                               BonusBudget = rest.BonusBudget,
-                              Address = new AddressDTO
+                              Address = new GetAddressDTO
                               {
                                   IdAddress = addr.IdAddress,
                                   City = addr.City,
@@ -147,7 +147,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 
                                                    where eir.IdRestaurant == restaurantId
 
-                                                   select new RestaurantWorkersDTO
+                                                   select new GetRestaurantWorkersDTO
                                                    {
                                                        IdEmployee = eir.IdEmployee,
                                                        EmployeeType = et.Name
@@ -157,7 +157,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                               RestaurantReservations = (from r in _context.Reservations
                                                         where r.IdRestauration == restaurantId
 
-                                                        select new ReservationDTO
+                                                        select new GetReservationDTO
                                                         {
                                                             IdReservation = r.IdReservation,
                                                             ReservationDate = r.ReservationDate,
@@ -167,7 +167,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                                                             ReservationComplain = (from c in _context.Complains
                                                                                    where c.IdReservation == r.IdReservation
 
-                                                                                   select new ComplainDTO
+                                                                                   select new GetComplainDTO
                                                                                    {
                                                                                        IdComplain = c.IdComplain,
                                                                                        ComplainDate = c.ComplainDate,
@@ -181,7 +181,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                               RestaurantComplains = (from c in _context.Complains
                                                      where c.IdRestaurant == restaurantId
 
-                                                     select new ComplainDTO
+                                                     select new GetComplainDTO
                                                      {
                                                          IdComplain = c.IdComplain,
                                                          ComplainDate = c.ComplainDate,
@@ -194,11 +194,11 @@ namespace Restaurants_REST_API.Services.Database_Service
                           ).FirstAsync();
         }
 
-        public async Task<IEnumerable<ReservationDTO>?> GetAllReservationsAsync()
+        public async Task<IEnumerable<GetReservationDTO>?> GetAllReservationsAsync()
         {
             return await (from r in _context.Reservations
 
-                          select new ReservationDTO
+                          select new GetReservationDTO
                           {
                               IdReservation = r.IdReservation,
                               ReservationDate = r.ReservationDate,
@@ -209,7 +209,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                               ReservationComplain = (from c in _context.Complains
                                                      where c.IdReservation == r.IdReservation
 
-                                                     select new ComplainDTO
+                                                     select new GetComplainDTO
                                                      {
                                                          IdComplain = c.IdComplain,
                                                          ComplainDate = c.ComplainDate,
@@ -237,7 +237,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             return await _context.Restaurants.Where(e => e.IdRestaurant == restaurantId).FirstOrDefaultAsync();
         }
 
-        public async Task<bool> AddNewRestaurantAsync(RestaurantDTO newRestaurant)
+        public async Task<bool> AddNewRestaurantAsync(GetRestaurantDTO newRestaurant)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -279,7 +279,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
         }
 
-        public async Task<bool> AddNewDishToRestaurantsAsync(DishDTO newDish)
+        public async Task<bool> AddNewDishToRestaurantsAsync(GetDishDTO newDish)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -321,7 +321,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
         }
 
-        public async Task<bool> HireNewEmployeeAsync(EmployeeHiredDTO employeeHire)
+        public async Task<bool> HireNewEmployeeAsync(GetEmployeeHiredDTO employeeHire)
         {
             try
             {

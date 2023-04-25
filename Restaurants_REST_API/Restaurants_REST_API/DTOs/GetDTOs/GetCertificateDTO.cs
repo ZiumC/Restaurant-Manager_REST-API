@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Restaurants_REST_API.DTOs
+namespace Restaurants_REST_API.DTOs.GetDTOs
 {
-    public class CertificateDTO
+    public class GetCertificateDTO
     {
         public int IdCertificate { get; set; }
         [Required]

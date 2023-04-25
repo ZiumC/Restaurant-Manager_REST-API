@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Restaurants_REST_API.DTOs;
+using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.Models.Database;
 using Restaurants_REST_API.Services.Database_Service;
 using Restaurants_REST_API.Services.ValidatorService;
@@ -23,7 +23,7 @@ namespace Restaurants_REST_API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllRestaurants()
         {
-            IEnumerable<RestaurantDTO?> restaurants = await _restaurantsApiService.GetAllRestaurantsAsync();
+            IEnumerable<GetRestaurantDTO?> restaurants = await _restaurantsApiService.GetAllRestaurantsAsync();
 
             if (restaurants == null || restaurants.Count() == 0)
             {
@@ -49,14 +49,14 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound($"Restaurant not found");
             }
 
-            RestaurantDTO restaurantDTO = await _restaurantsApiService.GetRestaurantDetailsByIdAsync(id);
+            GetRestaurantDTO restaurantDTO = await _restaurantsApiService.GetRestaurantDetailsByIdAsync(id);
 
             return Ok(restaurantDTO);
         }
 
         [HttpPost]
         [Route("add")]
-        public async Task<IActionResult> AddNewRestaurant(RestaurantDTO newRestaurant)
+        public async Task<IActionResult> AddNewRestaurant(GetRestaurantDTO newRestaurant)
         {
             if (newRestaurant == null)
             {
@@ -78,7 +78,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Restaurant statuc can't be empty");
             }
 
-            IEnumerable<RestaurantDTO?> allRestaurants = await _restaurantsApiService.GetAllRestaurantsAsync();
+            IEnumerable<GetRestaurantDTO?> allRestaurants = await _restaurantsApiService.GetAllRestaurantsAsync();
             if (RestaurantValidator.isRestaurantExistIn(allRestaurants, newRestaurant))
             {
                 return BadRequest("Restaurant already exist");
@@ -94,7 +94,7 @@ namespace Restaurants_REST_API.Controllers
 
         [HttpPost]
         [Route("add-dish")]
-        public async Task<IActionResult> AddNewDish(DishDTO newDish)
+        public async Task<IActionResult> AddNewDish(GetDishDTO newDish)
         {
             if (newDish == null)
             {
@@ -113,7 +113,7 @@ namespace Restaurants_REST_API.Controllers
 
             if (newDish.IdRestaurants.Count() > 0)
             {
-                List<RestaurantDTO> restaurants = new List<RestaurantDTO>();
+                List<GetRestaurantDTO> restaurants = new List<GetRestaurantDTO>();
 
                 foreach (int idRestaurant in newDish.IdRestaurants)
                 {
@@ -149,7 +149,7 @@ namespace Restaurants_REST_API.Controllers
 
         [HttpPost]
         [Route("add-emp")]
-        public async Task<IActionResult> AddNewEmployeeToRestaurant(EmployeeHiredDTO employeeHire)
+        public async Task<IActionResult> AddNewEmployeeToRestaurant(GetEmployeeHiredDTO employeeHire)
         {
             if (employeeHire == null)
             {
@@ -196,7 +196,7 @@ namespace Restaurants_REST_API.Controllers
 
             //at this stage i am certain that type name exist in database
             string typeName = allTypes.Where(e => e.IdType == employeeHire.IdEmployeeType).Select(e => e.Name).First();
-            RestaurantDTO restaurantDetails = await _restaurantsApiService.GetRestaurantDetailsByIdAsync(employeeHire.IdRestaurant);
+            GetRestaurantDTO restaurantDetails = await _restaurantsApiService.GetRestaurantDetailsByIdAsync(employeeHire.IdRestaurant);
             if (EmployeeTypeValidator.isEmployeeAlreadyHasTypeIn(restaurantDetails, employeeHire.IdEmployee, typeName))
             {
                 return BadRequest($"Employee {existEmployee.FirstName} has type already in restaurant {restaurant.Name}");

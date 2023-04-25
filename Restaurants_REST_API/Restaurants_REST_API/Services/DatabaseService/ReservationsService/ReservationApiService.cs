@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Restaurants_REST_API.DbContexts;
-using Restaurants_REST_API.DTOs;
+using Restaurants_REST_API.DTOs.GetDTOs;
 
 namespace Restaurants_REST_API.Services.Database_Service
 {
@@ -13,11 +13,11 @@ namespace Restaurants_REST_API.Services.Database_Service
             _context = context;
         }
 
-        public async Task<IEnumerable<ReservationDTO>?> GetAllReservationsAsync()
+        public async Task<IEnumerable<GetReservationDTO>?> GetAllReservationsAsync()
         {
             return await (from r in _context.Reservations
 
-                          select new ReservationDTO
+                          select new GetReservationDTO
                           {
                               IdReservation = r.IdReservation,
                               ReservationDate = r.ReservationDate,
@@ -28,7 +28,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                               ReservationComplain = (from c in _context.Complains
                                                      where c.IdReservation == r.IdReservation
 
-                                                     select new ComplainDTO
+                                                     select new GetComplainDTO
                                                      {
                                                          IdComplain = c.IdComplain,
                                                          ComplainDate = c.ComplainDate,
@@ -43,13 +43,13 @@ namespace Restaurants_REST_API.Services.Database_Service
         }
 
 
-        public async Task<IEnumerable<ReservationDTO>?> GetReservationsByRestaurantIdAsync(int restaurantId)
+        public async Task<IEnumerable<GetReservationDTO>?> GetReservationsByRestaurantIdAsync(int restaurantId)
         {
             return await (from r in _context.Reservations
 
                           where r.IdRestauration == restaurantId
 
-                          select new ReservationDTO
+                          select new GetReservationDTO
                           {
                               IdReservation = r.IdReservation,
                               ReservationDate = r.ReservationDate,
@@ -60,7 +60,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                               ReservationComplain = (from c in _context.Complains
                                                      where c.IdReservation == r.IdReservation
 
-                                                     select new ComplainDTO
+                                                     select new GetComplainDTO
                                                      {
                                                          IdComplain = c.IdComplain,
                                                          ComplainDate = c.ComplainDate,
@@ -72,12 +72,12 @@ namespace Restaurants_REST_API.Services.Database_Service
 
                           ).ToListAsync();
         }
-        public async Task<ReservationDTO?> GetReservationByIdAsync(int reservationId)
+        public async Task<GetReservationDTO?> GetReservationByIdAsync(int reservationId)
         {
             return await (from r in _context.Reservations
                           where r.IdReservation == reservationId
 
-                          select new ReservationDTO
+                          select new GetReservationDTO
                           {
                               IdReservation = r.IdReservation,
                               ReservationDate = r.ReservationDate,
@@ -87,7 +87,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                               ReservationComplain = (from c in _context.Complains
                                                      where c.IdReservation == reservationId
 
-                                                     select new ComplainDTO
+                                                     select new GetComplainDTO
                                                      {
                                                          IdComplain = c.IdComplain,
                                                          ComplainDate = c.ComplainDate,
@@ -99,12 +99,12 @@ namespace Restaurants_REST_API.Services.Database_Service
                           ).FirstOrDefaultAsync();
         }
 
-        public async Task<ClientDTO?> GetReservationsByClientIdAsync(int clientId)
+        public async Task<GetClientDTO?> GetReservationsByClientIdAsync(int clientId)
         {
             return await (from cli in _context.Clients
                           where cli.IdClient == clientId
 
-                          select new ClientDTO
+                          select new GetClientDTO
                           {
                               IdClient = cli.IdClient,
                               Name = cli.Name,
@@ -112,7 +112,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                               ClientReservations = (from r in _context.Reservations
                                                     where r.IdClient == clientId
 
-                                                    select new ReservationDTO
+                                                    select new GetReservationDTO
                                                     {
                                                         IdReservation = r.IdReservation,
                                                         ReservationDate = r.ReservationDate,
@@ -122,7 +122,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                                                         ReservationComplain = (from c in _context.Complains
                                                                                where c.IdReservation == r.IdReservation
 
-                                                                               select new ComplainDTO
+                                                                               select new GetComplainDTO
                                                                                {
                                                                                    IdComplain = c.IdComplain,
                                                                                    ComplainDate = c.ComplainDate,

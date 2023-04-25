@@ -1,9 +1,9 @@
 ﻿using Restaurants_REST_API.Models.Database;
 using System.ComponentModel.DataAnnotations;
 
-namespace Restaurants_REST_API.DTOs
+namespace Restaurants_REST_API.DTOs.GetDTOs
 {
-    public class RestaurantDTO
+    public class GetRestaurantDTO
     {
         public int IdRestaurant { get; set; }
         [Required]
@@ -16,10 +16,10 @@ namespace Restaurants_REST_API.DTOs
         public string Status { get; set; }
         public decimal? BonusBudget { get; set; }
         [Required]
-        public AddressDTO Address { get; set; }
+        public GetAddressDTO Address { get; set; }
         public List<Dish>? RestaurantDishes { get; set; }
-        public List<RestaurantWorkersDTO>? RestaurantWorkers { get; set; }
-        public List<ReservationDTO>? RestaurantReservations { get; set; }
-        public List<ComplainDTO>? RestaurantComplains { get; set; }
+        public List<GetRestaurantWorkersDTO>? RestaurantWorkers { get; set; }
+        public List<GetReservationDTO>? RestaurantReservations { get; set; }
+        public List<GetComplainDTO>? RestaurantComplains { get; set; }
     }
 }

@@ -1,6 +1,6 @@
-﻿namespace Restaurants_REST_API.DTOs
+﻿namespace Restaurants_REST_API.DTOs.GetDTOs
 {
-    public class RestaurantWorkersDTO
+    public class GetRestaurantWorkersDTO
     {
         public int IdEmployee { get; set; }
         public string EmployeeType { get; set; }
