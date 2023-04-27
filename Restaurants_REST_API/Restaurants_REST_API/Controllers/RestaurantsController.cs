@@ -63,7 +63,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Restaurant must be specified");
             }
 
-            if (RestaurantValidator.isEmptyNameOf(newRestaurant.Name))
+            if (GeneralValidator.isEmptyNameOf(newRestaurant.Name))
             {
                 return BadRequest("Restaurant name can't be empty");
             }
@@ -73,7 +73,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Restaurant adress can't be empty");
             }
 
-            if (RestaurantValidator.isEmptyNameOf(newRestaurant.Status))
+            if (GeneralValidator.isEmptyNameOf(newRestaurant.Status))
             {
                 return BadRequest("Restaurant statuc can't be empty");
             }
@@ -106,7 +106,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Dish must have specified one or more restaurants");
             }
 
-            if (RestaurantValidator.isEmptyNameOf(newDish.Name))
+            if (GeneralValidator.isEmptyNameOf(newDish.Name))
             {
                 return BadRequest("Dish name can't be empty");
             }

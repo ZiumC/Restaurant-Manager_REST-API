@@ -7,33 +7,26 @@ namespace Restaurants_REST_API.Services.ValidationService
 {
     public class EmployeeValidator
     {
-        public static bool isEmptyNameOf(string fieldToCheck)
-        {
-            return fieldToCheck.Replace("\\s", "") == "";
-        }
-
         public static bool isCorrectPeselOf(string peselToCheck)
         {
+            if (peselToCheck == null)
+            {
+                return true;
+            }
+
             return Regex.IsMatch(peselToCheck, @"^\d+$");
         }
 
-        public static bool isCorrectSalaryOf(decimal salaryToCheck)
+        public static bool isCorrectSalaryOf(decimal? salaryToCheck)
         {
+            if (salaryToCheck == null)
+            {
+                return false;
+            }
+
             return salaryToCheck > 0;
         }
 
-        public static bool isCorrectCertificatesOf(PostEmployeeDTO empToCheck)
-        {
-            foreach (PostCertificateDTO empCert in empToCheck.Certificates)
-            {
-                if (empCert.Name.Replace("\\s", "").Equals(""))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
 
         public static bool isEmployeeExistIn(IEnumerable<GetEmployeeDTO> allEmployees, PostEmployeeDTO empToCheck)
         {
@@ -51,12 +44,12 @@ namespace Restaurants_REST_API.Services.ValidationService
                     empExist = false;
                 }
 
-                if (!emp.PESEL.Equals(empToCheck.PESEL)) 
+                if (!emp.PESEL.Equals(empToCheck.PESEL))
                 {
                     empExist = false;
                 }
 
-                if (!emp.IsOwner.Equals(emp.IsOwner)) 
+                if (!emp.IsOwner.Equals(emp.IsOwner))
                 {
                     empExist = false;
                 }
