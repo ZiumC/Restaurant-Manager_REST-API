@@ -10,10 +10,10 @@ namespace Restaurants_REST_API.Services.Database_Service
         public Task<GetRestaurantDTO> GetRestaurantDetailsByIdAsync(int restaurantId);
         public Task<IEnumerable<GetRestaurantDTO?>> GetAllRestaurantsAsync();
         //public Task<IEnumerable<ReservationDTO>?> GetAllReservationsAsync();
-        public Task<bool> AddNewRestaurantAsync(PostRestaurantDTO newRestaurant);
+        public Task<bool> AddNewRestaurantAsync(RestaurantDTO newRestaurant);
 
         public Task<bool> AddNewDishToRestaurantsAsync(DishDTO newDish);
-        public Task<bool> HireNewEmployeeAsync(PostEmployeeToRestaurantDTO employeeHired);
+        public Task<bool> HireNewEmployeeAsync(EmployeeToRestaurantDTO employeeHired);
     }
 
 }

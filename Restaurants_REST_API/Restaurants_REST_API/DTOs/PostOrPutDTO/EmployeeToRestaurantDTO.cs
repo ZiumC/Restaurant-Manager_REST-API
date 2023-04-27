@@ -2,7 +2,7 @@
 
 namespace Restaurants_REST_API.DTOs.PostDTOs
 {
-    public class PostEmployeeToRestaurantDTO
+    public class EmployeeToRestaurantDTO
     {
         [Required]
         public int IdEmployee { get; set; }

@@ -7,7 +7,7 @@ namespace Restaurants_REST_API.Services.ValidatorService
     public class RestaurantValidator
     {
 
-        public static bool isRestaurantExistIn(IEnumerable<GetRestaurantDTO?> allRestaurants, PostRestaurantDTO newRestaurant)
+        public static bool isRestaurantExistIn(IEnumerable<GetRestaurantDTO?> allRestaurants, RestaurantDTO newRestaurant)
         {
             if (allRestaurants == null || allRestaurants.Count() == 0)
             {
@@ -50,7 +50,7 @@ namespace Restaurants_REST_API.Services.ValidatorService
             return newRestaurantEquals.Contains(true);
         }
 
-        public static bool isDishExistIn(List<GetRestaurantDTO> allRestaurants, PostDishDTO newDish)
+        public static bool isDishExistIn(List<GetRestaurantDTO> allRestaurants, DishDTO newDish)
         {
 
 

@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations;
 
 namespace Restaurants_REST_API.DTOs.PostDTOs
 {
-    public class PostEmployeeDTO
+    public class EmployeeDTO
     {
         [Required]
         [MaxLength(50)]
@@ -21,8 +20,8 @@ namespace Restaurants_REST_API.DTOs.PostDTOs
         public decimal Salary { get; set; }
         public decimal BonusSalary { get; set; }
         [Required]
-        public PostAddressDTO Address { get; set; }
-        public IEnumerable<PostCertificateDTO>? Certificates { get; set; }
+        public AddressDTO Address { get; set; }
+        public IEnumerable<CertificateDTO>? Certificates { get; set; }
 
     }
 }

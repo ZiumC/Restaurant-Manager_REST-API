@@ -141,7 +141,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddNewEmployee(PostEmployeeDTO? newEmployee)
+        public async Task<IActionResult> AddNewEmployee(EmployeeDTO? newEmployee)
         {
             //validating new employee
             if (newEmployee == null)
@@ -227,6 +227,52 @@ namespace Restaurants_REST_API.Controllers
             }
 
             return Ok("New employee type has been added");
+        }
+
+        [HttpPost]
+        [Route("id")]
+        public async Task<IActionResult> UpdateExistingEmployee(int id, EmployeeDTO? newEmployeeData) 
+        {
+            if (!GeneralValidator.isCorrectId(id))
+            {
+                return BadRequest($"Id={id} isn't correct");
+            }
+
+            if (newEmployeeData == null)
+            {
+                return BadRequest("Employee data can't be empty");
+            }
+
+            if (GeneralValidator.isEmptyNameOf(newEmployeeData.FirstName) || GeneralValidator.isEmptyNameOf(newEmployeeData.LastName))
+            {
+                return BadRequest("First or last name can't be empty");
+            }
+
+            if (!EmployeeValidator.isCorrectPeselOf(newEmployeeData.PESEL))
+            {
+                return BadRequest("PESEL isn't correct");
+            }
+
+            if (!EmployeeValidator.isCorrectSalaryOf(newEmployeeData.Salary))
+            {
+                return BadRequest("Salary can't be less or equal 0");
+            }
+
+            if (AddressValidator.isEmptyAddressOf(newEmployeeData.Address))
+            {
+                return BadRequest("Address can't be empty");
+            }
+
+            Employee? employeeDatabase = await _employeeApiService.GetBasicEmployeeDataByIdAsync(id);
+            if (employeeDatabase == null)
+            {
+                return NotFound("Employee doesn't exist");
+            }
+
+            GetEmployeeDTO employeeDetails = await _employeeApiService.GetDetailedEmployeeDataAsync(employeeDatabase);
+
+
+            return Ok();
         }
     }
 }
