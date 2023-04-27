@@ -56,7 +56,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddNewRestaurant(PostRestaurantDTO newRestaurant)
+        public async Task<IActionResult> AddNewRestaurant(RestaurantDTO newRestaurant)
         {
             if (newRestaurant == null)
             {
@@ -94,7 +94,7 @@ namespace Restaurants_REST_API.Controllers
 
         [HttpPost]
         [Route("add-dish")]
-        public async Task<IActionResult> AddNewDish(PostDishDTO newDish)
+        public async Task<IActionResult> AddNewDish(DishDTO newDish)
         {
             if (newDish == null)
             {
@@ -149,7 +149,7 @@ namespace Restaurants_REST_API.Controllers
 
         [HttpPost]
         [Route("hire-employee")]
-        public async Task<IActionResult> AddNewEmployeeToRestaurant(PostEmployeeToRestaurantDTO employeeHire)
+        public async Task<IActionResult> AddNewEmployeeToRestaurant(EmployeeToRestaurantDTO employeeHire)
         {
             if (employeeHire == null)
             {
