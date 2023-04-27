@@ -23,64 +23,69 @@ namespace Restaurants_REST_API.Services.UpdateDataService
 
         private void UpdatedEmployeeData()
         {
+            string newFirstName = _newEmployeeData.FirstName;
+            string oldFirstName = _employeeDatabase.FirstName;
+
+            string newLastName = _newEmployeeData.LastName;
+            string oldLastName = _employeeDatabase.LastName;
+
+            string newPesel = _newEmployeeData.PESEL;
+            string oldPesel = _employeeDatabase.PESEL;
+
+            decimal newSalary = _newEmployeeData.Salary;
+            decimal oldSalary = _employeeDatabase.Salary;
+
+            decimal newBonusSalary = _newEmployeeData.BonusSalary;
+            decimal oldBonusSalary = _employeeDatabase.BonusSalary;
+
             //setting first name
-            if (_newEmployeeData.FirstName.Equals(_employeeDatabase.FirstName))
+            if (newFirstName.Equals(oldFirstName))
             {
-                _employeeUpdatedData.FirstName = _employeeDatabase.FirstName;
+                _employeeUpdatedData.FirstName = oldFirstName;
             }
             else
             {
-                _employeeUpdatedData.FirstName = _newEmployeeData.FirstName;
+                _employeeUpdatedData.FirstName = newFirstName;
             }
 
             //setting last name
-            if (_newEmployeeData.LastName.Equals(_employeeDatabase.LastName))
+            if (newLastName.Equals(oldLastName))
             {
-                _employeeUpdatedData.LastName = _employeeDatabase.LastName;
+                _employeeUpdatedData.LastName = oldLastName;
             }
             else
             {
-                _employeeUpdatedData.LastName = _newEmployeeData.LastName;
+                _employeeUpdatedData.LastName = newLastName;
             }
 
             //setting pesel
-            if (_newEmployeeData.PESEL.Equals(_employeeDatabase.PESEL))
+            if (newPesel.Equals(oldPesel))
             {
-                _employeeUpdatedData.PESEL = _employeeDatabase.PESEL;
+                _employeeUpdatedData.PESEL = oldPesel;
             }
             else
             {
-                _employeeUpdatedData.PESEL = _newEmployeeData.PESEL;
-            }
-
-            //setting pesel
-            if (_newEmployeeData.PESEL.Equals(_employeeDatabase.PESEL))
-            {
-                _employeeUpdatedData.PESEL = _employeeDatabase.PESEL;
-            }
-            else
-            {
-                _employeeUpdatedData.PESEL = _newEmployeeData.PESEL;
+                _employeeUpdatedData.PESEL = newPesel;
             }
 
             //setting salary
-            if (_newEmployeeData.Salary == _employeeDatabase.Salary)
+            if (newSalary == oldSalary)
             {
-                _employeeUpdatedData.Salary = _employeeDatabase.Salary;
+                _employeeUpdatedData.Salary = oldSalary;
             }
             else
             {
-                _employeeUpdatedData.Salary = _newEmployeeData.Salary;
+                _employeeUpdatedData.Salary = newSalary;
             }
 
             //setting bonus salary
-            if (_newEmployeeData.BonusSalary == _employeeDatabase.BonusSalary)
+            if (newBonusSalary == oldBonusSalary)
             {
-                _employeeUpdatedData.BonusSalary = _employeeDatabase.BonusSalary;
+                _employeeUpdatedData.BonusSalary = oldBonusSalary;
             }
             else
             {
-                _employeeUpdatedData.BonusSalary = _newEmployeeData.BonusSalary;
+                _employeeUpdatedData.BonusSalary = newBonusSalary;
             }
         }
 
