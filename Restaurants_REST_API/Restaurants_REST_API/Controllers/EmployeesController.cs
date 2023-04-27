@@ -6,7 +6,7 @@ using Restaurants_REST_API.Models.Database;
 using Restaurants_REST_API.Services.Database_Service;
 using Restaurants_REST_API.Services.ValidationService;
 using Restaurants_REST_API.Services.ValidatorService;
-using Restaurants_REST_API.DTOs.PostDTOs;
+using Restaurants_REST_API.DTOs.PostOrPutDTO;
 using Restaurants_REST_API.DTOs;
 using Restaurants_REST_API.Services.UpdateDataService;
 

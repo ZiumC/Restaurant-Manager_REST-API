@@ -1,5 +1,5 @@
 ﻿using Restaurants_REST_API.DTOs.GetDTOs;
-using Restaurants_REST_API.DTOs.PostDTOs;
+using Restaurants_REST_API.DTOs.PostOrPutDTO;
 using Restaurants_REST_API.Models.Database;
 
 namespace Restaurants_REST_API.Services.Database_Service
