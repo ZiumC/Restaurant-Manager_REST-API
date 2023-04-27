@@ -8,7 +8,7 @@ using Restaurants_REST_API.Services.ValidatorService;
 
 namespace Restaurants_REST_API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/menage/[controller]")]
     [ApiController]
     public class RestaurantsController : ControllerBase
     {

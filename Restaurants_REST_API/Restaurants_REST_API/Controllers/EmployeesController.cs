@@ -7,10 +7,11 @@ using Restaurants_REST_API.Services.Database_Service;
 using Restaurants_REST_API.Services.ValidationService;
 using Restaurants_REST_API.Services.ValidatorService;
 using Restaurants_REST_API.DTOs.PostDTOs;
+using Restaurants_REST_API.DTOs;
 
 namespace Restaurants_REST_API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/menage/[controller]")]
     [ApiController]
     public class EmployeesController : ControllerBase
     {
@@ -223,6 +224,14 @@ namespace Restaurants_REST_API.Controllers
             }
 
             return Ok("New employee type has been added");
+        }
+
+        [HttpPut]
+        [Route("id")]
+        public async Task<IActionResult> UpdateExistingEmployee(PutEmployeeDTO newEmployeeData) 
+        {
+
+            return Ok();
         }
     }
 }

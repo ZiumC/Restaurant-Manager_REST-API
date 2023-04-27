@@ -6,7 +6,7 @@ using Restaurants_REST_API.Services.Database_Service;
 
 namespace Restaurants_REST_API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/menage/[controller]")]
     [ApiController]
     public class ReservationsController : ControllerBase
     {
