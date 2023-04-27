@@ -256,7 +256,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                 .Select(x => new EmployeeType { IdType = x.IdType, Name = x.Name }).ToListAsync();
         }
 
-        public async Task<bool> AddNewEmployeeAsync(PostEmployeeDTO newEmployee, bool certificatesExist)
+        public async Task<bool> AddNewEmployeeAsync(EmployeeDTO newEmployee, bool certificatesExist)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -293,7 +293,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                     if (certificatesExist)
                     {
                         //inside EmployeesController certificates are checked if they are NOT NULL and are correct
-                        foreach (PostCertificateDTO empCertificate in newEmployee.Certificates)
+                        foreach (CertificateDTO empCertificate in newEmployee.Certificates)
                         {
                             var newDatabaseCertificate = _context.Add
                                 (

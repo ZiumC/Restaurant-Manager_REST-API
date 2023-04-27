@@ -5,7 +5,7 @@ namespace Restaurants_REST_API.Services.ValidatorService
 {
     public class AddressValidator
     {
-        public static bool isEmptyAddressOf(PostAddressDTO newAddress)
+        public static bool isEmptyAddressOf(AddressDTO newAddress)
         {
             if (newAddress.City == null || newAddress.Street == null || newAddress.BuildingNumber == null)
             {
