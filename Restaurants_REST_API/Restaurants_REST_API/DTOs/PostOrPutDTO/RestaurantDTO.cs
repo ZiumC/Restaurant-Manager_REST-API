@@ -2,7 +2,7 @@
 
 namespace Restaurants_REST_API.DTOs.PostDTOs
 {
-    public class PostRestaurantDTO
+    public class RestaurantDTO
     {
         [Required]
         [MaxLength(100)]
@@ -14,6 +14,6 @@ namespace Restaurants_REST_API.DTOs.PostDTOs
         public string Status { get; set; }
         public decimal? BonusBudget { get; set; }
         [Required]
-        public PostAddressDTO Address { get; set; }
+        public AddressDTO Address { get; set; }
     }
 }

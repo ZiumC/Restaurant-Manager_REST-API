@@ -2,7 +2,7 @@
 
 namespace Restaurants_REST_API.DTOs.PostDTOs
 {
-    public class PostDishDTO
+    public class DishDTO
     {
         [Required]
         [MaxLength(100)]

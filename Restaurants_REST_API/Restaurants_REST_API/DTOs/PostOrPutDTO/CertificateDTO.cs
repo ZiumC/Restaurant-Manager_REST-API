@@ -2,7 +2,7 @@
 
 namespace Restaurants_REST_API.DTOs.PostDTOs
 {
-    public class PostCertificateDTO
+    public class CertificateDTO
     {
         [Required]
         [MaxLength(125)]

@@ -8,9 +8,9 @@ namespace Restaurants_REST_API.Services.UpdateDataService
     public class UpdateDataEmployeeService
     {
         private readonly Employee _employeeDatabase;
-        private readonly PostEmployeeDTO _newEmployeeData;
+        private readonly EmployeeDTO _newEmployeeData;
 
-        public UpdateDataEmployeeService(Employee employeeDatabase, PostEmployeeDTO newEmployeeData)
+        public UpdateDataEmployeeService(Employee employeeDatabase, EmployeeDTO newEmployeeData)
         {
             _employeeDatabase = employeeDatabase;
             _newEmployeeData = newEmployeeData;
