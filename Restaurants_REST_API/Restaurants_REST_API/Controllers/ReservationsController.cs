@@ -52,7 +52,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpGet]
-        [Route("restaurant/id")]
+        [Route("by-restaurant/id")]
         public async Task<IActionResult> GetReservationsByRestaurant(int id)
         {
             if (id < 0)
@@ -78,7 +78,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpGet]
-        [Route("client/id")]
+        [Route("by-client/id")]
         public async Task<IActionResult> GetReservationsByClient(int id)
         {
             if (id < 0)

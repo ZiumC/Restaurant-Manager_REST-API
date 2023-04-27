@@ -56,7 +56,6 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpPost]
-        [Route("add")]
         public async Task<IActionResult> AddNewRestaurant(PostRestaurantDTO newRestaurant)
         {
             if (newRestaurant == null)
@@ -149,7 +148,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpPost]
-        [Route("add-emp")]
+        [Route("hire-employee")]
         public async Task<IActionResult> AddNewEmployeeToRestaurant(PostEmployeeToRestaurantDTO employeeHire)
         {
             if (employeeHire == null)

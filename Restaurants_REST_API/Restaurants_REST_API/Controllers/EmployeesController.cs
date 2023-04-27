@@ -76,7 +76,7 @@ namespace Restaurants_REST_API.Controllers
          * GetSupervisorDetailsByIdAsync(int id) in interface IEmployeeApiService would very similar!
          */
         [HttpGet]
-        [Route("supervisors/id")]
+        [Route("supervisor/id")]
         public async Task<IActionResult> GetSupervisors(int id)
         {
             if (id < 0)
@@ -114,7 +114,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpGet]
-        [Route("restaurant/id")]
+        [Route("by-restaurant/id")]
         public async Task<IActionResult> GetEmployeeByRestaurant(int id)
         {
             if (id < 0)
@@ -140,7 +140,6 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpPost]
-        [Route("add")]
         public async Task<IActionResult> AddNewEmployee(PostEmployeeDTO? newEmployee)
         {
             //validating new employee
