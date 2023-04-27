@@ -229,7 +229,7 @@ namespace Restaurants_REST_API.Controllers
             return Ok("New employee type has been added");
         }
 
-        [HttpPost]
+        [HttpPut]
         [Route("id")]
         public async Task<IActionResult> UpdateExistingEmployee(int id, EmployeeDTO? newEmployeeData) 
         {
@@ -263,13 +263,27 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Address can't be empty");
             }
 
+            bool certificatesExist = false;
+            if (newEmployeeData.Certificates != null && newEmployeeData.Certificates.Count() > 0)
+            {
+                certificatesExist = true;
+                foreach (CertificateDTO certificate in newEmployeeData.Certificates)
+                {
+                    if (GeneralValidator.isEmptyNameOf(certificate.Name))
+                    {
+                        return BadRequest("One or more certificates is invalid");
+                    }
+                }
+            }
+            
+            //checking if employee exist
             Employee? employeeDatabase = await _employeeApiService.GetBasicEmployeeDataByIdAsync(id);
             if (employeeDatabase == null)
             {
                 return NotFound("Employee doesn't exist");
             }
 
-            GetEmployeeDTO employeeDetails = await _employeeApiService.GetDetailedEmployeeDataAsync(employeeDatabase);
+
 
 
             return Ok();
