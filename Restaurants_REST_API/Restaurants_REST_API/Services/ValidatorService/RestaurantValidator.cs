@@ -6,20 +6,6 @@ namespace Restaurants_REST_API.Services.ValidatorService
 {
     public class RestaurantValidator
     {
-        public static bool isEmptyNameOf(string field)
-        {
-            if (field == null)
-            {
-                return true;
-            }
-
-            if (field.Replace("\\s", "").Equals(""))
-            {
-                return true;
-            }
-
-            return false;
-        }
 
         public static bool isRestaurantExistIn(IEnumerable<GetRestaurantDTO?> allRestaurants, PostRestaurantDTO newRestaurant)
         {

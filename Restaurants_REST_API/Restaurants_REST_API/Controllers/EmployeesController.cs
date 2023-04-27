@@ -8,6 +8,7 @@ using Restaurants_REST_API.Services.ValidationService;
 using Restaurants_REST_API.Services.ValidatorService;
 using Restaurants_REST_API.DTOs.PostDTOs;
 using Restaurants_REST_API.DTOs;
+using Restaurants_REST_API.Services.UpdateDataService;
 
 namespace Restaurants_REST_API.Controllers
 {
@@ -148,7 +149,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Employee should be specified");
             }
 
-            if (EmployeeValidator.isEmptyNameOf(newEmployee.FirstName) || EmployeeValidator.isEmptyNameOf(newEmployee.LastName))
+            if (GeneralValidator.isEmptyNameOf(newEmployee.FirstName) || GeneralValidator.isEmptyNameOf(newEmployee.LastName))
             {
                 return BadRequest("First or last name can't be empty");
             }
@@ -172,9 +173,12 @@ namespace Restaurants_REST_API.Controllers
             if (newEmployee.Certificates != null && newEmployee.Certificates.Count() > 0)
             {
                 certificatesExist = true;
-                if (!EmployeeValidator.isCorrectCertificatesOf(newEmployee))
+                foreach (var certificate in newEmployee.Certificates) 
                 {
-                    return BadRequest("One or more certificates is invalid");
+                    if (GeneralValidator.isEmptyNameOf(certificate.Name))
+                    {
+                        return BadRequest("One or more certificates is invalid");
+                    }
                 }
             }
 
@@ -223,14 +227,6 @@ namespace Restaurants_REST_API.Controllers
             }
 
             return Ok("New employee type has been added");
-        }
-
-        [HttpPut]
-        [Route("id")]
-        public async Task<IActionResult> UpdateExistingEmployee(PutEmployeeDTO newEmployeeData) 
-        {
-
-            return Ok();
         }
     }
 }
