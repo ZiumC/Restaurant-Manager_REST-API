@@ -1,5 +1,5 @@
 ﻿using Restaurants_REST_API.DTOs.GetDTOs;
-using Restaurants_REST_API.DTOs.PostDTOs;
+using Restaurants_REST_API.DTOs.PostOrPutDTO;
 using System.Net;
 using System.Text.RegularExpressions;
 

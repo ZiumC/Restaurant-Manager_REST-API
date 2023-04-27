@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Restaurants_REST_API.DTOs.PostDTOs
+namespace Restaurants_REST_API.DTOs.PostOrPutDTO
 {
     public class DishDTO
     {

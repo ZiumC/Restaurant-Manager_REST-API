@@ -1,24 +1,22 @@
-﻿using Restaurants_REST_API.DTOs;
-using Restaurants_REST_API.DTOs.PostDTOs;
+﻿using Restaurants_REST_API.DTOs.PostOrPutDTO;
 using Restaurants_REST_API.Models.Database;
-using Restaurants_REST_API.Services.ValidationService;
 
 namespace Restaurants_REST_API.Services.UpdateDataService
 {
-    public class UpdateDataEmployeeService
+    public class MapEmployeeDataService
     {
         private readonly Employee _employeeDatabase;
         private readonly EmployeeDTO _newEmployeeData;
         private readonly bool _certificatesExist;
-        private EmployeeDTO _employeeUpdatedData;
+        private EmployeeDTO employeeUpdatedData;
 
-        public UpdateDataEmployeeService(Employee employeeDatabase, EmployeeDTO newEmployeeData, bool certificateExists)
+        public MapEmployeeDataService(Employee employeeDatabase, EmployeeDTO newEmployeeData, bool certificateExists)
         {
             _employeeDatabase = employeeDatabase;
             _newEmployeeData = newEmployeeData;
             _certificatesExist = certificateExists;
 
-            _employeeUpdatedData = new EmployeeDTO();
+            employeeUpdatedData = new EmployeeDTO();
         }
 
         private void UpdatedEmployeeData()
@@ -41,51 +39,51 @@ namespace Restaurants_REST_API.Services.UpdateDataService
             //setting first name
             if (newFirstName.Equals(oldFirstName))
             {
-                _employeeUpdatedData.FirstName = oldFirstName;
+                employeeUpdatedData.FirstName = oldFirstName;
             }
             else
             {
-                _employeeUpdatedData.FirstName = newFirstName;
+                employeeUpdatedData.FirstName = newFirstName;
             }
 
             //setting last name
             if (newLastName.Equals(oldLastName))
             {
-                _employeeUpdatedData.LastName = oldLastName;
+                employeeUpdatedData.LastName = oldLastName;
             }
             else
             {
-                _employeeUpdatedData.LastName = newLastName;
+                employeeUpdatedData.LastName = newLastName;
             }
 
             //setting pesel
             if (newPesel.Equals(oldPesel))
             {
-                _employeeUpdatedData.PESEL = oldPesel;
+                employeeUpdatedData.PESEL = oldPesel;
             }
             else
             {
-                _employeeUpdatedData.PESEL = newPesel;
+                employeeUpdatedData.PESEL = newPesel;
             }
 
             //setting salary
             if (newSalary == oldSalary)
             {
-                _employeeUpdatedData.Salary = oldSalary;
+                employeeUpdatedData.Salary = oldSalary;
             }
             else
             {
-                _employeeUpdatedData.Salary = newSalary;
+                employeeUpdatedData.Salary = newSalary;
             }
 
             //setting bonus salary
             if (newBonusSalary == oldBonusSalary)
             {
-                _employeeUpdatedData.BonusSalary = oldBonusSalary;
+                employeeUpdatedData.BonusSalary = oldBonusSalary;
             }
             else
             {
-                _employeeUpdatedData.BonusSalary = newBonusSalary;
+                employeeUpdatedData.BonusSalary = newBonusSalary;
             }
         }
 
@@ -106,31 +104,31 @@ namespace Restaurants_REST_API.Services.UpdateDataService
             //setting city address 
             if (newCityData.Equals(oldCityData))
             {
-                _employeeUpdatedData.Address.City = oldCityData;
+                employeeUpdatedData.Address.City = oldCityData;
             }
             else
             {
-                _employeeUpdatedData.Address.City = newCityData;
+                employeeUpdatedData.Address.City = newCityData;
             }
 
             //setting street address 
             if (newStreetData.Equals(oldStreetData))
             {
-                _employeeUpdatedData.Address.Street = oldStreetData;
+                employeeUpdatedData.Address.Street = oldStreetData;
             }
             else
             {
-                _employeeUpdatedData.Address.Street = newStreetData;
+                employeeUpdatedData.Address.Street = newStreetData;
             }
 
             //setting building number address 
             if (newBuildingNumberData.Equals(oldBuildingNumberData))
             {
-                _employeeUpdatedData.Address.BuildingNumber = oldBuildingNumberData;
+                employeeUpdatedData.Address.BuildingNumber = oldBuildingNumberData;
             }
             else
             {
-                _employeeUpdatedData.Address.BuildingNumber = newBuildingNumberData;
+                employeeUpdatedData.Address.BuildingNumber = newBuildingNumberData;
             }
 
             //setting local number
@@ -138,16 +136,16 @@ namespace Restaurants_REST_API.Services.UpdateDataService
             {
                 if (newLocalNumber.Equals(oldLocalNumber))
                 {
-                    _employeeUpdatedData.Address.LocalNumber = oldLocalNumber;
+                    employeeUpdatedData.Address.LocalNumber = oldLocalNumber;
                 }
                 else
                 {
-                    _employeeUpdatedData.Address.LocalNumber = newLocalNumber;
+                    employeeUpdatedData.Address.LocalNumber = newLocalNumber;
                 }
             }
             else
             {
-                _employeeUpdatedData.Address.LocalNumber = newLocalNumber;
+                employeeUpdatedData.Address.LocalNumber = newLocalNumber;
             }
         }
 
@@ -166,7 +164,7 @@ namespace Restaurants_REST_API.Services.UpdateDataService
                 UpdatedEmployeeCertificates();
             }
 
-            return _employeeUpdatedData;
+            return employeeUpdatedData;
         }
     }
 }
