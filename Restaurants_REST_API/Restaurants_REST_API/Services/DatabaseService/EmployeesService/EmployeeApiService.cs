@@ -3,9 +3,6 @@ using Restaurants_REST_API.DbContexts;
 using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.DTOs.PostOrPutDTO;
 using Restaurants_REST_API.Models.Database;
-using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
 
 namespace Restaurants_REST_API.Services.Database_Service
 {
@@ -256,7 +253,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                 .Select(x => new EmployeeType { IdType = x.IdType, Name = x.Name }).ToListAsync();
         }
 
-        public async Task<bool> AddNewEmployeeAsync(EmployeeDTO newEmployee, bool certificatesExist)
+        public async Task<bool> AddNewEmployeeAsync(PostEmployeeDTO newEmployee, bool certificatesExist)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -293,7 +290,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                     if (certificatesExist)
                     {
                         //inside EmployeesController certificates are checked if they are NOT NULL and are correct
-                        foreach (CertificateDTO empCertificate in newEmployee.Certificates)
+                        foreach (PostCertificateDTO empCertificate in newEmployee.Certificates)
                         {
                             var newDatabaseCertificate = _context.Add
                                 (
@@ -351,6 +348,46 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
 
             return true;
+        }
+
+        public async Task<bool> UpdateExistingEmployeeByIdAsync(int id, Employee employeeData)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var updateEmployeeQuery = await
+                        (_context.Employees
+                        .Where(e => e.IdEmployee == id)
+                        .FirstAsync());
+
+                    updateEmployeeQuery.FirstName = employeeData.FirstName;
+                    updateEmployeeQuery.LastName = employeeData.LastName;
+                    updateEmployeeQuery.PESEL = employeeData.PESEL;
+                    updateEmployeeQuery.Salary = employeeData.Salary;
+                    updateEmployeeQuery.BonusSalary = employeeData.BonusSalary;
+
+                    updateEmployeeQuery.Address.City = employeeData.Address.City;
+                    updateEmployeeQuery.Address.Street = employeeData.Address.Street;
+                    updateEmployeeQuery.Address.BuildingNumber = employeeData.Address.BuildingNumber;
+                    updateEmployeeQuery.Address.LocalNumber = employeeData.Address.LocalNumber;
+
+                    updateEmployeeQuery.HiredDate = updateEmployeeQuery.HiredDate;
+                    updateEmployeeQuery.FirstPromotionChefDate = updateEmployeeQuery.FirstPromotionChefDate;
+                    updateEmployeeQuery.IsOwner = updateEmployeeQuery.IsOwner;
+
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    await transaction.RollbackAsync();
+                    return false;
+                }
+                await transaction.CommitAsync();
+                return true;
+            }
+
         }
     }
 }

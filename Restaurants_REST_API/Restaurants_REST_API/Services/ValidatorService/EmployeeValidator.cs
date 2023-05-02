@@ -28,7 +28,7 @@ namespace Restaurants_REST_API.Services.ValidationService
         }
 
 
-        public static bool isEmployeeExistIn(IEnumerable<GetEmployeeDTO> allEmployees, EmployeeDTO empToCheck)
+        public static bool isEmployeeExistIn(IEnumerable<GetEmployeeDTO> allEmployees, PostEmployeeDTO empToCheck)
         {
             List<bool> newEmpEquals = new List<bool>();
             foreach (GetEmployeeDTO emp in allEmployees)

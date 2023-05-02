@@ -14,6 +14,6 @@ namespace Restaurants_REST_API.DTOs.GetDTOs
         public DateTime? FirstPromotionChefDate { get; set; }
         public string IsOwner { get; set; }
         public GetAddressDTO Address { get; set; }
-        public List<GetCertificateDTO?>? Certificates { get; set; }
+        public List<GetCertificateDTO>? Certificates { get; set; }
     }
 }

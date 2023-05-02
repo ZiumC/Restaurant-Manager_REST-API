@@ -56,7 +56,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddNewRestaurant(RestaurantDTO newRestaurant)
+        public async Task<IActionResult> AddNewRestaurant(PostRestaurantDTO newRestaurant)
         {
             if (newRestaurant == null)
             {
@@ -68,9 +68,19 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Restaurant name can't be empty");
             }
 
-            if (AddressValidator.isEmptyAddressOf(newRestaurant.Address))
+            if (GeneralValidator.isEmptyNameOf(newRestaurant.Address.City))
             {
-                return BadRequest("Restaurant adress can't be empty");
+                return BadRequest("City adress can't be empty");
+            }
+
+            if (GeneralValidator.isEmptyNameOf(newRestaurant.Address.Street))
+            {
+                return BadRequest("Street adress can't be empty");
+            }
+
+            if (GeneralValidator.isEmptyNameOf(newRestaurant.Address.BuildingNumber))
+            {
+                return BadRequest("Building number adress can't be empty");
             }
 
             if (GeneralValidator.isEmptyNameOf(newRestaurant.Status))
@@ -94,7 +104,7 @@ namespace Restaurants_REST_API.Controllers
 
         [HttpPost]
         [Route("add-dish")]
-        public async Task<IActionResult> AddNewDish(DishDTO newDish)
+        public async Task<IActionResult> AddNewDish(PostDishDTO newDish)
         {
             if (newDish == null)
             {
@@ -149,7 +159,7 @@ namespace Restaurants_REST_API.Controllers
 
         [HttpPost]
         [Route("hire-employee")]
-        public async Task<IActionResult> AddNewEmployeeToRestaurant(EmployeeToRestaurantDTO employeeHire)
+        public async Task<IActionResult> AddNewEmployeeToRestaurant(PostEmployeeToRestaurantDTO employeeHire)
         {
             if (employeeHire == null)
             {
