@@ -9,6 +9,7 @@ using Restaurants_REST_API.Services.ValidatorService;
 using Restaurants_REST_API.DTOs.PostOrPutDTO;
 using Restaurants_REST_API.DTOs;
 using Restaurants_REST_API.Services.UpdateDataService;
+using Restaurants_REST_API.DTOs.PutDTO;
 
 namespace Restaurants_REST_API.Controllers
 {
@@ -141,7 +142,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddNewEmployee(EmployeeDTO? newEmployee)
+        public async Task<IActionResult> AddNewEmployee(PostEmployeeDTO? newEmployee)
         {
             //validating new employee
             if (newEmployee == null)
@@ -164,16 +165,26 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Salary can't be less or equal 0");
             }
 
-            if (AddressValidator.isEmptyAddressOf(newEmployee.Address))
+            if (GeneralValidator.isEmptyNameOf(newEmployee.Address.City))
             {
-                return BadRequest("Address can't be empty");
+                return BadRequest("City can't be empty");
+            }
+
+            if (GeneralValidator.isEmptyNameOf(newEmployee.Address.Street))
+            {
+                return BadRequest("Street can't be empty");
+            }
+
+            if (GeneralValidator.isEmptyNameOf(newEmployee.Address.BuildingNumber))
+            {
+                return BadRequest("Building number can't be empty");
             }
 
             bool certificatesExist = false;
             if (newEmployee.Certificates != null && newEmployee.Certificates.Count() > 0)
             {
                 certificatesExist = true;
-                foreach (var certificate in newEmployee.Certificates) 
+                foreach (var certificate in newEmployee.Certificates)
                 {
                     if (GeneralValidator.isEmptyNameOf(certificate.Name))
                     {
@@ -209,7 +220,7 @@ namespace Restaurants_REST_API.Controllers
         [Route("add-type")]
         public async Task<IActionResult> AddNewTypeOfEmployee(string name)
         {
-            if (name.Replace("\\s", "").Equals(""))
+            if (GeneralValidator.isEmptyNameOf(name))
             {
                 return BadRequest("Employee type can't be empty");
             }
@@ -231,7 +242,7 @@ namespace Restaurants_REST_API.Controllers
 
         [HttpPut]
         [Route("id")]
-        public async Task<IActionResult> UpdateExistingEmployee(int id, EmployeeDTO? newEmployeeData) 
+        public async Task<IActionResult> UpdateExistingEmployeeData(int id, PutEmployeeDTO? newEmployeeData)
         {
             if (!GeneralValidator.isCorrectId(id))
             {
@@ -258,24 +269,21 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Salary can't be less or equal 0");
             }
 
-            if (AddressValidator.isEmptyAddressOf(newEmployeeData.Address))
+            if (GeneralValidator.isEmptyNameOf(newEmployeeData.Address.City))
             {
-                return BadRequest("Address can't be empty");
+                return BadRequest("City can't be empty");
             }
 
-            bool certificatesExist = false;
-            if (newEmployeeData.Certificates != null && newEmployeeData.Certificates.Count() > 0)
+            if (GeneralValidator.isEmptyNameOf(newEmployeeData.Address.Street)) 
             {
-                certificatesExist = true;
-                foreach (CertificateDTO certificate in newEmployeeData.Certificates)
-                {
-                    if (GeneralValidator.isEmptyNameOf(certificate.Name))
-                    {
-                        return BadRequest("One or more certificates is invalid");
-                    }
-                }
+                return BadRequest("Street can't be empty");
             }
-            
+
+            if (GeneralValidator.isEmptyNameOf(newEmployeeData.Address.BuildingNumber))
+            {
+                return BadRequest("Building number can't be empty");
+            }
+
             //checking if employee exist
             Employee? employeeDatabase = await _employeeApiService.GetBasicEmployeeDataByIdAsync(id);
             if (employeeDatabase == null)
@@ -283,10 +291,16 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound("Employee doesn't exist");
             }
 
+            GetEmployeeDTO employeeDetailsDatabase = await _employeeApiService.GetDetailedEmployeeDataAsync(employeeDatabase);
+            MapEmployeeDataService mapEmployeeData = new MapEmployeeDataService(employeeDetailsDatabase, newEmployeeData);
+            Employee employeeUpdatedData = mapEmployeeData.GetEmployeeUpdatedData();
 
-
-
-            return Ok();
+            bool isEmployeeUpdated = await _employeeApiService.UpdateExistingEmployeeByIdAsync(id, employeeUpdatedData);
+            if (!isEmployeeUpdated)
+            {
+                return BadRequest("Something went wrong unable to update employee");
+            }
+            return Ok("Employee has been updated");
         }
     }
 }

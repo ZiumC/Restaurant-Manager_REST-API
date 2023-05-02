@@ -1,40 +1,42 @@
-﻿using Restaurants_REST_API.DTOs.PostOrPutDTO;
+﻿using Restaurants_REST_API.DTOs.GetDTOs;
+using Restaurants_REST_API.DTOs.PostOrPutDTO;
+using Restaurants_REST_API.DTOs.PutDTO;
 using Restaurants_REST_API.Models.Database;
 
 namespace Restaurants_REST_API.Services.UpdateDataService
 {
     public class MapEmployeeDataService
     {
-        private readonly Employee _employeeDatabase;
-        private readonly EmployeeDTO _newEmployeeData;
-        private readonly bool _certificatesExist;
-        private EmployeeDTO employeeUpdatedData;
+        private readonly GetEmployeeDTO _employeeDetailsDatabase;
+        private readonly PutEmployeeDTO _newEmployeeData;
+        private Employee employeeUpdatedData;
 
-        public MapEmployeeDataService(Employee employeeDatabase, EmployeeDTO newEmployeeData, bool certificateExists)
+        public MapEmployeeDataService(GetEmployeeDTO employeeDetailsDatabase, PutEmployeeDTO newEmployeeData)
         {
-            _employeeDatabase = employeeDatabase;
+            _employeeDetailsDatabase = employeeDetailsDatabase;
             _newEmployeeData = newEmployeeData;
-            _certificatesExist = certificateExists;
 
-            employeeUpdatedData = new EmployeeDTO();
+            employeeUpdatedData = new Employee();
+            employeeUpdatedData.Address = new Address();
+
         }
 
         private void UpdatedEmployeeData()
         {
             string newFirstName = _newEmployeeData.FirstName;
-            string oldFirstName = _employeeDatabase.FirstName;
+            string oldFirstName = _employeeDetailsDatabase.FirstName;
 
             string newLastName = _newEmployeeData.LastName;
-            string oldLastName = _employeeDatabase.LastName;
+            string oldLastName = _employeeDetailsDatabase.LastName;
 
             string newPesel = _newEmployeeData.PESEL;
-            string oldPesel = _employeeDatabase.PESEL;
+            string oldPesel = _employeeDetailsDatabase.PESEL;
 
             decimal newSalary = _newEmployeeData.Salary;
-            decimal oldSalary = _employeeDatabase.Salary;
+            decimal oldSalary = _employeeDetailsDatabase.Salary;
 
             decimal newBonusSalary = _newEmployeeData.BonusSalary;
-            decimal oldBonusSalary = _employeeDatabase.BonusSalary;
+            decimal oldBonusSalary = _employeeDetailsDatabase.BonusSalary;
 
             //setting first name
             if (newFirstName.Equals(oldFirstName))
@@ -90,16 +92,16 @@ namespace Restaurants_REST_API.Services.UpdateDataService
         private void UpdatedEmployeeAddress()
         {
             string newCityData = _newEmployeeData.Address.City;
-            string oldCityData = _employeeDatabase.Address.City;
+            string oldCityData = _employeeDetailsDatabase.Address.City;
 
             string newStreetData = _newEmployeeData.Address.Street;
-            string oldStreetData = _employeeDatabase.Address.Street;
+            string oldStreetData = _employeeDetailsDatabase.Address.Street;
 
             string newBuildingNumberData = _newEmployeeData.Address.BuildingNumber;
-            string oldBuildingNumberData = _employeeDatabase.Address.BuildingNumber;
+            string oldBuildingNumberData = _employeeDetailsDatabase.Address.BuildingNumber;
 
             string? newLocalNumber = _newEmployeeData.Address.LocalNumber;
-            string? oldLocalNumber = _employeeDatabase.Address.LocalNumber;
+            string? oldLocalNumber = _employeeDetailsDatabase.Address.LocalNumber;
 
             //setting city address 
             if (newCityData.Equals(oldCityData))
@@ -149,20 +151,10 @@ namespace Restaurants_REST_API.Services.UpdateDataService
             }
         }
 
-        private void UpdatedEmployeeCertificates()
-        {
-
-        }
-
-        public EmployeeDTO GetEmployeeUpdatedData()
+        public Employee GetEmployeeUpdatedData()
         {
             UpdatedEmployeeData();
             UpdatedEmployeeAddress();
-
-            if (_certificatesExist)
-            {
-                UpdatedEmployeeCertificates();
-            }
 
             return employeeUpdatedData;
         }

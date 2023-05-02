@@ -238,7 +238,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             return await _context.Restaurants.Where(e => e.IdRestaurant == restaurantId).FirstOrDefaultAsync();
         }
 
-        public async Task<bool> AddNewRestaurantAsync(RestaurantDTO newRestaurant)
+        public async Task<bool> AddNewRestaurantAsync(PostRestaurantDTO newRestaurant)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -280,7 +280,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
         }
 
-        public async Task<bool> AddNewDishToRestaurantsAsync(DishDTO newDish)
+        public async Task<bool> AddNewDishToRestaurantsAsync(PostDishDTO newDish)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -322,7 +322,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
         }
 
-        public async Task<bool> HireNewEmployeeAsync(EmployeeToRestaurantDTO employeeHire)
+        public async Task<bool> HireNewEmployeeAsync(PostEmployeeToRestaurantDTO employeeHire)
         {
             try
             {

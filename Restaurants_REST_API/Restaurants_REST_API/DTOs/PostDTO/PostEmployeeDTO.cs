@@ -2,7 +2,7 @@
 
 namespace Restaurants_REST_API.DTOs.PostOrPutDTO
 {
-    public class EmployeeDTO
+    public class PostEmployeeDTO
     {
         [Required]
         [MaxLength(50)]
@@ -20,8 +20,8 @@ namespace Restaurants_REST_API.DTOs.PostOrPutDTO
         public decimal Salary { get; set; }
         public decimal BonusSalary { get; set; }
         [Required]
-        public AddressDTO Address { get; set; }
-        public IEnumerable<CertificateDTO>? Certificates { get; set; }
+        public PostAddressDTO Address { get; set; }
+        public IEnumerable<PostCertificateDTO>? Certificates { get; set; }
 
     }
 }

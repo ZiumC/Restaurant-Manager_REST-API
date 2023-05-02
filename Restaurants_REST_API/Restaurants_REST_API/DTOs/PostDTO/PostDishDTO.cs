@@ -2,13 +2,14 @@
 
 namespace Restaurants_REST_API.DTOs.PostOrPutDTO
 {
-    public class CertificateDTO
+    public class PostDishDTO
     {
         [Required]
-        [MaxLength(125)]
-        [MinLength(5)]
+        [MaxLength(100)]
         public string Name { get; set; }
         [Required]
-        public DateTime ExpirationDate { get; set; }
+        public decimal Price { get; set; }
+        [Required]
+        public List<int> IdRestaurants { get; set; }
     }
 }
