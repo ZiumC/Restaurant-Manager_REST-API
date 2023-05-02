@@ -255,6 +255,17 @@ namespace Restaurants_REST_API.Services.Database_Service
                 .Select(x => new GetEmployeeTypeDTO { IdType = x.IdType, Name = x.Name }).ToListAsync();
         }
 
+        public async Task<IEnumerable<EmployeesInRestaurant?>> GetEmployeeInRestaurantDataByRestaurantIdAsync(int restaurantId)
+        {
+            return await
+                (from eir in _context.EmployeesInRestaurants
+
+                 where eir.IdRestaurant == restaurantId
+
+                 select new EmployeesInRestaurant { IdRestaurantWorker = eir.IdRestaurantWorker, IdEmployee = eir.IdEmployee, IdRestaurant = restaurantId, IdType = eir.IdType }
+                 ).ToListAsync();
+        }
+
         public async Task<bool> AddNewEmployeeAsync(PostEmployeeDTO newEmployee, bool certificatesExist)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())

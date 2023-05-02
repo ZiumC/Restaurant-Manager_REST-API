@@ -22,6 +22,7 @@ namespace Restaurants_REST_API.Controllers
         private readonly IEmployeeApiService _employeeApiService;
         private readonly IRestaurantApiService _restaurantsApiService;
         private readonly decimal _basicBonus = 150;
+        private readonly int _idOwnerType = 1;
 
         public EmployeesController(IEmployeeApiService employeeApiService, IRestaurantApiService restaurantsApiService)
         {
@@ -375,9 +376,90 @@ namespace Restaurants_REST_API.Controllers
 
         [HttpPut]
         [Route("type")]
-        public async Task<IActionResult> UpdateEmployeeType(int empId, int typeId)
+        public async Task<IActionResult> UpdateEmployeeType(int empId, int typeId, int restaurantId)
         {
-            return Ok();
+            if (!GeneralValidator.isCorrectId(empId))
+            {
+                return BadRequest($"Employee id={empId} is invalid");
+            }
+
+            if (!GeneralValidator.isCorrectId(typeId))
+            {
+                return BadRequest($"Employee type id={typeId} is invalid");
+            }
+
+            if (!GeneralValidator.isCorrectId(restaurantId))
+            {
+                return BadRequest($"Restaurant id={restaurantId} is invalid");
+            }
+
+            string? typeName = "";
+            IEnumerable<GetEmployeeTypeDTO?> allTypes = await _employeeApiService.GetAllEmployeeTypesAsync();
+            if (allTypes == null || allTypes.Count() == 0)
+            {
+                return NotFound("Employee types not found");
+            }
+            else
+            {
+                bool typeExist = false;
+                foreach (var type in allTypes)
+                {
+                    if (type != null && type.IdType == typeId)
+                    {
+                        typeExist = true;
+                    }
+                }
+
+                if (!typeExist)
+                {
+                    return NotFound($"Type id={typeId} not found");
+                }
+
+                typeName = allTypes.Where(t => t?.IdType == typeId).Select(t => t?.Name).FirstOrDefault();
+            }
+
+            Employee? employeeDatabase = await _employeeApiService.GetBasicEmployeeDataByIdAsync(empId);
+            if (employeeDatabase == null)
+            {
+                return NotFound("Employee not found");
+            }
+
+            Restaurant? restaurantDatabase = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(restaurantId);
+            if (restaurantDatabase == null)
+            {
+                return NotFound("Restaurant not found");
+            }
+
+            IEnumerable<EmployeesInRestaurant?> restaurantWorkers = await _employeeApiService.GetEmployeeInRestaurantDataByRestaurantIdAsync(restaurantId);
+            if (restaurantWorkers != null)
+            {
+                foreach (var worker in restaurantWorkers)
+                {
+                    if (worker != null && worker.IdType == typeId && worker.IdEmployee == empId)
+                    {
+                        return BadRequest($"Employee {employeeDatabase.FirstName} has already type {typeName} in restaurant {restaurantDatabase.Name}");
+                    }
+                }
+
+                //Owner type has always id=1 
+                if (typeId == _idOwnerType)
+                {
+                    int ownersCount = restaurantWorkers.Where(t => t?.IdType == 1).ToList().Count();
+                    if (ownersCount >= 1)
+                    {
+                        return BadRequest($"Unable to add type Owner to employee {employeeDatabase.FirstName} because owner already exist");
+                    }
+                }
+            }
+
+
+            bool isEmployeeTypeChanged = true;
+            if (!isEmployeeTypeChanged)
+            {
+                return BadRequest($"Unalbe to change employee type in restaurant {restaurantDatabase.Name}");
+            }
+
+            return Ok("Employee type has been updated");
         }
     }
 }
