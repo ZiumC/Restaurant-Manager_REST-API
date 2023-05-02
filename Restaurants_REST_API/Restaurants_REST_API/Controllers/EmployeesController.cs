@@ -242,44 +242,44 @@ namespace Restaurants_REST_API.Controllers
 
         [HttpPut]
         [Route("id")]
-        public async Task<IActionResult> UpdateExistingEmployeeData(int id, PutEmployeeDTO? newEmployeeData)
+        public async Task<IActionResult> UpdateExistingEmployeeData(int id, PutEmployeeDTO? putEmpData)
         {
             if (!GeneralValidator.isCorrectId(id))
             {
                 return BadRequest($"Id={id} isn't correct");
             }
 
-            if (newEmployeeData == null)
+            if (putEmpData == null)
             {
                 return BadRequest("Employee data can't be empty");
             }
 
-            if (GeneralValidator.isEmptyNameOf(newEmployeeData.FirstName) || GeneralValidator.isEmptyNameOf(newEmployeeData.LastName))
+            if (GeneralValidator.isEmptyNameOf(putEmpData.FirstName) || GeneralValidator.isEmptyNameOf(putEmpData.LastName))
             {
                 return BadRequest("First or last name can't be empty");
             }
 
-            if (!EmployeeValidator.isCorrectPeselOf(newEmployeeData.PESEL))
+            if (!EmployeeValidator.isCorrectPeselOf(putEmpData.PESEL))
             {
                 return BadRequest("PESEL isn't correct");
             }
 
-            if (!EmployeeValidator.isCorrectSalaryOf(newEmployeeData.Salary))
+            if (!EmployeeValidator.isCorrectSalaryOf(putEmpData.Salary))
             {
                 return BadRequest("Salary can't be less or equal 0");
             }
 
-            if (GeneralValidator.isEmptyNameOf(newEmployeeData.Address.City))
+            if (GeneralValidator.isEmptyNameOf(putEmpData.Address.City))
             {
                 return BadRequest("City can't be empty");
             }
 
-            if (GeneralValidator.isEmptyNameOf(newEmployeeData.Address.Street)) 
+            if (GeneralValidator.isEmptyNameOf(putEmpData.Address.Street)) 
             {
                 return BadRequest("Street can't be empty");
             }
 
-            if (GeneralValidator.isEmptyNameOf(newEmployeeData.Address.BuildingNumber))
+            if (GeneralValidator.isEmptyNameOf(putEmpData.Address.BuildingNumber))
             {
                 return BadRequest("Building number can't be empty");
             }
@@ -292,8 +292,8 @@ namespace Restaurants_REST_API.Controllers
             }
 
             GetEmployeeDTO employeeDetailsDatabase = await _employeeApiService.GetDetailedEmployeeDataAsync(employeeDatabase);
-            MapEmployeeDataService mapEmployeeData = new MapEmployeeDataService(employeeDetailsDatabase, newEmployeeData);
-            Employee employeeUpdatedData = mapEmployeeData.GetEmployeeUpdatedData();
+            MapEmployeeDataService employeeMapper = new MapEmployeeDataService(employeeDetailsDatabase, putEmpData);
+            Employee employeeUpdatedData = employeeMapper.GetEmployeeUpdatedData();
 
             bool isEmployeeUpdated = await _employeeApiService.UpdateExistingEmployeeByIdAsync(id, employeeUpdatedData);
             if (!isEmployeeUpdated)
@@ -302,5 +302,9 @@ namespace Restaurants_REST_API.Controllers
             }
             return Ok("Employee has been updated");
         }
+
+        [HttpPut]
+        [Route("id")]
+        public async Task<IActionResult> UpdateEmployeeCertificates(int id, PutCertificateDTO )
     }
 }
