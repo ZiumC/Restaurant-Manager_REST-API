@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Restaurants_REST_API.DbContexts;
+using Restaurants_REST_API.DTOs.GetDTO;
 using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.DTOs.PostOrPutDTO;
 using Restaurants_REST_API.DTOs.PutDTO;
@@ -248,10 +249,10 @@ namespace Restaurants_REST_API.Services.Database_Service
         }
 
 
-        public async Task<IEnumerable<EmployeeType?>> GetAllEmployeeTypesAsync()
+        public async Task<IEnumerable<GetEmployeeTypeDTO?>> GetAllEmployeeTypesAsync()
         {
             return await _context.EmployeeTypes
-                .Select(x => new EmployeeType { IdType = x.IdType, Name = x.Name }).ToListAsync();
+                .Select(x => new GetEmployeeTypeDTO { IdType = x.IdType, Name = x.Name }).ToListAsync();
         }
 
         public async Task<bool> AddNewEmployeeAsync(PostEmployeeDTO newEmployee, bool certificatesExist)

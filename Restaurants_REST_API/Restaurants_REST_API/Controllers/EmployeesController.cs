@@ -11,6 +11,7 @@ using Restaurants_REST_API.DTOs;
 using Restaurants_REST_API.Services.UpdateDataService;
 using Restaurants_REST_API.DTOs.PutDTO;
 using Restaurants_REST_API.Services.MapperService;
+using Restaurants_REST_API.DTOs.GetDTO;
 
 namespace Restaurants_REST_API.Controllers
 {
@@ -142,6 +143,19 @@ namespace Restaurants_REST_API.Controllers
             return Ok(employeesByRestaurant);
         }
 
+        [HttpGet]
+        [Route("types")]
+        public async Task<IActionResult> GetAllEmployeeTypes()
+        {
+            var types = await _employeeApiService.GetAllEmployeeTypesAsync();
+            if (types == null)
+            {
+                return NotFound("Employee types not found");
+            }
+
+            return Ok(types);
+        }
+
         [HttpPost]
         public async Task<IActionResult> AddNewEmployee(PostEmployeeDTO? newEmployee)
         {
@@ -226,7 +240,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Employee type can't be empty");
             }
 
-            IEnumerable<EmployeeType?> allTypes = await _employeeApiService.GetAllEmployeeTypesAsync();
+            IEnumerable<GetEmployeeTypeDTO?> allTypes = await _employeeApiService.GetAllEmployeeTypesAsync();
             if (EmployeeTypeValidator.isTypeExistIn(allTypes, name))
             {
                 return BadRequest($"Employee type {name} already exist");
@@ -357,6 +371,13 @@ namespace Restaurants_REST_API.Controllers
             }
 
             return Ok("Employee certificates has been updated");
+        }
+
+        [HttpPut]
+        [Route("type")]
+        public async Task<IActionResult> UpdateEmployeeType(int empId, int typeId)
+        {
+            return Ok();
         }
     }
 }
