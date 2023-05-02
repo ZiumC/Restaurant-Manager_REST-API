@@ -378,6 +378,7 @@ namespace Restaurants_REST_API.Controllers
         [Route("type")]
         public async Task<IActionResult> UpdateEmployeeType(int empId, int typeId, int restaurantId)
         {
+            //checking if id are valid
             if (!GeneralValidator.isCorrectId(empId))
             {
                 return BadRequest($"Employee id={empId} is invalid");
@@ -393,6 +394,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest($"Restaurant id={restaurantId} is invalid");
             }
 
+            //checking if type id exist
             string? typeName = "";
             IEnumerable<GetEmployeeTypeDTO?> allTypes = await _employeeApiService.GetAllEmployeeTypesAsync();
             if (allTypes == null || allTypes.Count() == 0)
@@ -418,12 +420,14 @@ namespace Restaurants_REST_API.Controllers
                 typeName = allTypes.Where(t => t?.IdType == typeId).Select(t => t?.Name).FirstOrDefault();
             }
 
+            //checking if employee exist
             Employee? employeeDatabase = await _employeeApiService.GetBasicEmployeeDataByIdAsync(empId);
             if (employeeDatabase == null)
             {
                 return NotFound("Employee not found");
             }
 
+            //checking if restaurant exist
             Restaurant? restaurantDatabase = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(restaurantId);
             if (restaurantDatabase == null)
             {
@@ -433,9 +437,11 @@ namespace Restaurants_REST_API.Controllers
             IEnumerable<EmployeesInRestaurant?> restaurantWorkers = await _employeeApiService.GetEmployeeInRestaurantDataByRestaurantIdAsync(restaurantId);
             if (restaurantWorkers != null)
             {
+
                 bool empExistInRestaurant = false;
                 foreach (var worker in restaurantWorkers)
                 {
+                    //checking if emp has already specific type at specyfic restaurant
                     if (worker != null && worker.IdType == typeId && worker.IdEmployee == empId)
                     {
                         return BadRequest($"Employee {employeeDatabase.FirstName} has already type {typeName} in restaurant {restaurantDatabase.Name}");
@@ -447,14 +453,16 @@ namespace Restaurants_REST_API.Controllers
                     }
                 }
 
+                //checking if emp exist in restaurant
                 if (!empExistInRestaurant)
                 {
                     return NotFound($"Employee {employeeDatabase.FirstName} not found in restaurant {restaurantDatabase.Name}");
                 }
 
-                //Owner type has always id=1 
                 if (typeId == _idOwnerType)
                 {
+                    //checking if owner already exist 
+                    //Owner type has always id=1 
                     int ownersCount = restaurantWorkers.Where(t => t?.IdType == 1).ToList().Count();
                     if (ownersCount >= 1)
                     {
