@@ -10,6 +10,7 @@ using Restaurants_REST_API.DTOs.PostOrPutDTO;
 using Restaurants_REST_API.DTOs;
 using Restaurants_REST_API.Services.UpdateDataService;
 using Restaurants_REST_API.DTOs.PutDTO;
+using Restaurants_REST_API.Services.MapperService;
 
 namespace Restaurants_REST_API.Controllers
 {
@@ -274,7 +275,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("City can't be empty");
             }
 
-            if (GeneralValidator.isEmptyNameOf(putEmpData.Address.Street)) 
+            if (GeneralValidator.isEmptyNameOf(putEmpData.Address.Street))
             {
                 return BadRequest("Street can't be empty");
             }
@@ -292,8 +293,8 @@ namespace Restaurants_REST_API.Controllers
             }
 
             GetEmployeeDTO employeeDetailsDatabase = await _employeeApiService.GetDetailedEmployeeDataAsync(employeeDatabase);
-            MapEmployeeDataService employeeMapper = new MapEmployeeDataService(employeeDetailsDatabase, putEmpData);
-            Employee employeeUpdatedData = employeeMapper.GetEmployeeUpdatedData();
+            MapEmployeeDataService employeeDataMapper = new MapEmployeeDataService(employeeDetailsDatabase, putEmpData);
+            Employee employeeUpdatedData = employeeDataMapper.GetEmployeeUpdatedData();
 
             bool isEmployeeUpdated = await _employeeApiService.UpdateExistingEmployeeByIdAsync(id, employeeUpdatedData);
             if (!isEmployeeUpdated)
@@ -305,6 +306,51 @@ namespace Restaurants_REST_API.Controllers
 
         [HttpPut]
         [Route("id")]
-        public async Task<IActionResult> UpdateEmployeeCertificates(int id, PutCertificateDTO )
+        public async Task<IActionResult> UpdateEmployeeCertificates(int id, IEnumerable<PutCertificateDTO> putEmpCertificates)
+        {
+            if (!GeneralValidator.isCorrectId(id))
+            {
+                return BadRequest($"Employee id={id} isn't correct");
+            }
+
+            if (putEmpCertificates == null || putEmpCertificates.Count() == 0)
+            {
+                return BadRequest("Certificates can't be empty");
+            }
+
+            foreach (PutCertificateDTO cert in putEmpCertificates)
+            {
+                if (GeneralValidator.isEmptyNameOf(cert.Name))
+                {
+                    return BadRequest("One or more certificates is invalid");
+                }
+            }
+
+            Employee? employeeDatabase = await _employeeApiService.GetBasicEmployeeDataByIdAsync(id);
+            if (employeeDatabase == null)
+            {
+                return NotFound("Employee doesn't exist");
+            }
+
+            GetEmployeeDTO employeeDetailsDatabase = await _employeeApiService.GetDetailedEmployeeDataAsync(employeeDatabase);
+            if (employeeDetailsDatabase.Certificates != null)
+            {
+                if (putEmpCertificates.Count() > employeeDetailsDatabase.Certificates.Count())
+                {
+                    return BadRequest($"Employee doesn't have {putEmpCertificates.Count()} certificates. " +
+                        $"Currenthy employee have {employeeDetailsDatabase.Certificates.Count()} certificates");
+                }
+            } else
+            {
+                return NotFound("Employee certificates not found");
+            }
+
+
+            MapEmployeeCertificatesService employeeCertificatesMapper = new MapEmployeeCertificatesService(employeeDetailsDatabase, putEmpCertificates);
+            List<PutCertificateDTO> employeeUpdatedCertificates = employeeCertificatesMapper
+
+
+            return Ok("employee eertificates has been updated");
+        }
     }
 }
