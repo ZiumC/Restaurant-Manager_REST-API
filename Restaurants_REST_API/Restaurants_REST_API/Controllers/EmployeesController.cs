@@ -305,7 +305,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpPut]
-        [Route("certificates/by-employee")]
+        [Route("certificates/by-employee/id")]
         public async Task<IActionResult> UpdateEmployeeCertificates(int id, IEnumerable<PutCertificateDTO> putEmpCertificates)
         {
             if (!GeneralValidator.isCorrectId(id))
@@ -333,7 +333,7 @@ namespace Restaurants_REST_API.Controllers
             }
 
             GetEmployeeDTO employeeDetailsDatabase = await _employeeApiService.GetDetailedEmployeeDataAsync(employeeDatabase);
-            if (employeeDetailsDatabase.Certificates != null)
+            if (employeeDetailsDatabase.Certificates != null && employeeDetailsDatabase.Certificates.Count() > 0)
             {
                 if (putEmpCertificates.Count() > employeeDetailsDatabase.Certificates.Count())
                 {
