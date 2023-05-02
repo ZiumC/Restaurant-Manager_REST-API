@@ -8,6 +8,7 @@ namespace Restaurants_REST_API.Services.MapperService
         private readonly GetEmployeeDTO _employeeDetailsDatabase;
         private readonly IEnumerable<PutCertificateDTO> _certificatesData;
         private List<string> updatedCertificateNames = new List<string>();
+        private List<int> updatedCertificatesId = new List<int>();
 
         public MapEmployeeCertificatesService(GetEmployeeDTO employeeDetailsDatabase, IEnumerable<PutCertificateDTO> certificatesData)
         {
@@ -17,7 +18,6 @@ namespace Restaurants_REST_API.Services.MapperService
 
         private void UpdateEmployeeCertificates()
         {
-            List<int> updatedCertificatesId = new List<int>();
 
             if (_employeeDetailsDatabase.Certificates == null)
             {
@@ -38,10 +38,15 @@ namespace Restaurants_REST_API.Services.MapperService
 
         }
 
-        public List<string> GetEmployeeUpdatedCertificates()
+        public List<string> GetUpdatedCertificateNames()
         {
             UpdateEmployeeCertificates();
             return updatedCertificateNames;
+        }
+
+        public List<int> GetUpdatedCertificatesId()
+        {
+            return updatedCertificatesId;
         }
     }
 }

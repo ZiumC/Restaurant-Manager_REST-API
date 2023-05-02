@@ -389,5 +389,35 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
 
         }
+
+        public async Task<bool> UpdateExistingEmployeeCertificatesByIdAsync(int id, List<string> certificateNames, List<int> certificatesId)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    for (int i = 0; i < certificatesId.Count(); i++)
+                    {
+                        var updateCertNameQuery = await
+                            (_context.Certificates
+                            .Where(c => c.IdCertificate == certificatesId.ElementAt(i))
+                            .FirstAsync());
+
+                        updateCertNameQuery.Name = certificateNames.ElementAt(i);
+
+                        await _context.SaveChangesAsync();
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    await transaction.RollbackAsync();
+                    return false;
+                }
+                await transaction.CommitAsync();
+                return true;
+            }
+        }
     }
 }

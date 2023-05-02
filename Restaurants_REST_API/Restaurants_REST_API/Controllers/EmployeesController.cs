@@ -305,7 +305,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpPut]
-        [Route("id")]
+        [Route("certificates/by-employee")]
         public async Task<IActionResult> UpdateEmployeeCertificates(int id, IEnumerable<PutCertificateDTO> putEmpCertificates)
         {
             if (!GeneralValidator.isCorrectId(id))
@@ -338,19 +338,26 @@ namespace Restaurants_REST_API.Controllers
                 if (putEmpCertificates.Count() > employeeDetailsDatabase.Certificates.Count())
                 {
                     return BadRequest($"Employee doesn't have {putEmpCertificates.Count()} certificates. " +
-                        $"Currenthy employee have {employeeDetailsDatabase.Certificates.Count()} certificates");
+                        $"Currenthy employee have only {employeeDetailsDatabase.Certificates.Count()} certificates");
                 }
-            } else
+            }
+            else
             {
                 return NotFound("Employee certificates not found");
             }
 
 
             MapEmployeeCertificatesService employeeCertificatesMapper = new MapEmployeeCertificatesService(employeeDetailsDatabase, putEmpCertificates);
-            List<PutCertificateDTO> employeeUpdatedCertificates = employeeCertificatesMapper
+            List<string> updatedCertificateNames = employeeCertificatesMapper.GetUpdatedCertificateNames();
+            List<int> updatedCertificatesId = employeeCertificatesMapper.GetUpdatedCertificatesId();
 
+            bool isCertificatesHasBeenUpdated = await _employeeApiService.UpdateExistingEmployeeCertificatesByIdAsync(id, updatedCertificateNames, updatedCertificatesId);
+            if (!isCertificatesHasBeenUpdated)
+            {
+                return BadRequest("Unable to update certificates name");
+            }
 
-            return Ok("employee eertificates has been updated");
+            return Ok("Employee eertificates has been updated");
         }
     }
 }
