@@ -1,13 +1,14 @@
-﻿using Restaurants_REST_API.DTOs.GetDTOs;
+﻿using Restaurants_REST_API.DTOs.GetDTO;
+using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.Models.Database;
 
 namespace Restaurants_REST_API.Services.ValidatorService
 {
     public class EmployeeTypeValidator
     {
-        public static bool isCorrectEmployeeTypeOf(int typeToCheck, IEnumerable<EmployeeType?> allTypes)
+        public static bool isCorrectEmployeeTypeOf(int typeToCheck, IEnumerable<GetEmployeeTypeDTO?> allTypes)
         {
-            foreach (EmployeeType? empType in allTypes)
+            foreach (GetEmployeeTypeDTO? empType in allTypes)
             {
                 if (typeToCheck == empType?.IdType)
                 {
@@ -35,14 +36,14 @@ namespace Restaurants_REST_API.Services.ValidatorService
             return false;
         }
 
-        public static bool isTypeExistIn(IEnumerable<EmployeeType?> allTypes, string name)
+        public static bool isTypeExistIn(IEnumerable<GetEmployeeTypeDTO?> allTypes, string name)
         {
             if (allTypes == null)
             {
                 return false;
             }
 
-            foreach (EmployeeType? empType in allTypes)
+            foreach (GetEmployeeTypeDTO? empType in allTypes)
             {
                 if (name.ToLower().Equals(empType?.Name.ToLower()))
                 {

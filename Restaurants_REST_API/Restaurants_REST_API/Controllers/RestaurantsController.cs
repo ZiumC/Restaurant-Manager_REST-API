@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Restaurants_REST_API.DTOs.GetDTO;
 using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.DTOs.PostOrPutDTO;
 using Restaurants_REST_API.Models.Database;
@@ -193,7 +194,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound($"Employee id={employeeHire.IdEmployee} doesn't exist");
             }
 
-            IEnumerable<EmployeeType?> allTypes = await _employeeApiService.GetAllEmployeeTypesAsync();
+            IEnumerable<GetEmployeeTypeDTO?> allTypes = await _employeeApiService.GetAllEmployeeTypesAsync();
             if (allTypes == null || allTypes.Count() < 0)
             {
                 return NotFound("Employee types doesn't found");
