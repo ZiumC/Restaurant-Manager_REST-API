@@ -346,18 +346,17 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound("Employee certificates not found");
             }
 
-
             MapEmployeeCertificatesService employeeCertificatesMapper = new MapEmployeeCertificatesService(employeeDetailsDatabase, putEmpCertificates);
-            List<string> updatedCertificateNames = employeeCertificatesMapper.GetUpdatedCertificateNames();
+            List<PutCertificateDTO> updatedCertificatesData = employeeCertificatesMapper.GetUpdatedCertificateNames();
             List<int> updatedCertificatesId = employeeCertificatesMapper.GetUpdatedCertificatesId();
 
-            bool isCertificatesHasBeenUpdated = await _employeeApiService.UpdateExistingEmployeeCertificatesByIdAsync(id, updatedCertificateNames, updatedCertificatesId);
+            bool isCertificatesHasBeenUpdated = await _employeeApiService.UpdateExistingEmployeeCertificatesByIdAsync(updatedCertificatesData, updatedCertificatesId);
             if (!isCertificatesHasBeenUpdated)
             {
                 return BadRequest("Unable to update certificates name");
             }
 
-            return Ok("Employee eertificates has been updated");
+            return Ok("Employee certificates has been updated");
         }
     }
 }
