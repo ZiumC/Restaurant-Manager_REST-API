@@ -11,6 +11,6 @@ namespace Restaurants_REST_API.DTOs.PostOrPutDTO
         public int IdRestaurant { get; set; }
 
         [Required]
-        public int IdEmployeeType { get; set; }
+        public int IdType { get; set; }
     }
 }

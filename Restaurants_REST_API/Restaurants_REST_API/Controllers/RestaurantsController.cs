@@ -160,67 +160,66 @@ namespace Restaurants_REST_API.Controllers
 
         [HttpPost]
         [Route("hire-employee")]
-        public async Task<IActionResult> AddNewEmployeeToRestaurant(PostEmployeeToRestaurantDTO employeeHire)
+        public async Task<IActionResult> AddNewEmployeeToRestaurant(int empId, int typeId, int restaurantId)
         {
-            if (employeeHire == null)
-            {
-                return BadRequest("Data can't be empty");
-            }
 
-            if (!GeneralValidator.isCorrectId(employeeHire.IdEmployee))
+            if (!GeneralValidator.isCorrectId(empId))
             {
                 return BadRequest("Employee id isn't correct");
             }
 
-            if (!GeneralValidator.isCorrectId(employeeHire.IdRestaurant))
+            if (!GeneralValidator.isCorrectId(typeId))
             {
                 return BadRequest("Restaurant id isn't correct");
             }
 
-            if (!GeneralValidator.isCorrectId(employeeHire.IdEmployeeType))
+            if (!GeneralValidator.isCorrectId(restaurantId))
             {
                 return BadRequest("Restaurant id isn't correct");
             }
 
-            Restaurant? restaurant = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(employeeHire.IdRestaurant);
-            if (restaurant == null)
+            Restaurant? restaurantDatabase = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(restaurantId);
+            if (restaurantDatabase == null)
             {
-                return NotFound($"Restaurant id={employeeHire.IdRestaurant} doesn't exist");
+                return NotFound($"Restaurant id={restaurantId} not found");
             }
 
-            Employee? existEmployee = await _employeeApiService.GetBasicEmployeeDataByIdAsync(employeeHire.IdEmployee);
-            if (existEmployee == null)
+            Employee? employeeDatabase = await _employeeApiService.GetBasicEmployeeDataByIdAsync(empId);
+            if (employeeDatabase == null)
             {
-                return NotFound($"Employee id={employeeHire.IdEmployee} doesn't exist");
+                return NotFound($"Employee id={empId} not found");
             }
 
             IEnumerable<GetEmployeeTypeDTO?> allTypes = await _employeeApiService.GetAllEmployeeTypesAsync();
-            if (allTypes == null || allTypes.Count() < 0)
-            {
-                return NotFound("Employee types doesn't found");
-            }
+            //NEEED TO REFACTOR THIS SHEET!
 
-            if (!EmployeeTypeValidator.isCorrectEmployeeTypeOf(employeeHire.IdEmployeeType, allTypes))
-            {
-                return NotFound("Employee type doesn't exist");
-            }
 
-            //at this stage i am certain that type name exist in database
-            string typeName = allTypes.Where(e => e.IdType == employeeHire.IdEmployeeType).Select(e => e.Name).First();
-            GetRestaurantDTO restaurantDetails = await _restaurantsApiService.GetRestaurantDetailsByIdAsync(employeeHire.IdRestaurant);
-            if (EmployeeTypeValidator.isEmployeeAlreadyHasTypeIn(restaurantDetails, employeeHire.IdEmployee, typeName))
-            {
-                return BadRequest($"Employee {existEmployee.FirstName} has already type of {typeName} in restaurant {restaurant.Name}");
-            }
+            //if (allTypes == null || allTypes.Count() < 0)
+            //{
+            //    return NotFound("Employee types not found");
+            //}
 
-            bool isEmployeeHired = await _restaurantsApiService.HireNewEmployeeAsync(employeeHire);
+            //if (!EmployeeTypeValidator.isCorrectEmployeeTypeOf(employeeHire.IdType, allTypes))
+            //{
+            //    return NotFound("Employee type not exist");
+            //}
+
+            ////at this stage i am certain that type name exist in database
+            //string typeName = allTypes.Where(e => e.IdType == employeeHire.IdType).Select(e => e.Name).First();
+            //GetRestaurantDTO restaurantDetails = await _restaurantsApiService.GetRestaurantDetailsByIdAsync(employeeHire.IdRestaurant);
+            //if (EmployeeTypeValidator.isEmployeeAlreadyHasTypeIn(restaurantDetails, employeeHire.IdEmployee, typeName))
+            //{
+            //    return BadRequest($"Employee {existEmployee.FirstName} has already type of {typeName} in restaurant {restaurant.Name}");
+            //}
+
+            bool isEmployeeHired = await _restaurantsApiService.HireNewEmployeeAsync(empId, typeId, restaurantId);
             if (!isEmployeeHired)
             {
                 return BadRequest("Something went wrong unable to hire employee");
             }
 
 
-            return Ok($"Employee has been hired as {typeName}");
+            return Ok($"Employee {employeeDatabase.FirstName} has been hired in {restaurantDatabase.Name} as ");
         }
 
     }

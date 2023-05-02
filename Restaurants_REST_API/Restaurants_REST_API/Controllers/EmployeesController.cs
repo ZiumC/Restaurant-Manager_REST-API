@@ -68,9 +68,10 @@ namespace Restaurants_REST_API.Controllers
         {
             var supervisorsId = await _employeeApiService.GetSupervisorsIdAsync();
 
-            if (supervisorsId == null)
+            if (supervisorsId == null || supervisorsId.Count() == 0)
             {
-                return NotFound("No supervisors found");
+                return NotFound("Supervisors not found");
+
             }
 
             return Ok(await _employeeApiService.GetSupervisorsDetailsAsync((List<int>)supervisorsId));
@@ -84,21 +85,21 @@ namespace Restaurants_REST_API.Controllers
         [Route("supervisor/id")]
         public async Task<IActionResult> GetSupervisors(int id)
         {
-            if (id < 0)
+            if (!GeneralValidator.isCorrectId(id))
             {
-                return BadRequest($"Incorrect id, expected id grater than 0 but got {id}");
+                return BadRequest($"Id={id} is invalid");
             }
 
             var supervisorsIdList = await _employeeApiService.GetSupervisorsIdAsync();
 
             if (supervisorsIdList == null)
             {
-                return NotFound($"Supervisors not exist");
+                return NotFound($"Supervisors not found");
             }
 
             if (!supervisorsIdList.Contains(id))
             {
-                return NotFound($"Supervisor {id} not exist");
+                return NotFound($"Supervisor id={id} not found");
             }
 
             return Ok(await _employeeApiService.GetSupervisorsDetailsAsync(new List<int> { id }));
@@ -434,7 +435,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound("Restaurant not found");
             }
 
-            IEnumerable<EmployeesInRestaurant?> restaurantWorkers = await _employeeApiService.GetEmployeeInRestaurantDataByRestaurantIdAsync(restaurantId);
+            IEnumerable<EmployeesInRestaurant?> restaurantWorkers = await _restaurantsApiService.GetEmployeeInRestaurantDataByRestaurantIdAsync(restaurantId);
             if (restaurantWorkers != null)
             {
 
@@ -466,7 +467,7 @@ namespace Restaurants_REST_API.Controllers
                     int ownersCount = restaurantWorkers.Where(t => t?.IdType == 1).ToList().Count();
                     if (ownersCount >= 1)
                     {
-                        return BadRequest($"Unable to update type to Owner because employee {employeeDatabase.FirstName} has owner type already");
+                        return BadRequest($"Unable to update type to Owner because owner already exists");
                     }
                 }
             }
