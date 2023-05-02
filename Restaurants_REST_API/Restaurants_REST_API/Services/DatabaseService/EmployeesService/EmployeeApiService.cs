@@ -440,5 +440,32 @@ namespace Restaurants_REST_API.Services.Database_Service
                 return true;
             }
         }
+
+        public async Task<bool> UpdateEmployeeTypeAsync(int empId, int typeId, int restaurantId)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var updateEmpTypeQuery = await
+                        (_context.EmployeesInRestaurants
+                        .Where(eir => eir.IdEmployee == empId && eir.IdRestaurant == restaurantId)
+                        .FirstAsync()
+                        );
+
+                    updateEmpTypeQuery.IdType = typeId;
+
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    await transaction.RollbackAsync();
+                    return false;
+                }
+                await transaction.CommitAsync();
+                return true;
+            }
+        }
     }
 }

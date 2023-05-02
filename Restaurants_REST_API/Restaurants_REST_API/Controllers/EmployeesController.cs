@@ -433,12 +433,23 @@ namespace Restaurants_REST_API.Controllers
             IEnumerable<EmployeesInRestaurant?> restaurantWorkers = await _employeeApiService.GetEmployeeInRestaurantDataByRestaurantIdAsync(restaurantId);
             if (restaurantWorkers != null)
             {
+                bool empExistInRestaurant = false;
                 foreach (var worker in restaurantWorkers)
                 {
                     if (worker != null && worker.IdType == typeId && worker.IdEmployee == empId)
                     {
                         return BadRequest($"Employee {employeeDatabase.FirstName} has already type {typeName} in restaurant {restaurantDatabase.Name}");
                     }
+
+                    if (worker != null && worker.IdEmployee == empId)
+                    {
+                        empExistInRestaurant = true;
+                    }
+                }
+
+                if (!empExistInRestaurant)
+                {
+                    return NotFound($"Employee {employeeDatabase.FirstName} not found in restaurant {restaurantDatabase.Name}");
                 }
 
                 //Owner type has always id=1 
@@ -447,13 +458,12 @@ namespace Restaurants_REST_API.Controllers
                     int ownersCount = restaurantWorkers.Where(t => t?.IdType == 1).ToList().Count();
                     if (ownersCount >= 1)
                     {
-                        return BadRequest($"Unable to add type Owner to employee {employeeDatabase.FirstName} because owner already exist");
+                        return BadRequest($"Unable to update type to Owner because employee {employeeDatabase.FirstName} has owner type already");
                     }
                 }
             }
 
-
-            bool isEmployeeTypeChanged = true;
+            bool isEmployeeTypeChanged = await _employeeApiService.UpdateEmployeeTypeAsync(empId, typeId, restaurantId);
             if (!isEmployeeTypeChanged)
             {
                 return BadRequest($"Unalbe to change employee type in restaurant {restaurantDatabase.Name}");
