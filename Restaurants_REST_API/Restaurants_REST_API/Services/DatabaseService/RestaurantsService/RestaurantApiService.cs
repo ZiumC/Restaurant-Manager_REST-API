@@ -238,6 +238,17 @@ namespace Restaurants_REST_API.Services.Database_Service
             return await _context.Restaurants.Where(e => e.IdRestaurant == restaurantId).FirstOrDefaultAsync();
         }
 
+        public async Task<IEnumerable<EmployeesInRestaurant?>> GetEmployeeInRestaurantDataByRestaurantIdAsync(int restaurantId)
+        {
+            return await
+                (from eir in _context.EmployeesInRestaurants
+
+                 where eir.IdRestaurant == restaurantId
+
+                 select new EmployeesInRestaurant { IdRestaurantWorker = eir.IdRestaurantWorker, IdEmployee = eir.IdEmployee, IdRestaurant = restaurantId, IdType = eir.IdType }
+                 ).ToListAsync();
+        }
+
         public async Task<bool> AddNewRestaurantAsync(PostRestaurantDTO newRestaurant)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
@@ -322,7 +333,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
         }
 
-        public async Task<bool> HireNewEmployeeAsync(PostEmployeeToRestaurantDTO employeeHire)
+        public async Task<bool> HireNewEmployeeAsync(int empId, int typeId, int restaurantId)
         {
             try
             {
@@ -330,9 +341,9 @@ namespace Restaurants_REST_API.Services.Database_Service
                     (
                         new EmployeesInRestaurant
                         {
-                            IdEmployee = employeeHire.IdEmployee,
-                            IdRestaurant = employeeHire.IdRestaurant,
-                            IdType = employeeHire.IdEmployeeType
+                            IdEmployee = empId,
+                            IdRestaurant = restaurantId,
+                            IdType = typeId
                         }
                     );
                 await _context.SaveChangesAsync();

@@ -11,7 +11,7 @@ namespace Restaurants_REST_API.Services.Database_Service
     public class EmployeeApiService : IEmployeeApiService
     {
         private readonly MainDbContext _context;
-
+        private readonly int _idOwnerType = 1;
         public EmployeeApiService(MainDbContext context)
         {
             _context = context;
@@ -189,7 +189,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                           join emp in _context.Employees
                           on eir.IdEmployee equals emp.IdEmployee
 
-                          where et.IdType == 1
+                          where et.IdType == _idOwnerType
 
                           select emp
                           ).FirstOrDefaultAsync();
@@ -254,17 +254,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             return await _context.EmployeeTypes
                 .Select(x => new GetEmployeeTypeDTO { IdType = x.IdType, Name = x.Name }).ToListAsync();
         }
-
-        public async Task<IEnumerable<EmployeesInRestaurant?>> GetEmployeeInRestaurantDataByRestaurantIdAsync(int restaurantId)
-        {
-            return await
-                (from eir in _context.EmployeesInRestaurants
-
-                 where eir.IdRestaurant == restaurantId
-
-                 select new EmployeesInRestaurant { IdRestaurantWorker = eir.IdRestaurantWorker, IdEmployee = eir.IdEmployee, IdRestaurant = restaurantId, IdType = eir.IdType }
-                 ).ToListAsync();
-        }
+     
 
         public async Task<bool> AddNewEmployeeAsync(PostEmployeeDTO newEmployee, bool certificatesExist)
         {
