@@ -1,5 +1,6 @@
 ﻿using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.DTOs.PostOrPutDTO;
+using Restaurants_REST_API.DTOs.PutDTO;
 using Restaurants_REST_API.Models.Database;
 
 namespace Restaurants_REST_API.Services.Database_Service
@@ -24,7 +25,7 @@ namespace Restaurants_REST_API.Services.Database_Service
         public Task<bool> AddNewEmployeeAsync(PostEmployeeDTO newEmployee, bool certificatesExist);
         public Task<bool> AddNewEmployeeTypeAsync(string name);
         public Task<bool> UpdateExistingEmployeeByIdAsync(int id, Employee updatedEmployeeData);
-        public Task<bool> UpdateExistingEmployeeCertificatesByIdAsync(int id, List<string> certificateNames, List<int> certificatesId);
+        public Task<bool> UpdateExistingEmployeeCertificatesByIdAsync(List<PutCertificateDTO> updatedCertificatesData, List<int> updatedCertificatesId);
 
     }
 }

@@ -2,6 +2,7 @@
 using Restaurants_REST_API.DbContexts;
 using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.DTOs.PostOrPutDTO;
+using Restaurants_REST_API.DTOs.PutDTO;
 using Restaurants_REST_API.Models.Database;
 
 namespace Restaurants_REST_API.Services.Database_Service
@@ -390,7 +391,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 
         }
 
-        public async Task<bool> UpdateExistingEmployeeCertificatesByIdAsync(int id, List<string> certificateNames, List<int> certificatesId)
+        public async Task<bool> UpdateExistingEmployeeCertificatesByIdAsync(List<PutCertificateDTO> updatedCertificatesData, List<int> certificatesId)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -403,8 +404,16 @@ namespace Restaurants_REST_API.Services.Database_Service
                             .Where(c => c.IdCertificate == certificatesId.ElementAt(i))
                             .FirstAsync());
 
-                        updateCertNameQuery.Name = certificateNames.ElementAt(i);
+                        updateCertNameQuery.Name = updatedCertificatesData.ElementAt(i).Name;
 
+                        await _context.SaveChangesAsync();
+
+                        var updateCertExpiriationDateQuery = await
+                            (_context.EmployeeCertificates
+                            .Where(ec => ec.IdCertificate == certificatesId.ElementAt(i))
+                            .FirstAsync());
+
+                        updateCertExpiriationDateQuery.ExpirationDate = updatedCertificatesData.ElementAt(i).ExpirationDate;
                         await _context.SaveChangesAsync();
                     }
 

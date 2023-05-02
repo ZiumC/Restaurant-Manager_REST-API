@@ -7,7 +7,7 @@ namespace Restaurants_REST_API.Services.MapperService
     {
         private readonly GetEmployeeDTO _employeeDetailsDatabase;
         private readonly IEnumerable<PutCertificateDTO> _certificatesData;
-        private List<string> updatedCertificateNames = new List<string>();
+        private List<PutCertificateDTO> updatedCertificateNames = new List<PutCertificateDTO>();
         private List<int> updatedCertificatesId = new List<int>();
 
         public MapEmployeeCertificatesService(GetEmployeeDTO employeeDetailsDatabase, IEnumerable<PutCertificateDTO> certificatesData)
@@ -26,19 +26,24 @@ namespace Restaurants_REST_API.Services.MapperService
 
             for (int i = 0; i < _employeeDetailsDatabase.Certificates.Count(); i++)
             {
-                string oldName = _employeeDetailsDatabase.Certificates.ElementAt(i).Name.ToLower();
+                var oldEmpCert = _employeeDetailsDatabase.Certificates.ElementAt(i);
+
+                string oldName = oldEmpCert.Name.ToLower();
                 string newName = _certificatesData.ElementAt(i).Name.ToLower();
 
-                if (!oldName.Equals(newName))
+                DateTime oldExpirationDate = oldEmpCert.ExpirationDate.Date;
+                DateTime newExpirationDate = _certificatesData.ElementAt(i).ExpirationDate.Date;
+
+                if (!oldName.Equals(newName) || oldExpirationDate != newExpirationDate)
                 {
-                    updatedCertificateNames.Add(newName);
+                    updatedCertificateNames.Add(new PutCertificateDTO { Name = newName, ExpirationDate = newExpirationDate });
                     updatedCertificatesId.Add(_employeeDetailsDatabase.Certificates.ElementAt(i).IdCertificate);
                 }
             }
 
         }
 
-        public List<string> GetUpdatedCertificateNames()
+        public List<PutCertificateDTO> GetUpdatedCertificateNames()
         {
             UpdateEmployeeCertificates();
             return updatedCertificateNames;
