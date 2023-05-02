@@ -28,6 +28,7 @@ namespace Restaurants_REST_API.Services.Database_Service
         public Task<bool> AddNewEmployeeTypeAsync(string name);
         public Task<bool> UpdateExistingEmployeeByIdAsync(int id, Employee updatedEmployeeData);
         public Task<bool> UpdateExistingEmployeeCertificatesByIdAsync(List<PutCertificateDTO> updatedCertificatesData, List<int> updatedCertificatesId);
+        public Task<bool> UpdateEmployeeTypeAsync(int empId, int typeId, int restaurantId);
 
     }
 }
