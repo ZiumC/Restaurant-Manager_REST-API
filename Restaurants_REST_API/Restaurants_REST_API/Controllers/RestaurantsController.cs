@@ -304,7 +304,11 @@ namespace Restaurants_REST_API.Controllers
             MapRestaurantDataService restaurantDataMapper = new MapRestaurantDataService(restaurantDetailsDatabase, putRestaurantData);
             Restaurant restaurantUpdatedData = restaurantDataMapper.GetRestaurantUpdatedData();
 
-
+            bool isRestaurantUpdated = await _restaurantsApiService.UpdateRestaurantData(id, restaurantUpdatedData);
+            if (!isRestaurantUpdated)
+            {
+                return BadRequest("Something went wrong, unable to update restaurant");
+            }
 
             return Ok("Restaurant data has been updated");
         }
