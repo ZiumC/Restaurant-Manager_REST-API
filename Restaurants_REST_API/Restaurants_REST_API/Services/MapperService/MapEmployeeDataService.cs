@@ -1,7 +1,7 @@
 ﻿using Restaurants_REST_API.DTOs.GetDTOs;
-using Restaurants_REST_API.DTOs.PostOrPutDTO;
 using Restaurants_REST_API.DTOs.PutDTO;
 using Restaurants_REST_API.Models.Database;
+using Restaurants_REST_API.Services.ValidatorService;
 
 namespace Restaurants_REST_API.Services.UpdateDataService
 {
@@ -134,7 +134,7 @@ namespace Restaurants_REST_API.Services.UpdateDataService
             }
 
             //setting local number
-            if (newLocalNumber != null && oldLocalNumber != null)
+            if (newLocalNumber != null && !GeneralValidator.isEmptyNameOf(newLocalNumber))
             {
                 if (newLocalNumber.Equals(oldLocalNumber))
                 {
@@ -147,7 +147,7 @@ namespace Restaurants_REST_API.Services.UpdateDataService
             }
             else
             {
-                employeeUpdatedData.Address.LocalNumber = newLocalNumber;
+                employeeUpdatedData.Address.LocalNumber = null;
             }
         }
 
