@@ -1,13 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Restaurants_REST_API.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.Models.Database;
 using Restaurants_REST_API.Services.Database_Service;
 using Restaurants_REST_API.Services.ValidationService;
 using Restaurants_REST_API.Services.ValidatorService;
 using Restaurants_REST_API.DTOs.PostOrPutDTO;
-using Restaurants_REST_API.DTOs;
 using Restaurants_REST_API.Services.UpdateDataService;
 using Restaurants_REST_API.DTOs.PutDTO;
 using Restaurants_REST_API.Services.MapperService;
@@ -195,6 +192,11 @@ namespace Restaurants_REST_API.Controllers
             if (GeneralValidator.isEmptyNameOf(newEmployee.Address.BuildingNumber))
             {
                 return BadRequest("Building number can't be empty");
+            }
+
+            if (GeneralValidator.isEmptyNameOf(newEmployee.Address.LocalNumber))
+            {
+                newEmployee.Address.LocalNumber = null;
             }
 
             bool certificatesExist = false;

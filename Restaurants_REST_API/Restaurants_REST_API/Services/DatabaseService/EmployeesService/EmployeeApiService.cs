@@ -11,10 +11,11 @@ namespace Restaurants_REST_API.Services.Database_Service
     public class EmployeeApiService : IEmployeeApiService
     {
         private readonly MainDbContext _context;
-        private readonly int _idOwnerType = 1;
-        public EmployeeApiService(MainDbContext context)
+        private readonly IConfiguration _config;
+        public EmployeeApiService(MainDbContext context, IConfiguration config)
         {
             _context = context;
+            _config = config;
         }
 
         public async Task<IEnumerable<GetEmployeeDTO>> GetAllEmployeesAsync()
@@ -182,6 +183,17 @@ namespace Restaurants_REST_API.Services.Database_Service
         // Owner employee type should has always id equals 1.
         public async Task<Employee?> GetOwnerBasicDataAsync()
         {
+            int? ownerId = null;
+            try
+            {
+                ownerId = int.Parse(_config["ApplicationSettings:OwnerTypeId"]);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return null;
+            }
+
             return await (from eir in _context.EmployeesInRestaurants
                           join et in _context.EmployeeTypes
                           on eir.IdType equals et.IdType
@@ -189,7 +201,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                           join emp in _context.Employees
                           on eir.IdEmployee equals emp.IdEmployee
 
-                          where et.IdType == _idOwnerType
+                          where et.IdType == ownerId
 
                           select emp
                           ).FirstOrDefaultAsync();
@@ -254,7 +266,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             return await _context.EmployeeTypes
                 .Select(x => new GetEmployeeTypeDTO { IdType = x.IdType, Name = x.Name }).ToListAsync();
         }
-     
+
 
         public async Task<bool> AddNewEmployeeAsync(PostEmployeeDTO newEmployee, bool certificatesExist)
         {
