@@ -104,10 +104,16 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Building number adress can't be empty");
             }
 
+            if (GeneralValidator.isEmptyNameOf(newRestaurant.Address.LocalNumber))
+            {
+                newRestaurant.Address.LocalNumber = null;
+            }
+
             if (GeneralValidator.isEmptyNameOf(newRestaurant.Status))
             {
                 return BadRequest("Restaurant statuc can't be empty");
             }
+
 
             IEnumerable<GetRestaurantDTO?> allRestaurants = await _restaurantsApiService.GetAllRestaurantsAsync();
             if (RestaurantValidator.isRestaurantExistIn(allRestaurants, newRestaurant))
