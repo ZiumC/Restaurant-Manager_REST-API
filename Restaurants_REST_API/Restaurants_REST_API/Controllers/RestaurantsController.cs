@@ -182,14 +182,13 @@ namespace Restaurants_REST_API.Controllers
 
             //checking if types exist in db
             IEnumerable<GetEmployeeTypeDTO?> allTypes = await _employeeApiService.GetAllTypesAsync();
-            if (allTypes == null || allTypes.Count() == 0)
+            if (!EmployeeTypeValidator.isTypesExist(allTypes))
             {
                 return NotFound("Employee types not found in data base");
             }
 
             //checking if type exist
-            string? typeNameQuery = allTypes.Where(at => at?.IdType == typeId).Select(at => at?.Name).FirstOrDefault();
-            if (typeNameQuery == null)
+            if (!EmployeeTypeValidator.isTypeExistInById(allTypes, typeId))
             {
                 return NotFound($"Type id={typeId} not found");
             }
@@ -212,7 +211,11 @@ namespace Restaurants_REST_API.Controllers
             if (restaurantWorkers != null)
             {
                 //checking if employee exist in passed restaurant id
-                int? empIdInRestaurantQuery = restaurantWorkers.Where(rw => rw?.IdEmployee == empId).Select(rw => rw?.IdEmployee).FirstOrDefault();
+                int? empIdInRestaurantQuery = restaurantWorkers
+                    .Where(rw => rw?.IdEmployee == empId)
+                    .Select(rw => rw?.IdEmployee)
+                    .FirstOrDefault();
+
                 if (empIdInRestaurantQuery != null)
                 {
                     return BadRequest($"Employee {employeeDatabase.FirstName} already works in restaurant {restaurantDatabase.Name}");
@@ -233,7 +236,7 @@ namespace Restaurants_REST_API.Controllers
                 //checking if owner already exist 
                 if (typeId == ownerTypeId)
                 {
-                    var ownersCount = restaurantWorkers.Where(t => t?.IdType == 1).ToList();
+                    var ownersCount = restaurantWorkers.Where(t => t?.IdType == ownerTypeId).ToList();
                     if (ownersCount != null && ownersCount.Count() >= 1)
                     {
                         return BadRequest($"Unable to add type Owner because owner already exists");
@@ -248,7 +251,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Something went wrong unable to hire employee");
             }
 
-            return Ok($"Employee {employeeDatabase.FirstName} has been hired in {restaurantDatabase.Name} as {typeNameQuery}");
+            return Ok($"Employee {employeeDatabase.FirstName} has been hired in restaurant {restaurantDatabase.Name}");
         }
 
     }

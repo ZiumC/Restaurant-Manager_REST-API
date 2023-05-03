@@ -1,57 +1,36 @@
 ﻿using Restaurants_REST_API.DTOs.GetDTO;
-using Restaurants_REST_API.DTOs.GetDTOs;
-using Restaurants_REST_API.Models.Database;
 
 namespace Restaurants_REST_API.Services.ValidatorService
 {
     public class EmployeeTypeValidator
     {
-        public static bool isCorrectEmployeeTypeOf(int typeToCheck, IEnumerable<GetEmployeeTypeDTO?> allTypes)
+        public static bool isTypesExist(IEnumerable<GetEmployeeTypeDTO?> allTypes)
         {
-            foreach (GetEmployeeTypeDTO? empType in allTypes)
-            {
-                if (typeToCheck == empType?.IdType)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public static bool isEmployeeAlreadyHasTypeIn(GetRestaurantDTO restaurantDTO, int empId, string typeName)
-        {
-
-            if (restaurantDTO.RestaurantWorkers == null || restaurantDTO.RestaurantWorkers.Count() == 0)
+            if (allTypes == null || allTypes.Count() == 0)
             {
                 return false;
             }
-
-            foreach (GetRestaurantWorkersDTO worker in restaurantDTO.RestaurantWorkers)
-            {
-                if (worker.IdEmployee == empId && worker.EmployeeType.ToLower().Equals(typeName.ToLower()))
-                {
-                    return true;
-                }
-            }
-            return false;
+            return true;
         }
 
-        public static bool isTypeExistIn(IEnumerable<GetEmployeeTypeDTO?> allTypes, string name)
+        public static bool isTypeExistInById(IEnumerable<GetEmployeeTypeDTO?> allTypes, int typeId)
         {
-            if (allTypes == null)
-            {
-                return false;
-            }
+            string? typeNameQuery = allTypes
+                .Where(at => at?.IdType == typeId)
+                .Select(at => at?.Name)
+                .FirstOrDefault();
 
-            foreach (GetEmployeeTypeDTO? empType in allTypes)
-            {
-                if (name.ToLower().Equals(empType?.Name.ToLower()))
-                {
-                    return true;
-                }
-            }
+            return typeNameQuery != null;
+        }
 
-            return false;
+        public static bool isTypeExistInByName(IEnumerable<GetEmployeeTypeDTO?> allTypes, string name)
+        {
+            string? typeNameQuery = allTypes
+                .Where(at => at?.Name.ToLower() == name.ToLower())
+                .Select(at => at?.Name)
+                .FirstOrDefault();
+
+            return typeNameQuery != null;
         }
     }
 }

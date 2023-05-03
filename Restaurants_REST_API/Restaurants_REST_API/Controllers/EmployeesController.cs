@@ -246,7 +246,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpPost]
-        [Route("add-type")]
+        [Route("type")]
         public async Task<IActionResult> AddNewTypeOfEmployee(string name)
         {
             if (GeneralValidator.isEmptyNameOf(name))
@@ -255,7 +255,7 @@ namespace Restaurants_REST_API.Controllers
             }
 
             IEnumerable<GetEmployeeTypeDTO?> allTypes = await _employeeApiService.GetAllTypesAsync();
-            if (EmployeeTypeValidator.isTypeExistIn(allTypes, name))
+            if (EmployeeTypeValidator.isTypeExistInByName(allTypes, name))
             {
                 return BadRequest($"Employee type {name} already exist");
             }
@@ -409,14 +409,13 @@ namespace Restaurants_REST_API.Controllers
 
             //checking if types exist in db
             IEnumerable<GetEmployeeTypeDTO?> allTypes = await _employeeApiService.GetAllTypesAsync();
-            if (allTypes == null || allTypes.Count() == 0)
+            if (!EmployeeTypeValidator.isTypesExist(allTypes))
             {
                 return NotFound("Employee types not found in data base");
             }
 
             //checking if type exist
-            string? typeNameQuery = allTypes.Where(at => at?.IdType == typeId).Select(at => at?.Name).FirstOrDefault();
-            if (typeNameQuery == null)
+            if (!EmployeeTypeValidator.isTypeExistInById(allTypes, typeId))
             {
                 return NotFound($"Type id={typeId} not found");
             }
@@ -439,16 +438,28 @@ namespace Restaurants_REST_API.Controllers
             if (restaurantWorkers != null)
             {
                 //checking if employee exist in passed restaurant id
-                int? empIdInRestaurantQuery = restaurantWorkers.Where(rw => rw?.IdEmployee == empId).Select(rw => rw?.IdEmployee).FirstOrDefault();
+                int? empIdInRestaurantQuery = restaurantWorkers
+                    .Where(rw => rw?.IdEmployee == empId)
+                    .Select(rw => rw?.IdEmployee)
+                    .FirstOrDefault();
                 if (empIdInRestaurantQuery == null)
                 {
                     return NotFound($"Employee {employeeDatabase.FirstName} not found in restaurant {restaurantDatabase.Name}");
                 }
 
                 //checking if employee is already hired as passed type id in passed restaurant id
-                int? empIdInRestaurantWithTypeQuery = restaurantWorkers.Where(rw => rw?.IdType == typeId && rw.IdEmployee == empId).Select(rw => rw?.IdEmployee).FirstOrDefault();
+                int? empIdInRestaurantWithTypeQuery = restaurantWorkers
+                    .Where(rw => rw?.IdType == typeId && rw.IdEmployee == empId)
+                    .Select(rw => rw?.IdEmployee)
+                    .FirstOrDefault();
+
                 if (empIdInRestaurantWithTypeQuery != null)
                 {
+                    string? typeNameQuery = allTypes
+                           .Where(at => at?.IdType == typeId)
+                           .Select(at => at?.Name)
+                           .FirstOrDefault();
+
                     return BadRequest($"Employee {employeeDatabase.FirstName} has already type {typeNameQuery} in restaurant {restaurantDatabase.Name}");
                 }
 
