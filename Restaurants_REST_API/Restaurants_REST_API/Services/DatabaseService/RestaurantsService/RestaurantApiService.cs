@@ -3,6 +3,7 @@ using Restaurants_REST_API.DbContexts;
 using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.DTOs.PostOrPutDTO;
 using Restaurants_REST_API.Models.Database;
+using System;
 
 namespace Restaurants_REST_API.Services.Database_Service
 {
@@ -358,6 +359,44 @@ namespace Restaurants_REST_API.Services.Database_Service
                 return false;
             }
             return true;
+        }
+
+        public async Task<bool> UpdateRestaurantData(int id, Restaurant newRestaurantData)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var updateRestaurantDataQuery = await
+                        (_context.Restaurants.Where(r => r.IdRestaurant == id)).FirstAsync();
+
+                    updateRestaurantDataQuery.Name = newRestaurantData.Name;
+                    updateRestaurantDataQuery.RestaurantStatus = newRestaurantData.RestaurantStatus;
+                    updateRestaurantDataQuery.BonusBudget = newRestaurantData.BonusBudget;
+
+                    await _context.SaveChangesAsync();
+
+
+                    var updateRestaurantAddressQuery = await
+                        (_context.Address.Where(a => a.IdAddress == newRestaurantData.Address.IdAddress)).FirstAsync();
+
+                    updateRestaurantAddressQuery.City = newRestaurantData.Address.City;
+                    updateRestaurantAddressQuery.Street = newRestaurantData.Address.Street;
+                    updateRestaurantAddressQuery.BuildingNumber = newRestaurantData.Address.BuildingNumber;
+                    updateRestaurantAddressQuery.LocalNumber = newRestaurantData.Address.LocalNumber;
+
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    await transaction.RollbackAsync();
+                    return false;
+                }
+                await transaction.CommitAsync();
+                return true;
+            }
+
         }
     }
 }

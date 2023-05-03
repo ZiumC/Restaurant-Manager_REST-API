@@ -1,6 +1,7 @@
 ﻿using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.DTOs.PutDTO;
 using Restaurants_REST_API.Models.Database;
+using Restaurants_REST_API.Services.ValidatorService;
 
 namespace Restaurants_REST_API.Services.MapperService
 {
@@ -50,7 +51,7 @@ namespace Restaurants_REST_API.Services.MapperService
             }
 
             //setting bonus budget
-            if (newBonusBudgetData != null && oldBonusBudgetData != null)
+            if (newBonusBudgetData != null && newBonusBudgetData > 0)
             {
                 if (oldBonusBudgetData == newBonusBudgetData)
                 {
@@ -63,12 +64,14 @@ namespace Restaurants_REST_API.Services.MapperService
             }
             else
             {
-                restaurantUpdatedData.BonusBudget = newBonusBudgetData;
+                restaurantUpdatedData.BonusBudget = null;
             }
         }
 
         private void UpdateRestaurantAddress()
         {
+            int oldAddressId = _restaurantDetailsDatabase.Address.IdAddress;
+
             string oldCityData = _restaurantDetailsDatabase.Address.City;
             string newCityData = _newRestaurantData.Address.City;
 
@@ -80,6 +83,8 @@ namespace Restaurants_REST_API.Services.MapperService
 
             string? oldLocalNumber = _restaurantDetailsDatabase.Address.LocalNumber;
             string? newLocalNumber = _newRestaurantData.Address.LocalNumber;
+
+            restaurantUpdatedData.Address.IdAddress = oldAddressId;
 
             //setting city address 
             if (newCityData.Equals(oldCityData))
@@ -112,7 +117,7 @@ namespace Restaurants_REST_API.Services.MapperService
             }
 
             //setting local number
-            if (newLocalNumber != null && oldLocalNumber != null)
+            if (newLocalNumber != null && !GeneralValidator.isEmptyNameOf(newLocalNumber))
             {
                 if (newLocalNumber.Equals(oldLocalNumber))
                 {
@@ -125,7 +130,7 @@ namespace Restaurants_REST_API.Services.MapperService
             }
             else
             {
-                restaurantUpdatedData.Address.LocalNumber = newLocalNumber;
+                restaurantUpdatedData.Address.LocalNumber = null;
             }
         }
 

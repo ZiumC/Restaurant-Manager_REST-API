@@ -13,6 +13,7 @@ namespace Restaurants_REST_API.Services.Database_Service
         public Task<bool> AddNewRestaurantAsync(PostRestaurantDTO newRestaurant);
         public Task<bool> AddNewDishToRestaurantsAsync(PostDishDTO newDish);
         public Task<bool> HireNewEmployeeAsync(int empId, int typeId, int restaurantId);
+        public Task<bool> UpdateRestaurantData(int id, Restaurant newRestaurantData);
     }
 
 }
