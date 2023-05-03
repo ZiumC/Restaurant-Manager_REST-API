@@ -6,14 +6,14 @@ namespace Restaurants_REST_API.Services.MapperService
     public class MapEmployeeCertificatesService
     {
         private readonly GetEmployeeDTO _employeeDetailsDatabase;
-        private readonly IEnumerable<PutCertificateDTO> _certificatesData;
+        private readonly IEnumerable<PutCertificateDTO> _newCertificatesData;
         private List<PutCertificateDTO> updatedCertificateNames = new List<PutCertificateDTO>();
         private List<int> updatedCertificatesId = new List<int>();
 
         public MapEmployeeCertificatesService(GetEmployeeDTO employeeDetailsDatabase, IEnumerable<PutCertificateDTO> certificatesData)
         {
             _employeeDetailsDatabase = employeeDetailsDatabase;
-            _certificatesData = certificatesData;
+            _newCertificatesData = certificatesData;
         }
 
         private void UpdateEmployeeCertificates()
@@ -29,10 +29,10 @@ namespace Restaurants_REST_API.Services.MapperService
                 var oldEmpCert = _employeeDetailsDatabase.Certificates.ElementAt(i);
 
                 string oldName = oldEmpCert.Name.ToLower();
-                string newName = _certificatesData.ElementAt(i).Name.ToLower();
+                string newName = _newCertificatesData.ElementAt(i).Name.ToLower();
 
                 DateTime oldExpirationDate = oldEmpCert.ExpirationDate.Date;
-                DateTime newExpirationDate = _certificatesData.ElementAt(i).ExpirationDate.Date;
+                DateTime newExpirationDate = _newCertificatesData.ElementAt(i).ExpirationDate.Date;
 
                 if (!oldName.Equals(newName) || oldExpirationDate != newExpirationDate)
                 {

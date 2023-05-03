@@ -350,9 +350,16 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound($"Dish id={id} not found");
             }
 
+            MapDishDataService dishDataMapper = new MapDishDataService(dishDetailsDatabase, putDishData);
+            Dish dishUpdatedData = dishDataMapper.GetDishUpdatedData();
 
+            bool isDishUpdated = await _restaurantsApiService.UpdateDishDataAsync(id, dishUpdatedData);
+            if (!isDishUpdated)
+            {
+                return BadRequest("Something went wrong unable to update dish data");
+            }
 
-            return Ok();
+            return Ok("Dish data has been updated");
         }
 
     }

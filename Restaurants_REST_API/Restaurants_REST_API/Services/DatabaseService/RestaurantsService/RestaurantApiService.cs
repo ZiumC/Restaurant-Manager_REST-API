@@ -426,7 +426,27 @@ namespace Restaurants_REST_API.Services.Database_Service
                 await transaction.CommitAsync();
                 return true;
             }
+        }
 
+        public async Task<bool> UpdateDishDataAsync(int dishId, Dish newDishData)
+        {
+            try
+            {
+                var updateDishDataQuery = await
+                    (_context.Dishes.Where(d => d.IdDish == dishId)).FirstAsync();
+
+                updateDishDataQuery.Name = newDishData.Name;
+                updateDishDataQuery.Price = newDishData.Price;
+
+                await _context.SaveChangesAsync();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return false;
+            }
+            return true;
         }
     }
 }
