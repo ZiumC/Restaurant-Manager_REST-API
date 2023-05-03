@@ -102,13 +102,13 @@ namespace Restaurants_REST_API.Controllers
             bool isRestaurantAdded = await _restaurantsApiService.AddNewRestaurantAsync(newRestaurant);
             if (!isRestaurantAdded)
             {
-                return BadRequest("something went wrong restaruant wasn't added");
+                return BadRequest("Something went wrong unable to add new restaruant");
             }
             return Ok("Restaurant has been added");
         }
 
         [HttpPost]
-        [Route("add-dish")]
+        [Route("dish")]
         public async Task<IActionResult> AddNewDish(PostDishDTO newDish)
         {
             if (newDish == null)
@@ -304,10 +304,10 @@ namespace Restaurants_REST_API.Controllers
             MapRestaurantDataService restaurantDataMapper = new MapRestaurantDataService(restaurantDetailsDatabase, putRestaurantData);
             Restaurant restaurantUpdatedData = restaurantDataMapper.GetRestaurantUpdatedData();
 
-            bool isRestaurantUpdated = await _restaurantsApiService.UpdateRestaurantData(id, restaurantUpdatedData);
+            bool isRestaurantUpdated = await _restaurantsApiService.UpdateRestaurantDataAsync(id, restaurantUpdatedData);
             if (!isRestaurantUpdated)
             {
-                return BadRequest("Something went wrong, unable to update restaurant");
+                return BadRequest("Something went wrong unable to update restaurant data");
             }
 
             return Ok("Restaurant data has been updated");

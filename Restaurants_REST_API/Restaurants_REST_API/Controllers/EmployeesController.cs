@@ -271,7 +271,7 @@ namespace Restaurants_REST_API.Controllers
 
         [HttpPut]
         [Route("id")]
-        public async Task<IActionResult> UpdateExistingEmployeeData(int id, PutEmployeeDTO? putEmpData)
+        public async Task<IActionResult> UpdateEmployeeData(int id, PutEmployeeDTO? putEmpData)
         {
             if (!GeneralValidator.isCorrectId(id))
             {
@@ -324,7 +324,7 @@ namespace Restaurants_REST_API.Controllers
             MapEmployeeDataService employeeDataMapper = new MapEmployeeDataService(employeeDetailsDatabase, putEmpData);
             Employee employeeUpdatedData = employeeDataMapper.GetEmployeeUpdatedData();
 
-            bool isEmployeeUpdated = await _employeeApiService.UpdateExistingEmployeeByIdAsync(id, employeeUpdatedData);
+            bool isEmployeeUpdated = await _employeeApiService.UpdateEmployeeDataByIdAsync(id, employeeUpdatedData);
             if (!isEmployeeUpdated)
             {
                 return BadRequest("Something went wrong unable to update employee");
