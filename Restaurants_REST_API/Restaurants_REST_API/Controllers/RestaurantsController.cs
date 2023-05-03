@@ -15,11 +15,13 @@ namespace Restaurants_REST_API.Controllers
     {
         private readonly IRestaurantApiService _restaurantsApiService;
         private readonly IEmployeeApiService _employeeApiService;
+        private readonly IConfiguration _config;
 
-        public RestaurantsController(IRestaurantApiService restaurantsApiService, IEmployeeApiService employeeApiService)
+        public RestaurantsController(IRestaurantApiService restaurantsApiService, IEmployeeApiService employeeApiService, IConfiguration config)
         {
             _restaurantsApiService = restaurantsApiService;
             _employeeApiService = employeeApiService;
+            _config = config;
         }
 
         [HttpGet]
@@ -218,18 +220,42 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound($"Restaurant id={restaurantId} not found");
             }
 
-            
+            IEnumerable<EmployeesInRestaurant?> restaurantWorkers = await _restaurantsApiService.GetEmployeeInRestaurantDataByRestaurantIdAsync(restaurantId);
+            if (restaurantWorkers != null)
+            {
+                //checking if employee exist in passed restaurant id
+                int? empIdInRestaurantQuery = restaurantWorkers.Where(rw => rw?.IdEmployee == empId).Select(rw => rw?.IdEmployee).FirstOrDefault();
+                if (empIdInRestaurantQuery != null)
+                {
+                    return BadRequest($"Employee {employeeDatabase.FirstName} already works in restaurant {restaurantDatabase.Name}");
+                    //return NotFound($"Employee {employeeDatabase.FirstName} not found in restaurant {restaurantDatabase.Name}");
+                }
 
+                ////checking if employee is already hired as passed type id in passed restaurant id
+                //int? empIdInRestaurantWithTypeQuery = restaurantWorkers.Where(rw => rw?.IdType == typeId && rw.IdEmployee == empId).Select(rw => rw?.IdEmployee).FirstOrDefault();
+                //if (empIdInRestaurantWithTypeQuery != null)
+                //{
+                //    return BadRequest($"Employee {employeeDatabase.FirstName} has already type {typeName} in restaurant {restaurantDatabase.Name}");
+                //}
 
-            //if (allTypes == null || allTypes.Count() < 0)
-            //{
-            //    return NotFound("Employee types not found");
-            //}
+                //checking if employee has more than 1 type in specyfic restaurant
+                //int? empTypesCount = restaurantWorkers.Where(rw => rw?.IdEmployee == empId).ToList().Count();
+                //if (empTypesCount > 0) 
+                //{
+                //    return BadRequest($"Employee {employeeDatabase.FirstName} already works in restaurant {restaurantDatabase.Name}");
+                //}
 
-            //if (!EmployeeTypeValidator.isCorrectEmployeeTypeOf(employeeHire.IdType, allTypes))
-            //{
-            //    return NotFound("Employee type not exist");
-            //}
+                //checking if owner already exist 
+                if (typeId == int.Parse(_config["OwnerTypeId"]))
+                {
+                    var ownersCount = restaurantWorkers.Where(t => t?.IdType == 1).ToList();
+                    if (ownersCount != null && ownersCount.Count() >= 1)
+                    {
+                        return BadRequest($"Unable to add type Owner because owner already exists");
+                    }
+                }
+
+            }
 
             ////at this stage i am certain that type name exist in database
             //string typeName = allTypes.Where(e => e.IdType == employeeHire.IdType).Select(e => e.Name).First();
