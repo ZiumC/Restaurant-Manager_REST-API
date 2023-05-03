@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Restaurants_REST_API.DbContexts;
+using Restaurants_REST_API.DTOs.GetDTO;
 using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.DTOs.PostOrPutDTO;
 using Restaurants_REST_API.Models.Database;
@@ -252,6 +253,35 @@ namespace Restaurants_REST_API.Services.Database_Service
 
                  select new EmployeesInRestaurant { IdRestaurantWorker = eir.IdRestaurantWorker, IdEmployee = eir.IdEmployee, IdRestaurant = restaurantId, IdType = eir.IdType }
                  ).ToListAsync();
+        }
+
+        public async Task<GetDishDTO?> GetDishDetailsByIdAsync(int dishId)
+        {
+            return await
+                (from d in _context.Dishes
+                 where d.IdDish == dishId
+
+                 select new GetDishDTO
+                 {
+                     IdDish = dishId,
+                     Name = d.Name,
+                     Price = d.Price,
+                     Restaurants = (from dir in _context.RestaurantDishes
+                                    join r in _context.Restaurants
+                                    on dir.IdRestaurant equals r.IdRestaurant
+
+                                    where dir.IdDish == dishId
+
+                                    select new GetSimpleRestaurantDTO
+                                    {
+                                        IdRestaurant = dir.IdRestaurant,
+                                        Name = r.Name,
+                                        Status = r.RestaurantStatus,
+                                        BonusBudget = r.BonusBudget
+                                    }
+                                    ).ToList()
+                 }
+                 ).FirstOrDefaultAsync();
         }
 
         public async Task<bool> AddNewRestaurantAsync(PostRestaurantDTO newRestaurant)
