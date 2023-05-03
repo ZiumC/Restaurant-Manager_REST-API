@@ -330,5 +330,30 @@ namespace Restaurants_REST_API.Controllers
             return Ok("Restaurant data has been updated");
         }
 
+        [HttpPut]
+        [Route("dish/id")]
+        public async Task<IActionResult> UpdateDishData(int id, PutDishDTO putDishData)
+        {
+            if (!GeneralValidator.isCorrectId(id))
+            {
+                return BadRequest($"Dish id={id} is invalid");
+            }
+
+            if (GeneralValidator.isEmptyNameOf(putDishData.Name))
+            {
+                return BadRequest("Dish name can't be empty");
+            }
+
+            GetDishDTO? dishDetailsDatabase = await _restaurantsApiService.GetDishDetailsByIdAsync(id);
+            if (dishDetailsDatabase == null)
+            {
+                return NotFound($"Dish id={id} not found");
+            }
+
+
+
+            return Ok();
+        }
+
     }
 }
