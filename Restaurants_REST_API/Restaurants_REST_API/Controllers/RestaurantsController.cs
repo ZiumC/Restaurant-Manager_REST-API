@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Restaurants_REST_API.DTOs.GetDTO;
 using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.DTOs.PostOrPutDTO;
@@ -11,7 +10,7 @@ using Restaurants_REST_API.Services.ValidatorService;
 
 namespace Restaurants_REST_API.Controllers
 {
-    [Route("api/menage/[controller]")]
+    [Route("api/manage/[controller]")]
     [ApiController]
     public class RestaurantsController : ControllerBase
     {
