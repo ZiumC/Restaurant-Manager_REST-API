@@ -178,20 +178,47 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Restaurant id isn't correct");
             }
 
-            Restaurant? restaurantDatabase = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(restaurantId);
-            if (restaurantDatabase == null)
+            //checking if type id exist
+            string? typeName = "";
+            IEnumerable<GetEmployeeTypeDTO?> allTypes = await _employeeApiService.GetAllEmployeeTypesAsync();
+            if (allTypes == null || allTypes.Count() == 0)
             {
-                return NotFound($"Restaurant id={restaurantId} not found");
+                return NotFound("Employee types not found");
+            }
+            else
+            {
+                bool typeExist = false;
+                foreach (var type in allTypes)
+                {
+                    if (type != null && type.IdType == typeId)
+                    {
+                        typeExist = true;
+                    }
+                }
+
+                if (!typeExist)
+                {
+                    return NotFound($"Type id={typeId} not found");
+                }
+
+                typeName = allTypes.Where(t => t?.IdType == typeId).Select(t => t?.Name).FirstOrDefault();
             }
 
+            //checking if employee exist
             Employee? employeeDatabase = await _employeeApiService.GetBasicEmployeeDataByIdAsync(empId);
             if (employeeDatabase == null)
             {
                 return NotFound($"Employee id={empId} not found");
             }
 
-            IEnumerable<GetEmployeeTypeDTO?> allTypes = await _employeeApiService.GetAllEmployeeTypesAsync();
-            //NEEED TO REFACTOR THIS SHEET!
+            //checking if restaurant exist
+            Restaurant? restaurantDatabase = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(restaurantId);
+            if (restaurantDatabase == null)
+            {
+                return NotFound($"Restaurant id={restaurantId} not found");
+            }
+
+            
 
 
             //if (allTypes == null || allTypes.Count() < 0)
@@ -212,14 +239,14 @@ namespace Restaurants_REST_API.Controllers
             //    return BadRequest($"Employee {existEmployee.FirstName} has already type of {typeName} in restaurant {restaurant.Name}");
             //}
 
-            bool isEmployeeHired = await _restaurantsApiService.HireNewEmployeeAsync(empId, typeId, restaurantId);
-            if (!isEmployeeHired)
-            {
-                return BadRequest("Something went wrong unable to hire employee");
-            }
+            //bool isEmployeeHired = await _restaurantsApiService.HireNewEmployeeAsync(empId, typeId, restaurantId);
+            //if (!isEmployeeHired)
+            //{
+            //    return BadRequest("Something went wrong unable to hire employee");
+            //}
 
 
-            return Ok($"Employee {employeeDatabase.FirstName} has been hired in {restaurantDatabase.Name} as ");
+            return Ok($"Employee {employeeDatabase.FirstName} has been hired in {restaurantDatabase.Name} as {typeName}");
         }
 
     }
