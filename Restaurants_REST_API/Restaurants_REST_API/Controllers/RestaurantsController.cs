@@ -180,30 +180,18 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Restaurant id isn't correct");
             }
 
-            //checking if type id exist
-            string? typeName = "";
-            IEnumerable<GetEmployeeTypeDTO?> allTypes = await _employeeApiService.GetAllEmployeeTypesAsync();
+            //checking if types exist in db
+            IEnumerable<GetEmployeeTypeDTO?> allTypes = await _employeeApiService.GetAllTypesAsync();
             if (allTypes == null || allTypes.Count() == 0)
             {
-                return NotFound("Employee types not found");
+                return NotFound("Employee types not found in data base");
             }
-            else
+
+            //checking if type exist
+            string? typeNameQuery = allTypes.Where(at => at?.IdType == typeId).Select(at => at?.Name).FirstOrDefault();
+            if (typeNameQuery == null)
             {
-                bool typeExist = false;
-                foreach (var type in allTypes)
-                {
-                    if (type != null && type.IdType == typeId)
-                    {
-                        typeExist = true;
-                    }
-                }
-
-                if (!typeExist)
-                {
-                    return NotFound($"Type id={typeId} not found");
-                }
-
-                typeName = allTypes.Where(t => t?.IdType == typeId).Select(t => t?.Name).FirstOrDefault();
+                return NotFound($"Type id={typeId} not found");
             }
 
             //checking if employee exist
@@ -260,7 +248,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Something went wrong unable to hire employee");
             }
 
-            return Ok($"Employee {employeeDatabase.FirstName} has been hired in {restaurantDatabase.Name} as {typeName}");
+            return Ok($"Employee {employeeDatabase.FirstName} has been hired in {restaurantDatabase.Name} as {typeNameQuery}");
         }
 
     }
