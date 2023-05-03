@@ -228,25 +228,22 @@ namespace Restaurants_REST_API.Controllers
                 if (empIdInRestaurantQuery != null)
                 {
                     return BadRequest($"Employee {employeeDatabase.FirstName} already works in restaurant {restaurantDatabase.Name}");
-                    //return NotFound($"Employee {employeeDatabase.FirstName} not found in restaurant {restaurantDatabase.Name}");
                 }
 
-                ////checking if employee is already hired as passed type id in passed restaurant id
-                //int? empIdInRestaurantWithTypeQuery = restaurantWorkers.Where(rw => rw?.IdType == typeId && rw.IdEmployee == empId).Select(rw => rw?.IdEmployee).FirstOrDefault();
-                //if (empIdInRestaurantWithTypeQuery != null)
-                //{
-                //    return BadRequest($"Employee {employeeDatabase.FirstName} has already type {typeName} in restaurant {restaurantDatabase.Name}");
-                //}
-
-                //checking if employee has more than 1 type in specyfic restaurant
-                //int? empTypesCount = restaurantWorkers.Where(rw => rw?.IdEmployee == empId).ToList().Count();
-                //if (empTypesCount > 0) 
-                //{
-                //    return BadRequest($"Employee {employeeDatabase.FirstName} already works in restaurant {restaurantDatabase.Name}");
-                //}
+                //parsing owner type id from app settings
+                int? ownerTypeId = null;
+                try
+                {
+                    ownerTypeId = int.Parse(_config["ApplicationSettings:OwnerTypeId"]);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return BadRequest("Something went wrong, bad value to parse");
+                }
 
                 //checking if owner already exist 
-                if (typeId == int.Parse(_config["OwnerTypeId"]))
+                if (typeId == ownerTypeId)
                 {
                     var ownersCount = restaurantWorkers.Where(t => t?.IdType == 1).ToList();
                     if (ownersCount != null && ownersCount.Count() >= 1)
