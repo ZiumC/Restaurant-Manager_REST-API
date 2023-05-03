@@ -6,6 +6,7 @@ using Restaurants_REST_API.DTOs.PostOrPutDTO;
 using Restaurants_REST_API.DTOs.PutDTO;
 using Restaurants_REST_API.Models.Database;
 using Restaurants_REST_API.Services.Database_Service;
+using Restaurants_REST_API.Services.MapperService;
 using Restaurants_REST_API.Services.ValidatorService;
 
 namespace Restaurants_REST_API.Controllers
@@ -300,6 +301,9 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound($"Restaurant id={id} not found");
             }
             GetRestaurantDTO restaurantDetailsDatabase = await _restaurantsApiService.GetRestaurantDetailedDataAsync(restaurantDatabase);
+            MapRestaurantDataService restaurantDataMapper = new MapRestaurantDataService(restaurantDetailsDatabase, putRestaurantData);
+            Restaurant restaurantUpdatedData = restaurantDataMapper.GetRestaurantUpdatedData();
+
 
 
             return Ok("Restaurant data has been updated");
