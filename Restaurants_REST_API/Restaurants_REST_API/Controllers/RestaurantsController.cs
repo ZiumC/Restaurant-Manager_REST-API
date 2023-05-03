@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Restaurants_REST_API.DTOs.GetDTO;
 using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.DTOs.PostOrPutDTO;
+using Restaurants_REST_API.DTOs.PutDTO;
 using Restaurants_REST_API.Models.Database;
 using Restaurants_REST_API.Services.Database_Service;
 using Restaurants_REST_API.Services.ValidatorService;
@@ -41,9 +42,9 @@ namespace Restaurants_REST_API.Controllers
         [Route("id")]
         public async Task<IActionResult> GetRestaurantBy(int id)
         {
-            if (id < 0)
+            if (!GeneralValidator.isCorrectId(id))
             {
-                return BadRequest($"Incorrect id, expected id grater than 0 but got {id}");
+                return BadRequest($"Restaurant id={id} is invalid");
             }
 
             Restaurant? restaurant = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(id);
@@ -53,7 +54,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound($"Restaurant not found");
             }
 
-            GetRestaurantDTO restaurantDTO = await _restaurantsApiService.GetRestaurantDetailsByIdAsync(id);
+            GetRestaurantDTO restaurantDTO = await _restaurantsApiService.GetRestaurantDetailedDataAsync(restaurant);
 
             return Ok(restaurantDTO);
         }
@@ -128,21 +129,21 @@ namespace Restaurants_REST_API.Controllers
             {
                 List<GetRestaurantDTO> restaurants = new List<GetRestaurantDTO>();
 
-                foreach (int idRestaurant in newDish.IdRestaurants)
+                foreach (int restaurantId in newDish.IdRestaurants)
                 {
-                    if (!GeneralValidator.isCorrectId(idRestaurant))
+                    if (!GeneralValidator.isCorrectId(restaurantId))
                     {
                         return BadRequest("One or many restaurant id isn't correct");
                     }
 
-                    Restaurant? restaurant = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(idRestaurant);
+                    Restaurant? restaurant = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(restaurantId);
 
                     if (restaurant == null)
                     {
-                        return NotFound($"Given restaurant id={idRestaurant} is invalid");
+                        return NotFound($"Given restaurant id={restaurantId} is invalid");
                     }
 
-                    restaurants.Add(await _restaurantsApiService.GetRestaurantDetailsByIdAsync(idRestaurant));
+                    restaurants.Add(await _restaurantsApiService.GetRestaurantDetailedDataAsync(restaurant));
                 }
 
                 if (RestaurantValidator.isDishExistIn(restaurants, newDish))
@@ -252,6 +253,56 @@ namespace Restaurants_REST_API.Controllers
             }
 
             return Ok($"Employee {employeeDatabase.FirstName} has been hired in restaurant {restaurantDatabase.Name}");
+        }
+
+        [HttpPut]
+        [Route("id")]
+        public async Task<IActionResult> UpdateRestaurantData(int id, PutRestaurantDTO putRestaurantData)
+        {
+            if (!GeneralValidator.isCorrectId(id))
+            {
+                return BadRequest($"Restaurant id={id} is invalid");
+            }
+
+            if (putRestaurantData == null)
+            {
+                return BadRequest("Restaurant data can't be empty");
+            }
+
+            if (GeneralValidator.isEmptyNameOf(putRestaurantData.Name))
+            {
+                return BadRequest("Restaurant name can't be empty");
+            }
+
+            if (GeneralValidator.isEmptyNameOf(putRestaurantData.Status))
+            {
+                return BadRequest("Restaurant status can't be empty");
+            }
+
+            if (GeneralValidator.isEmptyNameOf(putRestaurantData.Address.City))
+            {
+                return BadRequest("City can't be empty");
+            }
+
+            if (GeneralValidator.isEmptyNameOf(putRestaurantData.Address.Street))
+            {
+                return BadRequest("Street can't be empty");
+            }
+
+            if (GeneralValidator.isEmptyNameOf(putRestaurantData.Address.BuildingNumber))
+            {
+                return BadRequest("Building number can't be empty");
+            }
+
+            Restaurant? restaurantDatabase = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(id);
+            if (restaurantDatabase == null)
+            {
+                return NotFound($"Restaurant id={id} not found");
+            }
+            GetRestaurantDTO restaurantDetailsDatabase = await _restaurantsApiService.GetRestaurantDetailedDataAsync(restaurantDatabase);
+
+
+            return Ok("Restaurant data has been updated");
         }
 
     }
