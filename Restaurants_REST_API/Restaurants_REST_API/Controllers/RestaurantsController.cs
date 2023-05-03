@@ -59,6 +59,23 @@ namespace Restaurants_REST_API.Controllers
 
             return Ok(restaurantDTO);
         }
+        [HttpGet]
+        [Route("dish/id")]
+        public async Task<IActionResult> GetDishBy(int id)
+        {
+            if (!GeneralValidator.isCorrectId(id))
+            {
+                return BadRequest($"Dish id={id} is invalid");
+            }
+
+            GetDishDTO? dishDetailsData = await _restaurantsApiService.GetDishDetailsByIdAsync(id);
+            if (dishDetailsData == null)
+            {
+                return NotFound($"Dish id={id} not found");
+            }
+
+            return Ok(dishDetailsData);
+        }
 
         [HttpPost]
         public async Task<IActionResult> AddNewRestaurant(PostRestaurantDTO newRestaurant)
