@@ -21,13 +21,13 @@ namespace Restaurants_REST_API.Controllers
     {
         private readonly IEmployeeApiService _employeeApiService;
         private readonly IRestaurantApiService _restaurantsApiService;
-        private readonly decimal _basicBonus = 150;
-        private readonly int _idOwnerType = 1;
+        private readonly IConfiguration _config;
 
-        public EmployeesController(IEmployeeApiService employeeApiService, IRestaurantApiService restaurantsApiService)
+        public EmployeesController(IEmployeeApiService employeeApiService, IRestaurantApiService restaurantsApiService, IConfiguration config)
         {
             _employeeApiService = employeeApiService;
             _restaurantsApiService = restaurantsApiService;
+            _config = config;
         }
 
         [HttpGet]
@@ -217,10 +217,22 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Employee already exist");
             }
 
-            //checking if newEmp has bonus sal less than minimum value
-            if (newEmployee.BonusSalary < _basicBonus)
+            //parsing basic bonus from app settings
+            decimal? basicBonus = null;
+            try
             {
-                return BadRequest($"Default value of bonus salary is {_basicBonus} but found {newEmployee.BonusSalary}");
+                basicBonus = decimal.Parse(_config["ApplicationSettings:BasicBonus"]);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return BadRequest("Something went wrong, bad value to parse");
+            }
+
+            //checking if newEmp has bonus sal less than minimum value
+            if (newEmployee.BonusSalary < basicBonus)
+            {
+                return BadRequest($"Default value of bonus salary is {basicBonus} but found {newEmployee.BonusSalary}");
             }
 
             bool isEmpAdded = await _employeeApiService.AddNewEmployeeAsync(newEmployee, certificatesExist);
@@ -438,36 +450,39 @@ namespace Restaurants_REST_API.Controllers
             IEnumerable<EmployeesInRestaurant?> restaurantWorkers = await _restaurantsApiService.GetEmployeeInRestaurantDataByRestaurantIdAsync(restaurantId);
             if (restaurantWorkers != null)
             {
-
-                bool empExistInRestaurant = false;
-                foreach (var worker in restaurantWorkers)
-                {
-                    //checking if emp has already specific type at specyfic restaurant
-                    if (worker != null && worker.IdType == typeId && worker.IdEmployee == empId)
-                    {
-                        return BadRequest($"Employee {employeeDatabase.FirstName} has already type {typeName} in restaurant {restaurantDatabase.Name}");
-                    }
-
-                    if (worker != null && worker.IdEmployee == empId)
-                    {
-                        empExistInRestaurant = true;
-                    }
-                }
-
-                //checking if emp exist in restaurant
-                if (!empExistInRestaurant)
+                //checking if employee exist in passed restaurant id
+                int? empIdInRestaurantQuery = restaurantWorkers.Where(rw => rw?.IdEmployee == empId).Select(rw => rw?.IdEmployee).FirstOrDefault();
+                if (empIdInRestaurantQuery == null)
                 {
                     return NotFound($"Employee {employeeDatabase.FirstName} not found in restaurant {restaurantDatabase.Name}");
                 }
 
-                if (typeId == _idOwnerType)
+                //checking if employee is already hired as passed type id in passed restaurant id
+                int? empIdInRestaurantWithTypeQuery = restaurantWorkers.Where(rw => rw?.IdType == typeId && rw.IdEmployee == empId).Select(rw => rw?.IdEmployee).FirstOrDefault();
+                if (empIdInRestaurantWithTypeQuery != null)
                 {
-                    //checking if owner already exist 
-                    //Owner type has always id=1 
-                    int ownersCount = restaurantWorkers.Where(t => t?.IdType == 1).ToList().Count();
-                    if (ownersCount >= 1)
+                    return BadRequest($"Employee {employeeDatabase.FirstName} has already type {typeName} in restaurant {restaurantDatabase.Name}");
+                }
+
+                //parsing owner type id from app settings
+                int? ownerTypeId = null;
+                try
+                {
+                    ownerTypeId = int.Parse(_config["ApplicationSettings:OwnerTypeId"]);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return BadRequest("Something went wrong, bad value to parse");
+                }
+
+                //checking if owner already exist 
+                if (typeId == ownerTypeId)
+                {
+                    var ownersCount = restaurantWorkers.Where(t => t?.IdType == 1).ToList();
+                    if (ownersCount != null && ownersCount.Count() >= 1)
                     {
-                        return BadRequest($"Unable to update type to Owner because owner already exists");
+                        return BadRequest($"Unable to add type Owner because owner already exists");
                     }
                 }
             }
