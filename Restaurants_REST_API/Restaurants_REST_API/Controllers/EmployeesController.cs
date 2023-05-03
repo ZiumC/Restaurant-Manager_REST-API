@@ -149,7 +149,7 @@ namespace Restaurants_REST_API.Controllers
         [Route("types")]
         public async Task<IActionResult> GetAllEmployeeTypes()
         {
-            var types = await _employeeApiService.GetAllEmployeeTypesAsync();
+            var types = await _employeeApiService.GetAllTypesAsync();
             if (types == null)
             {
                 return NotFound("Employee types not found");
@@ -254,7 +254,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Employee type can't be empty");
             }
 
-            IEnumerable<GetEmployeeTypeDTO?> allTypes = await _employeeApiService.GetAllEmployeeTypesAsync();
+            IEnumerable<GetEmployeeTypeDTO?> allTypes = await _employeeApiService.GetAllTypesAsync();
             if (EmployeeTypeValidator.isTypeExistIn(allTypes, name))
             {
                 return BadRequest($"Employee type {name} already exist");
@@ -407,30 +407,18 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest($"Restaurant id={restaurantId} is invalid");
             }
 
-            //checking if type id exist
-            string? typeName = "";
-            IEnumerable<GetEmployeeTypeDTO?> allTypes = await _employeeApiService.GetAllEmployeeTypesAsync();
+            //checking if types exist in db
+            IEnumerable<GetEmployeeTypeDTO?> allTypes = await _employeeApiService.GetAllTypesAsync();
             if (allTypes == null || allTypes.Count() == 0)
             {
-                return NotFound("Employee types not found");
+                return NotFound("Employee types not found in data base");
             }
-            else
+
+            //checking if type exist
+            string? typeNameQuery = allTypes.Where(at => at?.IdType == typeId).Select(at => at?.Name).FirstOrDefault();
+            if (typeNameQuery == null)
             {
-                bool typeExist = false;
-                foreach (var type in allTypes)
-                {
-                    if (type != null && type.IdType == typeId)
-                    {
-                        typeExist = true;
-                    }
-                }
-
-                if (!typeExist)
-                {
-                    return NotFound($"Type id={typeId} not found");
-                }
-
-                typeName = allTypes.Where(t => t?.IdType == typeId).Select(t => t?.Name).FirstOrDefault();
+                return NotFound($"Type id={typeId} not found");
             }
 
             //checking if employee exist
@@ -461,7 +449,7 @@ namespace Restaurants_REST_API.Controllers
                 int? empIdInRestaurantWithTypeQuery = restaurantWorkers.Where(rw => rw?.IdType == typeId && rw.IdEmployee == empId).Select(rw => rw?.IdEmployee).FirstOrDefault();
                 if (empIdInRestaurantWithTypeQuery != null)
                 {
-                    return BadRequest($"Employee {employeeDatabase.FirstName} has already type {typeName} in restaurant {restaurantDatabase.Name}");
+                    return BadRequest($"Employee {employeeDatabase.FirstName} has already type {typeNameQuery} in restaurant {restaurantDatabase.Name}");
                 }
 
                 //parsing owner type id from app settings

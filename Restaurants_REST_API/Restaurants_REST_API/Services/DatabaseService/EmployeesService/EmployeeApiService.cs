@@ -249,7 +249,7 @@ namespace Restaurants_REST_API.Services.Database_Service
         }
 
 
-        public async Task<IEnumerable<GetEmployeeTypeDTO?>> GetAllEmployeeTypesAsync()
+        public async Task<IEnumerable<GetEmployeeTypeDTO?>> GetAllTypesAsync()
         {
             return await _context.EmployeeTypes
                 .Select(x => new GetEmployeeTypeDTO { IdType = x.IdType, Name = x.Name }).ToListAsync();
