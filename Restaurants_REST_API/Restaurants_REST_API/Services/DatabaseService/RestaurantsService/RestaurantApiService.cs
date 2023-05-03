@@ -16,7 +16,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             _context = context;
         }
 
-        public async Task<IEnumerable<GetRestaurantDTO>?> GetAllRestaurantsAsync()
+        public async Task<IEnumerable<GetRestaurantDTO?>> GetAllRestaurantsAsync()
         {
             return await (from rest in _context.Restaurants
                           join addr in _context.Address
@@ -109,7 +109,7 @@ namespace Restaurants_REST_API.Services.Database_Service
         {
             int restaurantId = restaurant.IdRestaurant;
 
-            var getRestaurantaAddressQuery = await
+            var getRestaurantAddressQuery = await
                 (from rest in _context.Restaurants
                  join addr in _context.Address
                  on rest.IdAddress equals addr.IdAddress
@@ -201,7 +201,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                 BonusBudget = restaurant.BonusBudget,
 
 
-                Address = getRestaurantaAddressQuery,
+                Address = getRestaurantAddressQuery,
                 RestaurantWorkers = getRestaurantWorkersQuery,
                 RestaurantDishes = getRestaurantDishesQuery,
                 RestaurantReservations = getRestaurantReservationsQuery,
@@ -236,16 +236,6 @@ namespace Restaurants_REST_API.Services.Database_Service
 
                           ).ToListAsync();
         }
-
-        //public Task<Reservation> GetReservationsByRestaurantIdAsync(int restaurantId)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public Task<Complain> GetComplainsByRestaurantIdAsync(int restaurantId)
-        //{
-        //    throw new NotImplementedException();
-        //}
 
         public async Task<Restaurant?> GetBasicRestaurantDataByIdAsync(int restaurantId)
         {
