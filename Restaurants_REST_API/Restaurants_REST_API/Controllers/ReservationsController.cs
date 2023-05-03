@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.Models.Database;
 using Restaurants_REST_API.Services.Database_Service;
+using Restaurants_REST_API.Services.ValidatorService;
 
 namespace Restaurants_REST_API.Controllers
 {
-    [Route("api/menage/[controller]")]
+    [Route("api/manage/[controller]")]
     [ApiController]
     public class ReservationsController : ControllerBase
     {
@@ -36,7 +37,7 @@ namespace Restaurants_REST_API.Controllers
         [Route("id")]
         public async Task<IActionResult> GetReservationBy(int id)
         {
-            if (id < 0)
+            if (!GeneralValidator.isCorrectId(id))
             {
                 return BadRequest($"Incorrect id, expected id grater than 0 but got {id}");
             }
@@ -55,16 +56,16 @@ namespace Restaurants_REST_API.Controllers
         [Route("by-restaurant/id")]
         public async Task<IActionResult> GetReservationsByRestaurant(int id)
         {
-            if (id < 0)
+            if (!GeneralValidator.isCorrectId(id))
             {
-                return BadRequest($"Incorrect id, expected id grater than 0 but got {id}");
+                return BadRequest($"Restaurant id={id} is invalid");
             }
 
             Restaurant? restaurant = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(id);
 
             if (restaurant == null)
             {
-                return NotFound($"Restaurant {id} not found");
+                return NotFound($"Restaurant not found");
             }
 
             var reservations = await _reservationsApiService.GetReservationsByRestaurantIdAsync(id);
@@ -81,16 +82,16 @@ namespace Restaurants_REST_API.Controllers
         [Route("by-client/id")]
         public async Task<IActionResult> GetReservationsByClient(int id)
         {
-            if (id < 0)
+            if (!GeneralValidator.isCorrectId(id))
             {
-                return BadRequest($"Incorrect id, expected id grater than 0 but got {id}");
+                return BadRequest($"Client id={id} is invalid");
             }
 
             GetClientDTO? client = await _reservationsApiService.GetReservationsByClientIdAsync(id);
 
             if (client == null)
             {
-                return NotFound($"Client {id} not found");
+                return NotFound($"Client not found");
             }
 
             return Ok(client);

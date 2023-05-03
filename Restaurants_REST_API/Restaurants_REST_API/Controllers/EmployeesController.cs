@@ -15,7 +15,7 @@ using Restaurants_REST_API.DTOs.GetDTO;
 
 namespace Restaurants_REST_API.Controllers
 {
-    [Route("api/menage/[controller]")]
+    [Route("api/manage/[controller]")]
     [ApiController]
     public class EmployeesController : ControllerBase
     {
