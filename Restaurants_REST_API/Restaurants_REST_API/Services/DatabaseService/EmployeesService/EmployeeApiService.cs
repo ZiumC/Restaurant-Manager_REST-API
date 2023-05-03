@@ -353,7 +353,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             return true;
         }
 
-        public async Task<bool> UpdateExistingEmployeeByIdAsync(int id, Employee employeeData)
+        public async Task<bool> UpdateEmployeeDataByIdAsync(int id, Employee employeeData)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {

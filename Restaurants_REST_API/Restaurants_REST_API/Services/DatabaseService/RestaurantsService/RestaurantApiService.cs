@@ -361,7 +361,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             return true;
         }
 
-        public async Task<bool> UpdateRestaurantData(int id, Restaurant newRestaurantData)
+        public async Task<bool> UpdateRestaurantDataAsync(int id, Restaurant newRestaurantData)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {

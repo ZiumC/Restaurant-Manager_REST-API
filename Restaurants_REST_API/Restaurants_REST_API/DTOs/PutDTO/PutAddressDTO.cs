@@ -17,7 +17,6 @@ namespace Restaurants_REST_API.DTOs.PutDTO
         [MinLength(1)]
         public string BuildingNumber { get; set; }
         [MaxLength(5)]
-        [MinLength(1)]
         public string? LocalNumber { get; set; }
     }
 }
