@@ -8,7 +8,6 @@ using Restaurants_REST_API.DTOs.PostOrPutDTO;
 using Restaurants_REST_API.Services.UpdateDataService;
 using Restaurants_REST_API.DTOs.PutDTO;
 using Restaurants_REST_API.Services.MapperService;
-using Restaurants_REST_API.DTOs.GetDTO;
 
 namespace Restaurants_REST_API.Controllers
 {
@@ -44,16 +43,15 @@ namespace Restaurants_REST_API.Controllers
         [Route("id")]
         public async Task<IActionResult> GetEmployeeBy(int id)
         {
-            if (id < 0)
+            if (!GeneralValidator.isCorrectId(id))
             {
-                return BadRequest($"Incorrect id, expected id grater than 0 but got {id}");
+                return BadRequest($"Employee id={id} is invalid");
             }
 
-            var employee = await _employeeApiService.GetBasicEmployeeDataByIdAsync(id);
-
+            Employee? employee = await _employeeApiService.GetBasicEmployeeDataByIdAsync(id);
             if (employee == null)
             {
-                return NotFound($"Employee {id} not found");
+                return NotFound($"Employee id={id} not found");
             }
 
             return Ok(await _employeeApiService.GetDetailedEmployeeDataAsync(employee));
@@ -63,7 +61,7 @@ namespace Restaurants_REST_API.Controllers
         [Route("supervisors")]
         public async Task<IActionResult> GetSupervisors()
         {
-            var supervisorsId = await _employeeApiService.GetSupervisorsIdAsync();
+            IEnumerable<int>? supervisorsId = await _employeeApiService.GetSupervisorsIdAsync();
 
             if (supervisorsId == null || supervisorsId.Count() == 0)
             {
@@ -80,14 +78,14 @@ namespace Restaurants_REST_API.Controllers
          */
         [HttpGet]
         [Route("supervisor/id")]
-        public async Task<IActionResult> GetSupervisors(int id)
+        public async Task<IActionResult> GetSupervisorBy(int id)
         {
             if (!GeneralValidator.isCorrectId(id))
             {
-                return BadRequest($"Id={id} is invalid");
+                return BadRequest($"Supervisor id={id} is invalid");
             }
 
-            var supervisorsIdList = await _employeeApiService.GetSupervisorsIdAsync();
+            IEnumerable<int>? supervisorsIdList = await _employeeApiService.GetSupervisorsIdAsync();
 
             if (supervisorsIdList == null)
             {
@@ -96,7 +94,7 @@ namespace Restaurants_REST_API.Controllers
 
             if (!supervisorsIdList.Contains(id))
             {
-                return NotFound($"Supervisor id={id} not found");
+                return NotFound($"Supervisor not found");
             }
 
             return Ok(await _employeeApiService.GetSupervisorsDetailsAsync(new List<int> { id }));
@@ -104,42 +102,41 @@ namespace Restaurants_REST_API.Controllers
 
         [HttpGet]
         [Route("owner")]
-        public async Task<IActionResult> GetOwnerDerails()
+        public async Task<IActionResult> GetOwnerDetails()
         {
-            Employee? ownerBasicData = await _employeeApiService.GetOwnerBasicDataAsync();
+            Employee? ownerDatabase = await _employeeApiService.GetOwnerBasicDataAsync();
 
-            if (ownerBasicData == null)
+            if (ownerDatabase == null)
             {
-                return NotFound($"Owner not found");
+                return NotFound("Owner not found");
             }
 
-            return Ok(await _employeeApiService.GetDetailedEmployeeDataAsync(ownerBasicData));
+            return Ok(await _employeeApiService.GetDetailedEmployeeDataAsync(ownerDatabase));
         }
 
         [HttpGet]
         [Route("by-restaurant/id")]
         public async Task<IActionResult> GetEmployeeByRestaurant(int id)
         {
-            if (id < 0)
+            if (!GeneralValidator.isCorrectId(id))
             {
-                return BadRequest($"Incorrect id, expected id grater than 0 but got {id}");
+                return BadRequest($"Restaurant id={id} is invalid");
             }
 
             Restaurant? restaurant = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(id);
-
             if (restaurant == null)
             {
                 return NotFound($"Restaurant not found");
             }
 
-            var employeesByRestaurant = await _employeeApiService.GetAllEmployeesByRestaurantIdAsync(id);
+            IEnumerable<GetEmployeeDTO> employeesInRestaurant = await _employeeApiService.GetAllEmployeesByRestaurantIdAsync(id);
 
-            if (employeesByRestaurant.Count() == 0)
+            if (employeesInRestaurant.Count() == 0)
             {
                 return NotFound($"Employees not found");
             }
 
-            return Ok(employeesByRestaurant);
+            return Ok(employeesInRestaurant);
         }
 
         [HttpPost]
@@ -190,17 +187,16 @@ namespace Restaurants_REST_API.Controllers
             if (newEmployee.Certificates != null && newEmployee.Certificates.Count() > 0)
             {
                 certificatesExist = true;
-                foreach (var certificate in newEmployee.Certificates)
+
+                int countOfEmptyCertificateName = newEmployee.Certificates.Where(nec => nec.Name.Replace("\\s", "").Equals("")).ToList().Count();
+                if (countOfEmptyCertificateName > 0)
                 {
-                    if (GeneralValidator.isEmptyNameOf(certificate.Name))
-                    {
-                        return BadRequest("One or more certificates is invalid");
-                    }
+                    return BadRequest("One or more certificates has empty name");
                 }
             }
 
             //need to check if emp exist in db
-            var allEmployees = await _employeeApiService.GetAllEmployeesAsync();
+            IEnumerable<GetEmployeeDTO> allEmployees = await _employeeApiService.GetAllEmployeesAsync();
             if (EmployeeValidator.isEmployeeExistIn(allEmployees, newEmployee))
             {
                 return BadRequest("Employee already exist");
@@ -235,7 +231,7 @@ namespace Restaurants_REST_API.Controllers
 
         [HttpPost]
         [Route("certificate/by-employee/id")]
-        public async Task<IActionResult> AddCertificateToEmployeeBy(int id, IEnumerable<PostCertificateDTO> newCertificates)
+        public async Task<IActionResult> AddCertificateByEmployee(int id, IEnumerable<PostCertificateDTO> newCertificates)
         {
             if (!GeneralValidator.isCorrectId(id))
             {
@@ -247,8 +243,8 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Certificates can't be empty");
             }
 
-            int countOfEmptyNames = newCertificates.Where(nc => nc.Name.Replace("\\s", "").Equals("")).ToList().Count();
-            if (countOfEmptyNames > 0)
+            int countOfEmptyCertificateNames = newCertificates.Where(nc => nc.Name.Replace("\\s", "").Equals("")).ToList().Count();
+            if (countOfEmptyCertificateNames > 0)
             {
                 return BadRequest("One or more certificates has empty name");
             }
@@ -270,7 +266,7 @@ namespace Restaurants_REST_API.Controllers
 
         [HttpPut]
         [Route("id")]
-        public async Task<IActionResult> UpdateEmployeeData(int id, PutEmployeeDTO? putEmpData)
+        public async Task<IActionResult> UpdateEmployeeDataByEmployee(int id, PutEmployeeDTO? putEmpData)
         {
             if (!GeneralValidator.isCorrectId(id))
             {
@@ -333,7 +329,7 @@ namespace Restaurants_REST_API.Controllers
 
         [HttpPut]
         [Route("certificates/by-employee/id")]
-        public async Task<IActionResult> UpdateEmployeeCertificates(int id, IEnumerable<PutCertificateDTO> putEmpCertificates)
+        public async Task<IActionResult> UpdateEmployeeCertificatesByEmployee(int id, IEnumerable<PutCertificateDTO> putEmpCertificates)
         {
             if (!GeneralValidator.isCorrectId(id))
             {
@@ -345,12 +341,11 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Certificates can't be empty");
             }
 
-            foreach (PutCertificateDTO cert in putEmpCertificates)
+
+            int countOfEmptyCertificateName = putEmpCertificates.Where(pec => pec.Name.Replace("\\s", "").Equals("")).ToList().Count();
+            if (countOfEmptyCertificateName > 0)
             {
-                if (GeneralValidator.isEmptyNameOf(cert.Name))
-                {
-                    return BadRequest("One or more certificates is invalid");
-                }
+                return BadRequest("One or more certificates has empty name");
             }
 
             Employee? employeeDatabase = await _employeeApiService.GetBasicEmployeeDataByIdAsync(id);

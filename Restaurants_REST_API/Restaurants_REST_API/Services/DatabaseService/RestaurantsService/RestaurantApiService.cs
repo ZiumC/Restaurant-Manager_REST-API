@@ -284,6 +284,29 @@ namespace Restaurants_REST_API.Services.Database_Service
                  ).FirstOrDefaultAsync();
         }
 
+        public async Task<bool> AddNewEmployeeTypeAsync(string name)
+        {
+            try
+            {
+                var newType = _context.Add
+                (
+                    new EmployeeType
+                    {
+                        Name = name
+                    }
+                );
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return false;
+            }
+
+            return true;
+        }
+
         public async Task<bool> AddNewRestaurantAsync(PostRestaurantDTO newRestaurant)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())

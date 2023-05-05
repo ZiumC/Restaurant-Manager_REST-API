@@ -161,31 +161,33 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Dish name can't be empty");
             }
 
-            if (newDish.IdRestaurants.Count() > 0)
+            if (newDish.IdRestaurants.Count() == 0)
             {
-                List<GetRestaurantDTO> restaurants = new List<GetRestaurantDTO>();
+                return BadRequest("Restasurants id are required");
+            }
 
-                foreach (int restaurantId in newDish.IdRestaurants)
+            List<GetRestaurantDTO> restaurants = new List<GetRestaurantDTO>();
+
+            foreach (int restaurantId in newDish.IdRestaurants)
+            {
+                if (!GeneralValidator.isCorrectId(restaurantId))
                 {
-                    if (!GeneralValidator.isCorrectId(restaurantId))
-                    {
-                        return BadRequest("One or many restaurant id isn't correct");
-                    }
-
-                    Restaurant? restaurant = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(restaurantId);
-
-                    if (restaurant == null)
-                    {
-                        return NotFound($"Given restaurant id={restaurantId} is invalid");
-                    }
-
-                    restaurants.Add(await _restaurantsApiService.GetRestaurantDetailedDataAsync(restaurant));
+                    return BadRequest("One or many restaurant id isn't correct");
                 }
 
-                if (RestaurantValidator.isDishExistIn(restaurants, newDish))
+                Restaurant? restaurant = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(restaurantId);
+
+                if (restaurant == null)
                 {
-                    return BadRequest("Dish already exist in one or many restaurants");
+                    return NotFound($"Restaurant id={restaurantId} not found");
                 }
+
+                restaurants.Add(await _restaurantsApiService.GetRestaurantDetailedDataAsync(restaurant));
+            }
+
+            if (RestaurantValidator.isDishExistIn(restaurants, newDish))
+            {
+                return BadRequest("Dish already exist in one or many restaurants");
             }
 
             bool isDishAdded = await _restaurantsApiService.AddNewDishToRestaurantsAsync(newDish);
@@ -306,7 +308,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest($"Employee type {name} already exist");
             }
 
-            bool isTypeHasBeenAdded = await _employeeApiService.AddNewEmployeeTypeAsync(name);
+            bool isTypeHasBeenAdded = await _restaurantsApiService.AddNewEmployeeTypeAsync(name);
             if (!isTypeHasBeenAdded)
             {
                 return BadRequest("Unable to add new type");
