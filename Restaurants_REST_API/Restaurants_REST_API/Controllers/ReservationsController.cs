@@ -20,9 +20,9 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetReservations()
+        public async Task<IActionResult> GetAllReservations()
         {
-            var reservations = await _reservationsApiService.GetAllReservationsAsync();
+            IEnumerable<GetReservationDTO>? reservations = await _reservationsApiService.GetAllReservationsAsync();
 
             if (reservations == null)
             {
@@ -67,7 +67,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound($"Restaurant not found");
             }
 
-            var reservations = await _reservationsApiService.GetReservationsByRestaurantIdAsync(id);
+            IEnumerable<GetReservationDTO>? reservations = await _reservationsApiService.GetReservationsByRestaurantIdAsync(id);
 
             if (reservations == null || reservations.Count() == 0)
             {
