@@ -76,6 +76,19 @@ namespace Restaurants_REST_API.Controllers
             return Ok(dishDetailsData);
         }
 
+        [HttpGet]
+        [Route("types")]
+        public async Task<IActionResult> GetAllEmployeeTypes()
+        {
+            var types = await _employeeApiService.GetAllTypesAsync();
+            if (types == null)
+            {
+                return NotFound("Employee types not found");
+            }
+
+            return Ok(types);
+        }
+
         [HttpPost]
         public async Task<IActionResult> AddNewRestaurant(PostRestaurantDTO newRestaurant)
         {
@@ -276,6 +289,138 @@ namespace Restaurants_REST_API.Controllers
             }
 
             return Ok($"Employee {employeeDatabase.FirstName} has been hired in restaurant {restaurantDatabase.Name}");
+        }
+
+        [HttpPost]
+        [Route("new-type")]
+        public async Task<IActionResult> AddNewTypeOfEmployee(string name)
+        {
+            if (GeneralValidator.isEmptyNameOf(name))
+            {
+                return BadRequest("Employee type can't be empty");
+            }
+
+            IEnumerable<GetEmployeeTypeDTO?> allTypes = await _employeeApiService.GetAllTypesAsync();
+            if (EmployeeTypeValidator.isTypeExistInByName(allTypes, name))
+            {
+                return BadRequest($"Employee type {name} already exist");
+            }
+
+            bool isTypeHasBeenAdded = await _employeeApiService.AddNewEmployeeTypeAsync(name);
+            if (!isTypeHasBeenAdded)
+            {
+                return BadRequest("Unable to add new type");
+            }
+
+            return Ok("New employee type has been added");
+        }
+
+        [HttpPut]
+        [Route("update-emp-type")]
+        public async Task<IActionResult> UpdateEmployeeType(int empId, int typeId, int restaurantId)
+        {
+            //checking if ids are valid
+            if (!GeneralValidator.isCorrectId(empId))
+            {
+                return BadRequest($"Employee id={empId} is invalid");
+            }
+
+            if (!GeneralValidator.isCorrectId(typeId))
+            {
+                return BadRequest($"Employee type id={typeId} is invalid");
+            }
+
+            if (!GeneralValidator.isCorrectId(restaurantId))
+            {
+                return BadRequest($"Restaurant id={restaurantId} is invalid");
+            }
+
+            //checking if types exist in db
+            IEnumerable<GetEmployeeTypeDTO?> allTypes = await _employeeApiService.GetAllTypesAsync();
+            if (!EmployeeTypeValidator.isTypesExist(allTypes))
+            {
+                return NotFound("Employee types not found in data base");
+            }
+
+            //checking if type exist
+            if (!EmployeeTypeValidator.isTypeExistInById(allTypes, typeId))
+            {
+                return NotFound($"Type id={typeId} not found");
+            }
+
+            //checking if employee exist
+            Employee? employeeDatabase = await _employeeApiService.GetBasicEmployeeDataByIdAsync(empId);
+            if (employeeDatabase == null)
+            {
+                return NotFound("Employee not found");
+            }
+
+            //checking if restaurant exist
+            Restaurant? restaurantDatabase = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(restaurantId);
+            if (restaurantDatabase == null)
+            {
+                return NotFound("Restaurant not found");
+            }
+
+            IEnumerable<EmployeesInRestaurant?> restaurantWorkers = await _restaurantsApiService.GetEmployeeInRestaurantDataByRestaurantIdAsync(restaurantId);
+            if (restaurantWorkers != null)
+            {
+                //checking if employee exist in passed restaurant id
+                int? empIdInRestaurantQuery = restaurantWorkers
+                    .Where(rw => rw?.IdEmployee == empId)
+                    .Select(rw => rw?.IdEmployee)
+                    .FirstOrDefault();
+                if (empIdInRestaurantQuery == null)
+                {
+                    return NotFound($"Employee {employeeDatabase.FirstName} not found in restaurant {restaurantDatabase.Name}");
+                }
+
+                //checking if employee is already hired as passed type id in passed restaurant id
+                int? empIdInRestaurantWithTypeQuery = restaurantWorkers
+                    .Where(rw => rw?.IdType == typeId && rw.IdEmployee == empId)
+                    .Select(rw => rw?.IdEmployee)
+                    .FirstOrDefault();
+
+                if (empIdInRestaurantWithTypeQuery != null)
+                {
+                    string? typeNameQuery = allTypes
+                           .Where(at => at?.IdType == typeId)
+                           .Select(at => at?.Name)
+                           .FirstOrDefault();
+
+                    return BadRequest($"Employee {employeeDatabase.FirstName} has already type {typeNameQuery} in restaurant {restaurantDatabase.Name}");
+                }
+
+                //parsing owner type id from app settings
+                int? ownerTypeId = null;
+                try
+                {
+                    ownerTypeId = int.Parse(_config["ApplicationSettings:OwnerTypeId"]);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return BadRequest("Something went wrong, bad value to parse");
+                }
+
+                //checking if owner already exist 
+                if (typeId == ownerTypeId)
+                {
+                    var ownersCount = restaurantWorkers.Where(t => t?.IdType == 1).ToList();
+                    if (ownersCount != null && ownersCount.Count() >= 1)
+                    {
+                        return BadRequest($"Unable to add type Owner because owner already exists");
+                    }
+                }
+            }
+
+            bool isEmployeeTypeChanged = await _employeeApiService.UpdateEmployeeTypeAsync(empId, typeId, restaurantId);
+            if (!isEmployeeTypeChanged)
+            {
+                return BadRequest($"Unalbe to change employee type in restaurant {restaurantDatabase.Name}");
+            }
+
+            return Ok("Employee type has been updated");
         }
 
         [HttpPut]
