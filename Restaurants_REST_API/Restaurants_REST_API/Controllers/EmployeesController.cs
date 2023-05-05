@@ -231,7 +231,41 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Something went wrong unable to add new Employee");
             }
             return Ok("New Employee has been added");
+        }
 
+        [HttpPost]
+        [Route("certificate/by-employee/id")]
+        public async Task<IActionResult> AddCertificateToEmployeeBy(int id, IEnumerable<PostCertificateDTO> newCertificates)
+        {
+            if (!GeneralValidator.isCorrectId(id))
+            {
+                return BadRequest($"Employee id={id} is invalid");
+            }
+
+            if (newCertificates == null || newCertificates.Count() == 0)
+            {
+                return BadRequest("Certificates can't be empty");
+            }
+
+            int countOfEmptyNames = newCertificates.Where(nc => nc.Name.Replace("\\s", "").Equals("")).ToList().Count();
+            if (countOfEmptyNames > 0)
+            {
+                return BadRequest("One or more certificates has empty name");
+            }
+
+            Employee? employeeDatabase = await _employeeApiService.GetBasicEmployeeDataByIdAsync(id);
+            if (employeeDatabase == null)
+            {
+                return NotFound("Employee not found");
+            }
+
+            bool isCertificateHasBeenAdded = await _employeeApiService.AddNewEmployeeCertificateAsync(id, newCertificates);
+            if (!isCertificateHasBeenAdded)
+            {
+                return BadRequest($"Something went wrong unable to add certificates to employee {employeeDatabase.FirstName}");
+            }
+
+            return Ok($"Certificate has been added to employee {employeeDatabase.FirstName}");
         }
 
         [HttpPut]
@@ -351,7 +385,7 @@ namespace Restaurants_REST_API.Controllers
 
             return Ok("Employee certificates has been updated");
         }
-        
+
 
         [HttpDelete]
         [Route("id")]

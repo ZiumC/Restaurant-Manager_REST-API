@@ -365,6 +365,48 @@ namespace Restaurants_REST_API.Services.Database_Service
             return true;
         }
 
+        public async Task<bool> AddNewEmployeeCertificateAsync(int empId, IEnumerable<PostCertificateDTO> certificatesData)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    foreach (PostCertificateDTO postCert in certificatesData)
+                    {
+                        var newCertificate = _context.Add
+                        (
+                            new Certificate
+                            {
+                                Name = postCert.Name
+                            }
+                        );
+
+                        await _context.SaveChangesAsync();
+
+                        var newEmployeeCertificate = _context.Add
+                            (
+                                new EmployeeCertificates
+                                {
+                                    IdEmployee = empId,
+                                    ExpirationDate = postCert.ExpirationDate,
+                                    IdCertificate = newCertificate.Entity.IdCertificate
+                                }
+                            );
+
+                        await _context.SaveChangesAsync();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    await transaction.RollbackAsync();
+                    return false;
+                }
+                await transaction.CommitAsync();
+                return true;
+            }
+        }
+
         public async Task<bool> UpdateEmployeeDataByIdAsync(int id, Employee employeeData)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
