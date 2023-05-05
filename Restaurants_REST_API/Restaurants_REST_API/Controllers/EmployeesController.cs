@@ -393,7 +393,7 @@ namespace Restaurants_REST_API.Controllers
         [Route("type")]
         public async Task<IActionResult> UpdateEmployeeType(int empId, int typeId, int restaurantId)
         {
-            //checking if id are valid
+            //checking if ids are valid
             if (!GeneralValidator.isCorrectId(empId))
             {
                 return BadRequest($"Employee id={empId} is invalid");
@@ -495,6 +495,25 @@ namespace Restaurants_REST_API.Controllers
             }
 
             return Ok("Employee type has been updated");
+        }
+
+        [HttpDelete]
+        [Route("id")]
+        public async Task<IActionResult> RemoveEmployeeBy(int id)
+        {
+            if (!GeneralValidator.isCorrectId(id))
+            {
+                return BadRequest($"Employee id={id} is invalid");
+            }
+
+            Employee? employeeDatabase = await _employeeApiService.GetBasicEmployeeDataByIdAsync(id);
+            if (employeeDatabase == null)
+            {
+                return NotFound($"Employee id={id} not found");
+            }
+
+
+            return Ok($"Employee has been removed");
         }
     }
 }
