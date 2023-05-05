@@ -34,7 +34,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                                                          ComplainDate = c.ComplainDate,
                                                          Status = c.ComplainStatus,
                                                          Message = c.ComplainMessage
-                                                            
+
                                                      }
                                                    ).FirstOrDefault()
                           }
