@@ -453,5 +453,54 @@ namespace Restaurants_REST_API.Services.Database_Service
                 return true;
             }
         }
+
+        public async Task<bool> DeleteEmployeeDataByIdAsync(int empId, GetEmployeeDTO employeeData)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var employeeAddressQuery = await
+                       (_context.Address.Where(a => a.IdAddress == employeeData.Address.IdAddress)).FirstAsync();
+
+                    var workerQuery = await
+                       (_context.EmployeesInRestaurants.Where(eir => eir.IdEmployee == empId)).ToListAsync();
+
+                    foreach (EmployeesInRestaurant worker in workerQuery)
+                    {
+                        var singleWorkerQuery = await
+                            (_context.EmployeesInRestaurants.Where(eir => eir.IdEmployee == empId)).FirstAsync();
+
+                        _context.Remove(singleWorkerQuery);
+                        await _context.SaveChangesAsync();
+                    }
+
+                    //removing address
+                    _context.Remove(employeeAddressQuery);
+                    await _context.SaveChangesAsync();
+
+                    if (employeeData.Certificates != null && employeeData.Certificates.Count() > 0)
+                    {
+                        foreach (GetCertificateDTO empCert in employeeData.Certificates)
+                        {
+                            var certificateQuery = await
+                                (_context.Certificates.Where(c => c.IdCertificate == empCert.IdCertificate)).FirstAsync();
+
+                            //removing each employee certificate
+                            _context.Remove(certificateQuery);
+                            await _context.SaveChangesAsync();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    await transaction.RollbackAsync();
+                    return false;
+                }
+                await transaction.CommitAsync();
+                return true;
+            }
+        }
     }
 }

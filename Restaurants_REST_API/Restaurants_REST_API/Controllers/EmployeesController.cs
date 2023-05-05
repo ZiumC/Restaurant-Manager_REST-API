@@ -381,7 +381,6 @@ namespace Restaurants_REST_API.Controllers
             return Ok("Employee certificates has been updated");
         }
 
-
         [HttpDelete]
         [Route("id")]
         public async Task<IActionResult> RemoveEmployeeBy(int id)
@@ -394,9 +393,15 @@ namespace Restaurants_REST_API.Controllers
             Employee? employeeDatabase = await _employeeApiService.GetBasicEmployeeDataByIdAsync(id);
             if (employeeDatabase == null)
             {
-                return NotFound($"Employee id={id} not found");
+                return NotFound($"Employee not found");
             }
 
+            GetEmployeeDTO employeeDetailsDatabase = await _employeeApiService.GetDetailedEmployeeDataAsync(employeeDatabase);
+            bool isEmployeeHasBeenRemoved = await _employeeApiService.DeleteEmployeeDataByIdAsync(id, employeeDetailsDatabase);
+            if (!isEmployeeHasBeenRemoved)
+            {
+                return BadRequest("Something went wrong unable to delete employee");
+            }
 
             return Ok($"Employee has been removed");
         }
