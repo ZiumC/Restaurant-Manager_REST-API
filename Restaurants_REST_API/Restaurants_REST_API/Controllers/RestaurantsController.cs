@@ -54,7 +54,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound($"Restaurant not found");
             }
 
-            GetRestaurantDTO restaurantDTO = await _restaurantsApiService.GetRestaurantDetailedDataAsync(restaurant);
+            GetRestaurantDTO restaurantDTO = await _restaurantsApiService.GetDetailedRestaurantDataAsync(restaurant);
 
             return Ok(restaurantDTO);
         }
@@ -67,7 +67,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest($"Dish id={id} is invalid");
             }
 
-            GetDishDTO? dishDetailsData = await _restaurantsApiService.GetDishDetailsByIdAsync(id);
+            GetDishDTO? dishDetailsData = await _restaurantsApiService.GetDetailedDishDataByIdAsync(id);
             if (dishDetailsData == null)
             {
                 return NotFound($"Dish id={id} not found");
@@ -80,7 +80,7 @@ namespace Restaurants_REST_API.Controllers
         [Route("types")]
         public async Task<IActionResult> GetAllEmployeeTypes()
         {
-            var types = await _employeeApiService.GetAllTypesAsync();
+            var types = await _restaurantsApiService.GetEmployeeTypesAsync();
             if (types == null)
             {
                 return NotFound("Employee types not found");
@@ -182,7 +182,7 @@ namespace Restaurants_REST_API.Controllers
                     return NotFound($"Restaurant id={restaurantId} not found");
                 }
 
-                restaurants.Add(await _restaurantsApiService.GetRestaurantDetailedDataAsync(restaurant));
+                restaurants.Add(await _restaurantsApiService.GetDetailedRestaurantDataAsync(restaurant));
             }
 
             if (RestaurantValidator.isDishExistIn(restaurants, newDish))
@@ -220,7 +220,7 @@ namespace Restaurants_REST_API.Controllers
             }
 
             //checking if types exist in db
-            IEnumerable<GetEmployeeTypeDTO?> allTypes = await _employeeApiService.GetAllTypesAsync();
+            IEnumerable<GetEmployeeTypeDTO?> allTypes = await _restaurantsApiService.GetEmployeeTypesAsync();
             if (!EmployeeTypeValidator.isTypesExist(allTypes))
             {
                 return NotFound("Employee types not found in data base");
@@ -246,7 +246,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound($"Restaurant id={restaurantId} not found");
             }
 
-            IEnumerable<EmployeesInRestaurant?> restaurantWorkers = await _restaurantsApiService.GetEmployeeInRestaurantDataByRestaurantIdAsync(restaurantId);
+            IEnumerable<EmployeesInRestaurant?> restaurantWorkers = await _restaurantsApiService.GetHiredEmployeesByRestaurantIdAsync(restaurantId);
             if (restaurantWorkers != null)
             {
                 //checking if employee exist in passed restaurant id
@@ -284,7 +284,7 @@ namespace Restaurants_REST_API.Controllers
 
             }
 
-            bool isEmployeeHired = await _restaurantsApiService.HireNewEmployeeAsync(empId, typeId, restaurantId);
+            bool isEmployeeHired = await _restaurantsApiService.AddNewEmployeeToRestaurantAsync(empId, typeId, restaurantId);
             if (!isEmployeeHired)
             {
                 return BadRequest("Something went wrong unable to hire employee");
@@ -302,7 +302,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Employee type can't be empty");
             }
 
-            IEnumerable<GetEmployeeTypeDTO?> allTypes = await _employeeApiService.GetAllTypesAsync();
+            IEnumerable<GetEmployeeTypeDTO?> allTypes = await _restaurantsApiService.GetEmployeeTypesAsync();
             if (EmployeeTypeValidator.isTypeExistInByName(allTypes, name))
             {
                 return BadRequest($"Employee type {name} already exist");
@@ -338,7 +338,7 @@ namespace Restaurants_REST_API.Controllers
             }
 
             //checking if types exist in db
-            IEnumerable<GetEmployeeTypeDTO?> allTypes = await _employeeApiService.GetAllTypesAsync();
+            IEnumerable<GetEmployeeTypeDTO?> allTypes = await _restaurantsApiService.GetEmployeeTypesAsync();
             if (!EmployeeTypeValidator.isTypesExist(allTypes))
             {
                 return NotFound("Employee types not found in data base");
@@ -364,7 +364,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound("Restaurant not found");
             }
 
-            IEnumerable<EmployeesInRestaurant?> restaurantWorkers = await _restaurantsApiService.GetEmployeeInRestaurantDataByRestaurantIdAsync(restaurantId);
+            IEnumerable<EmployeesInRestaurant?> restaurantWorkers = await _restaurantsApiService.GetHiredEmployeesByRestaurantIdAsync(restaurantId);
             if (restaurantWorkers != null)
             {
                 //checking if employee exist in passed restaurant id
@@ -416,7 +416,7 @@ namespace Restaurants_REST_API.Controllers
                 }
             }
 
-            bool isEmployeeTypeChanged = await _employeeApiService.UpdateEmployeeTypeAsync(empId, typeId, restaurantId);
+            bool isEmployeeTypeChanged = await _restaurantsApiService.UpdateEmployeeTypeAsync(empId, typeId, restaurantId);
             if (!isEmployeeTypeChanged)
             {
                 return BadRequest($"Unalbe to change employee type in restaurant {restaurantDatabase.Name}");
@@ -469,7 +469,7 @@ namespace Restaurants_REST_API.Controllers
             {
                 return NotFound($"Restaurant id={id} not found");
             }
-            GetRestaurantDTO restaurantDetailsDatabase = await _restaurantsApiService.GetRestaurantDetailedDataAsync(restaurantDatabase);
+            GetRestaurantDTO restaurantDetailsDatabase = await _restaurantsApiService.GetDetailedRestaurantDataAsync(restaurantDatabase);
             MapRestaurantDataService restaurantDataMapper = new MapRestaurantDataService(restaurantDetailsDatabase, putRestaurantData);
             Restaurant restaurantUpdatedData = restaurantDataMapper.GetRestaurantUpdatedData();
 
@@ -496,7 +496,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Dish name can't be empty");
             }
 
-            GetDishDTO? dishDetailsDatabase = await _restaurantsApiService.GetDishDetailsByIdAsync(id);
+            GetDishDTO? dishDetailsDatabase = await _restaurantsApiService.GetDetailedDishDataByIdAsync(id);
             if (dishDetailsDatabase == null)
             {
                 return NotFound($"Dish id={id} not found");

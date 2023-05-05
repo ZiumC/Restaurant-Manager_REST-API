@@ -11,23 +11,21 @@ namespace Restaurants_REST_API.Services.Database_Service
         public Task<IEnumerable<GetEmployeeDTO>> GetAllEmployeesAsync();
         public Task<Employee?> GetBasicEmployeeDataByIdAsync(int empId);
         public Task<GetEmployeeDTO> GetDetailedEmployeeDataAsync(Employee employeeData);
-        public Task<IEnumerable<GetEmployeeDTO>> GetSupervisorsDetailsAsync(List<int> supervisorsId);
+        public Task<IEnumerable<GetEmployeeDTO>> GetDetailedSupervisorsDataAsync(List<int> supervisorsId);
         public Task<IEnumerable<int>?> GetSupervisorsIdAsync();
 
         /*
-         * this method is specially doesn't implemented, because implementation would be very similar to
+         * this method is doesn't implemented because implementation would be very similar to
          * implementation of GetSupervisorsDetailsAsync(List<int>)
          */
         //public Task<Employee> GetSupervisorDetailsByIdAsync(int id);
 
-        public Task<Employee?> GetOwnerBasicDataAsync();
-        public Task<IEnumerable<GetEmployeeDTO>> GetAllEmployeesByRestaurantIdAsync(int restaurantId);
-        public Task<IEnumerable<GetEmployeeTypeDTO?>> GetAllTypesAsync();
+        public Task<Employee?> GetBasicOwnerDataAsync();
+        public Task<IEnumerable<GetEmployeeDTO>> GetDetailedEmployeeDataByRestaurantIdAsync(int restaurantId);
         public Task<bool> AddNewEmployeeAsync(PostEmployeeDTO newEmployee, bool certificatesExist);
-        public Task<bool> AddNewEmployeeCertificateAsync(int empId, IEnumerable<PostCertificateDTO> certificatesData);
+        public Task<bool> AddNewEmployeeCertificatesAsync(int empId, IEnumerable<PostCertificateDTO> certificatesData);
         public Task<bool> UpdateEmployeeDataByIdAsync(int empId, Employee updatedEmployeeData);
-        public Task<bool> UpdateExistingEmployeeCertificatesByIdAsync(List<PutCertificateDTO> updatedCertificatesData, List<int> updatedCertificatesId);
-        public Task<bool> UpdateEmployeeTypeAsync(int empId, int typeId, int restaurantId);
+        public Task<bool> UpdateEmployeeCertificatesByIdAsync(List<PutCertificateDTO> updatedCertificatesData, List<int> updatedCertificatesId);
 
     }
 }

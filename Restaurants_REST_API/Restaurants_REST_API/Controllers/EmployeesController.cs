@@ -69,7 +69,7 @@ namespace Restaurants_REST_API.Controllers
 
             }
 
-            return Ok(await _employeeApiService.GetSupervisorsDetailsAsync((List<int>)supervisorsId));
+            return Ok(await _employeeApiService.GetDetailedSupervisorsDataAsync((List<int>)supervisorsId));
         }
 
         /*
@@ -97,14 +97,14 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound($"Supervisor not found");
             }
 
-            return Ok(await _employeeApiService.GetSupervisorsDetailsAsync(new List<int> { id }));
+            return Ok(await _employeeApiService.GetDetailedSupervisorsDataAsync(new List<int> { id }));
         }
 
         [HttpGet]
         [Route("owner")]
         public async Task<IActionResult> GetOwnerDetails()
         {
-            Employee? ownerDatabase = await _employeeApiService.GetOwnerBasicDataAsync();
+            Employee? ownerDatabase = await _employeeApiService.GetBasicOwnerDataAsync();
 
             if (ownerDatabase == null)
             {
@@ -129,7 +129,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound($"Restaurant not found");
             }
 
-            IEnumerable<GetEmployeeDTO> employeesInRestaurant = await _employeeApiService.GetAllEmployeesByRestaurantIdAsync(id);
+            IEnumerable<GetEmployeeDTO> employeesInRestaurant = await _employeeApiService.GetDetailedEmployeeDataByRestaurantIdAsync(id);
 
             if (employeesInRestaurant.Count() == 0)
             {
@@ -255,7 +255,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound("Employee not found");
             }
 
-            bool isCertificateHasBeenAdded = await _employeeApiService.AddNewEmployeeCertificateAsync(id, newCertificates);
+            bool isCertificateHasBeenAdded = await _employeeApiService.AddNewEmployeeCertificatesAsync(id, newCertificates);
             if (!isCertificateHasBeenAdded)
             {
                 return BadRequest($"Something went wrong unable to add certificates to employee {employeeDatabase.FirstName}");
@@ -372,7 +372,7 @@ namespace Restaurants_REST_API.Controllers
             List<PutCertificateDTO> updatedCertificatesData = employeeCertificatesMapper.GetUpdatedCertificateNames();
             List<int> updatedCertificatesId = employeeCertificatesMapper.GetUpdatedCertificatesId();
 
-            bool isCertificatesHasBeenUpdated = await _employeeApiService.UpdateExistingEmployeeCertificatesByIdAsync(updatedCertificatesData, updatedCertificatesId);
+            bool isCertificatesHasBeenUpdated = await _employeeApiService.UpdateEmployeeCertificatesByIdAsync(updatedCertificatesData, updatedCertificatesId);
             if (!isCertificatesHasBeenUpdated)
             {
                 return BadRequest("Unable to update certificates name");

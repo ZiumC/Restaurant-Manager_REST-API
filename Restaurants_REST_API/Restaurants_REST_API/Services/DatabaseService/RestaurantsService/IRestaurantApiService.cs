@@ -8,16 +8,18 @@ namespace Restaurants_REST_API.Services.Database_Service
     public interface IRestaurantApiService
     {
         public Task<Restaurant?> GetBasicRestaurantDataByIdAsync(int restaurantId);
-        public Task<GetRestaurantDTO> GetRestaurantDetailedDataAsync(Restaurant restaurant);
+        public Task<GetRestaurantDTO> GetDetailedRestaurantDataAsync(Restaurant restaurant);
         public Task<IEnumerable<GetRestaurantDTO?>> GetAllRestaurantsAsync();
-        public Task<IEnumerable<EmployeesInRestaurant?>> GetEmployeeInRestaurantDataByRestaurantIdAsync(int restaurantId);
-        public Task<GetDishDTO?> GetDishDetailsByIdAsync(int dishId);
+        public Task<IEnumerable<EmployeesInRestaurant?>> GetHiredEmployeesByRestaurantIdAsync(int restaurantId);
+        public Task<IEnumerable<GetEmployeeTypeDTO?>> GetEmployeeTypesAsync();
+        public Task<GetDishDTO?> GetDetailedDishDataByIdAsync(int dishId);
         public Task<bool> AddNewEmployeeTypeAsync(string name);
         public Task<bool> AddNewRestaurantAsync(PostRestaurantDTO newRestaurant);
         public Task<bool> AddNewDishToRestaurantsAsync(PostDishDTO newDish);
-        public Task<bool> HireNewEmployeeAsync(int empId, int typeId, int restaurantId);
+        public Task<bool> AddNewEmployeeToRestaurantAsync(int empId, int typeId, int restaurantId);
         public Task<bool> UpdateRestaurantDataAsync(int id, Restaurant newRestaurantData);
         public Task<bool> UpdateDishDataAsync(int id, Dish newDishData);
+        public Task<bool> UpdateEmployeeTypeAsync(int empId, int typeId, int restaurantId);
     }
 
 }

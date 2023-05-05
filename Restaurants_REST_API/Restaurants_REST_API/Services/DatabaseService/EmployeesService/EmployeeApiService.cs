@@ -129,7 +129,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                          ).ToListAsync();
         }
 
-        public async Task<IEnumerable<GetEmployeeDTO>> GetSupervisorsDetailsAsync(List<int> supervisorsID)
+        public async Task<IEnumerable<GetEmployeeDTO>> GetDetailedSupervisorsDataAsync(List<int> supervisorsID)
         {
 
             return await (from emp in _context.Employees
@@ -181,7 +181,7 @@ namespace Restaurants_REST_API.Services.Database_Service
         }
 
         // Owner employee type should has always id equals 1.
-        public async Task<Employee?> GetOwnerBasicDataAsync()
+        public async Task<Employee?> GetBasicOwnerDataAsync()
         {
             int? ownerId = null;
             try
@@ -208,7 +208,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 
         }
 
-        public async Task<IEnumerable<GetEmployeeDTO>> GetAllEmployeesByRestaurantIdAsync(int restaurantId)
+        public async Task<IEnumerable<GetEmployeeDTO>> GetDetailedEmployeeDataByRestaurantIdAsync(int restaurantId)
         {
             return await (from eir in _context.EmployeesInRestaurants
                           join emp in _context.Employees
@@ -258,13 +258,6 @@ namespace Restaurants_REST_API.Services.Database_Service
                                               }).ToList()
                           }
                           ).ToListAsync();
-        }
-
-
-        public async Task<IEnumerable<GetEmployeeTypeDTO?>> GetAllTypesAsync()
-        {
-            return await _context.EmployeeTypes
-                .Select(x => new GetEmployeeTypeDTO { IdType = x.IdType, Name = x.Name }).ToListAsync();
         }
 
 
@@ -341,7 +334,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
         }
 
-        public async Task<bool> AddNewEmployeeCertificateAsync(int empId, IEnumerable<PostCertificateDTO> certificatesData)
+        public async Task<bool> AddNewEmployeeCertificatesAsync(int empId, IEnumerable<PostCertificateDTO> certificatesData)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -423,7 +416,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 
         }
 
-        public async Task<bool> UpdateExistingEmployeeCertificatesByIdAsync(List<PutCertificateDTO> updatedCertificatesData, List<int> certificatesId)
+        public async Task<bool> UpdateEmployeeCertificatesByIdAsync(List<PutCertificateDTO> updatedCertificatesData, List<int> certificatesId)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -449,33 +442,6 @@ namespace Restaurants_REST_API.Services.Database_Service
                         await _context.SaveChangesAsync();
                     }
 
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.ToString());
-                    await transaction.RollbackAsync();
-                    return false;
-                }
-                await transaction.CommitAsync();
-                return true;
-            }
-        }
-
-        public async Task<bool> UpdateEmployeeTypeAsync(int empId, int typeId, int restaurantId)
-        {
-            using (var transaction = await _context.Database.BeginTransactionAsync())
-            {
-                try
-                {
-                    var updateEmpTypeQuery = await
-                        (_context.EmployeesInRestaurants
-                        .Where(eir => eir.IdEmployee == empId && eir.IdRestaurant == restaurantId)
-                        .FirstAsync()
-                        );
-
-                    updateEmpTypeQuery.IdType = typeId;
-
-                    await _context.SaveChangesAsync();
                 }
                 catch (Exception ex)
                 {
