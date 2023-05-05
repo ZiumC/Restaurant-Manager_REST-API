@@ -67,7 +67,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound($"Restaurant not found");
             }
 
-            IEnumerable<GetReservationDTO>? reservations = await _reservationsApiService.GetReservationsByRestaurantIdAsync(id);
+            IEnumerable<GetReservationDTO>? reservations = await _reservationsApiService.GetRestaurantReservationsAsync(id);
 
             if (reservations == null || reservations.Count() == 0)
             {

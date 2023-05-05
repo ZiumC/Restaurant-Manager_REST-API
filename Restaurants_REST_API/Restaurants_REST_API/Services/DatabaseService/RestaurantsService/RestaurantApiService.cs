@@ -107,7 +107,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                           }
                           ).ToListAsync();
         }
-        public async Task<GetRestaurantDTO> GetRestaurantDetailedDataAsync(Restaurant restaurant)
+        public async Task<GetRestaurantDTO> GetDetailedRestaurantDataAsync(Restaurant restaurant)
         {
             int restaurantId = restaurant.IdRestaurant;
 
@@ -244,7 +244,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             return await _context.Restaurants.Where(e => e.IdRestaurant == restaurantId).FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<EmployeesInRestaurant?>> GetEmployeeInRestaurantDataByRestaurantIdAsync(int restaurantId)
+        public async Task<IEnumerable<EmployeesInRestaurant?>> GetHiredEmployeesByRestaurantIdAsync(int restaurantId)
         {
             return await
                 (from eir in _context.EmployeesInRestaurants
@@ -255,7 +255,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                  ).ToListAsync();
         }
 
-        public async Task<GetDishDTO?> GetDishDetailsByIdAsync(int dishId)
+        public async Task<GetDishDTO?> GetDetailedDishDataByIdAsync(int dishId)
         {
             return await
                 (from d in _context.Dishes
@@ -282,6 +282,12 @@ namespace Restaurants_REST_API.Services.Database_Service
                                     ).ToList()
                  }
                  ).FirstOrDefaultAsync();
+        }
+
+        public async Task<IEnumerable<GetEmployeeTypeDTO?>> GetEmployeeTypesAsync()
+        {
+            return await _context.EmployeeTypes
+                .Select(x => new GetEmployeeTypeDTO { IdType = x.IdType, Name = x.Name }).ToListAsync();
         }
 
         public async Task<bool> AddNewEmployeeTypeAsync(string name)
@@ -391,7 +397,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
         }
 
-        public async Task<bool> HireNewEmployeeAsync(int empId, int typeId, int restaurantId)
+        public async Task<bool> AddNewEmployeeToRestaurantAsync(int empId, int typeId, int restaurantId)
         {
             try
             {
@@ -470,6 +476,33 @@ namespace Restaurants_REST_API.Services.Database_Service
                 return false;
             }
             return true;
+        }
+
+        public async Task<bool> UpdateEmployeeTypeAsync(int empId, int typeId, int restaurantId)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var updateEmpTypeQuery = await
+                        (_context.EmployeesInRestaurants
+                        .Where(eir => eir.IdEmployee == empId && eir.IdRestaurant == restaurantId)
+                        .FirstAsync()
+                        );
+
+                    updateEmpTypeQuery.IdType = typeId;
+
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    await transaction.RollbackAsync();
+                    return false;
+                }
+                await transaction.CommitAsync();
+                return true;
+            }
         }
     }
 }

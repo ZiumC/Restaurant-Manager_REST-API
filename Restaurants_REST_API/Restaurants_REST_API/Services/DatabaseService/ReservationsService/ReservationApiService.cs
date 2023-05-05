@@ -43,7 +43,7 @@ namespace Restaurants_REST_API.Services.Database_Service
         }
 
 
-        public async Task<IEnumerable<GetReservationDTO>?> GetReservationsByRestaurantIdAsync(int restaurantId)
+        public async Task<IEnumerable<GetReservationDTO>?> GetRestaurantReservationsAsync(int restaurantId)
         {
             return await (from r in _context.Reservations
 
