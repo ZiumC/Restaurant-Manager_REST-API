@@ -38,6 +38,11 @@ namespace Restaurants_REST_API.Controllers
             return Ok(restaurants);
         }
         
+        /// <summary>
+        /// asdasdasdsdads
+        /// </summary>
+        /// <param name="restaurantId">asdasdasd</param>
+        /// <returns></returns>
         [HttpGet("{restaurantId}")]
         public async Task<IActionResult> GetRestaurantBy(int restaurantId)
         {
