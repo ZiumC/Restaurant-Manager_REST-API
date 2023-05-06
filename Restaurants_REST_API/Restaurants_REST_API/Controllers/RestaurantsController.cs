@@ -37,17 +37,16 @@ namespace Restaurants_REST_API.Controllers
 
             return Ok(restaurants);
         }
-
-        [HttpGet]
-        [Route("id")]
-        public async Task<IActionResult> GetRestaurantBy(int id)
+        
+        [HttpGet("{restaurantId}")]
+        public async Task<IActionResult> GetRestaurantBy(int restaurantId)
         {
-            if (!GeneralValidator.isCorrectId(id))
+            if (!GeneralValidator.isCorrectId(restaurantId))
             {
-                return BadRequest($"Restaurant id={id} is invalid");
+                return BadRequest($"Restaurant id={restaurantId} is invalid");
             }
 
-            Restaurant? restaurant = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(id);
+            Restaurant? restaurant = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(restaurantId);
 
             if (restaurant == null)
             {
@@ -59,7 +58,7 @@ namespace Restaurants_REST_API.Controllers
             return Ok(restaurantDTO);
         }
         [HttpGet]
-        [Route("dish/id")]
+        [Route("dish/{dishId}")]
         public async Task<IActionResult> GetDishBy(int dishId)
         {
             if (!GeneralValidator.isCorrectId(dishId))
@@ -200,7 +199,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpPost]
-        [Route("employee/hire-emp")]
+        [Route("{restaurantId}/employee/{empId}/type/{typeId}")]
         public async Task<IActionResult> AddNewEmployeeToRestaurant(int empId, int typeId, int restaurantId)
         {
 
@@ -318,7 +317,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpPut]
-        [Route("employee/type")]
+        [Route("{restaurantId}/employee/{empId}/type/{typeId}")]
         public async Task<IActionResult> UpdateEmployeeType(int empId, int typeId, int restaurantId)
         {
             //checking if ids are valid
@@ -426,12 +425,12 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpPut]
-        [Route("id")]
-        public async Task<IActionResult> UpdateRestaurantData(int id, PutRestaurantDTO putRestaurantData)
+        [Route("{restaurantId}")]
+        public async Task<IActionResult> UpdateRestaurantData(int restaurantId, PutRestaurantDTO putRestaurantData)
         {
-            if (!GeneralValidator.isCorrectId(id))
+            if (!GeneralValidator.isCorrectId(restaurantId))
             {
-                return BadRequest($"Restaurant id={id} is invalid");
+                return BadRequest($"Restaurant id={restaurantId} is invalid");
             }
 
             if (putRestaurantData == null)
@@ -464,16 +463,16 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Building number can't be empty");
             }
 
-            Restaurant? restaurantDatabase = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(id);
+            Restaurant? restaurantDatabase = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(restaurantId);
             if (restaurantDatabase == null)
             {
-                return NotFound($"Restaurant id={id} not found");
+                return NotFound($"Restaurant id={restaurantId} not found");
             }
             GetRestaurantDTO restaurantDetailsDatabase = await _restaurantsApiService.GetDetailedRestaurantDataAsync(restaurantDatabase);
             MapRestaurantDataService restaurantDataMapper = new MapRestaurantDataService(restaurantDetailsDatabase, putRestaurantData);
             Restaurant restaurantUpdatedData = restaurantDataMapper.GetRestaurantUpdatedData();
 
-            bool isRestaurantUpdated = await _restaurantsApiService.UpdateRestaurantDataAsync(id, restaurantUpdatedData);
+            bool isRestaurantUpdated = await _restaurantsApiService.UpdateRestaurantDataAsync(restaurantId, restaurantUpdatedData);
             if (!isRestaurantUpdated)
             {
                 return BadRequest("Something went wrong unable to update restaurant data");
@@ -483,12 +482,12 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpPut]
-        [Route("dish/id")]
-        public async Task<IActionResult> UpdateDishData(int id, PutDishDTO putDishData)
+        [Route("dish/{dishId}")]
+        public async Task<IActionResult> UpdateDishData(int dishId, PutDishDTO putDishData)
         {
-            if (!GeneralValidator.isCorrectId(id))
+            if (!GeneralValidator.isCorrectId(dishId))
             {
-                return BadRequest($"Dish id={id} is invalid");
+                return BadRequest($"Dish id={dishId} is invalid");
             }
 
             if (GeneralValidator.isEmptyNameOf(putDishData.Name))
@@ -496,16 +495,16 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Dish name can't be empty");
             }
 
-            Dish? dishDetailsDatabase = await _restaurantsApiService.GetBasicDishDataByIdAsync(id);
+            Dish? dishDetailsDatabase = await _restaurantsApiService.GetBasicDishDataByIdAsync(dishId);
             if (dishDetailsDatabase == null)
             {
-                return NotFound($"Dish id={id} not found");
+                return NotFound($"Dish id={dishId} not found");
             }
 
             MapDishDataService dishDataMapper = new MapDishDataService(dishDetailsDatabase, putDishData);
             Dish dishUpdatedData = dishDataMapper.GetDishUpdatedData();
 
-            bool isDishUpdated = await _restaurantsApiService.UpdateDishDataAsync(id, dishUpdatedData);
+            bool isDishUpdated = await _restaurantsApiService.UpdateDishDataAsync(dishId, dishUpdatedData);
             if (!isDishUpdated)
             {
                 return BadRequest("Something went wrong unable to update dish data");
@@ -515,7 +514,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpDelete]
-        [Route("dish/id")]
+        [Route("dish/{dishId}")]
         public async Task<IActionResult> DeleteDishBy(int dishId)
         {
             if (!GeneralValidator.isCorrectId(dishId))
@@ -538,8 +537,7 @@ namespace Restaurants_REST_API.Controllers
             return Ok($"Dish {dishDatabase.Name} has been deleted from all restaurants");
         }
 
-        [HttpDelete]
-        [Route("dish/by-restaurant/id")]
+        [HttpDelete("{restaurantId}/dish/{dishId}")]
         public async Task<IActionResult> DeleteDishbyRestaurant(int restaurantId, int dishId)
         {
             if (!GeneralValidator.isCorrectId(restaurantId))
@@ -586,7 +584,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpDelete]
-        [Route("employee/fire-emp")]
+        [Route("{restaurantId}/employee/{empId}")]
         public async Task<IActionResult> DeleteEmployeeFromRestaurant(int empId, int restaurantId)
         {
             if (!GeneralValidator.isCorrectId(empId))
