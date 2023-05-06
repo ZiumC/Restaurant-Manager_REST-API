@@ -60,17 +60,17 @@ namespace Restaurants_REST_API.Controllers
         }
         [HttpGet]
         [Route("dish/id")]
-        public async Task<IActionResult> GetDishBy(int id)
+        public async Task<IActionResult> GetDishBy(int dishId)
         {
-            if (!GeneralValidator.isCorrectId(id))
+            if (!GeneralValidator.isCorrectId(dishId))
             {
-                return BadRequest($"Dish id={id} is invalid");
+                return BadRequest($"Dish id={dishId} is invalid");
             }
 
-            GetDishDTO? dishDetailsData = await _restaurantsApiService.GetDetailedDishDataByIdAsync(id);
+            Dish? dishDetailsData = await _restaurantsApiService.GetBasicDishDataByIdAsync(dishId);
             if (dishDetailsData == null)
             {
-                return NotFound($"Dish id={id} not found");
+                return NotFound($"Dish id={dishId} not found");
             }
 
             return Ok(dishDetailsData);
@@ -496,7 +496,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Dish name can't be empty");
             }
 
-            GetDishDTO? dishDetailsDatabase = await _restaurantsApiService.GetDetailedDishDataByIdAsync(id);
+            Dish? dishDetailsDatabase = await _restaurantsApiService.GetBasicDishDataByIdAsync(id);
             if (dishDetailsDatabase == null)
             {
                 return NotFound($"Dish id={id} not found");
@@ -512,6 +512,30 @@ namespace Restaurants_REST_API.Controllers
             }
 
             return Ok("Dish data has been updated");
+        }
+
+        [HttpDelete]
+        [Route("dish/id")]
+        public async Task<IActionResult> DeleteDishBy(int dishId)
+        {
+            if (!GeneralValidator.isCorrectId(dishId))
+            {
+                return BadRequest($"Dish id={dishId} is invalid");
+            }
+
+            Dish? dishDatabase = await _restaurantsApiService.GetBasicDishDataByIdAsync(dishId);
+            if (dishDatabase == null)
+            {
+                return NotFound("Dish not found");
+            }
+
+            bool isDishHasBeenRemoved = await _restaurantsApiService.DeleteDishAsync(dishDatabase);
+            if (!isDishHasBeenRemoved)
+            {
+                return BadRequest("Something went wrong unable to delete dish");
+            }
+
+            return Ok($"Dish {dishDatabase.Name} has been deleted from all restaurants");
         }
 
     }
