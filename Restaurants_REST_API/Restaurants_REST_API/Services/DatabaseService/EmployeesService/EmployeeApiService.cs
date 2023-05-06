@@ -502,5 +502,33 @@ namespace Restaurants_REST_API.Services.Database_Service
                 return true;
             }
         }
+
+        public async Task<bool> DeleteEmployeeCertificateAsync(int empId, GetCertificateDTO employeeCertificateData)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+
+                    Certificate certificateToDelete = new Certificate
+                    {
+                        IdCertificate = employeeCertificateData.IdCertificate,
+                        Name = employeeCertificateData.Name
+                    };
+
+                    //removing employee certificate
+                    _context.Remove(certificateToDelete);
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    await transaction.RollbackAsync();
+                    return false;
+                }
+                await transaction.CommitAsync();
+                return true;
+            }
+        }
     }
 }

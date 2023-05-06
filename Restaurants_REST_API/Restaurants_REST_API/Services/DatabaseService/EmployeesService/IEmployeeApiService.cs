@@ -27,6 +27,7 @@ namespace Restaurants_REST_API.Services.Database_Service
         public Task<bool> UpdateEmployeeDataByIdAsync(int empId, Employee updatedEmployeeData);
         public Task<bool> UpdateEmployeeCertificatesByIdAsync(List<PutCertificateDTO> updatedCertificatesData, List<int> updatedCertificatesId);
         public Task<bool> DeleteEmployeeDataByIdAsync(int empId, GetEmployeeDTO employeeData);
+        public Task<bool> DeleteEmployeeCertificateAsync(int empId, GetCertificateDTO employeeCertificateData);
 
     }
 }

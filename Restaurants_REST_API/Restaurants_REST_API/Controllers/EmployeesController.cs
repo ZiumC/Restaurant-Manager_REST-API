@@ -329,11 +329,11 @@ namespace Restaurants_REST_API.Controllers
 
         [HttpPut]
         [Route("certificates/by-employee/id")]
-        public async Task<IActionResult> UpdateEmployeeCertificatesByEmployee(int id, IEnumerable<PutCertificateDTO> putEmpCertificates)
+        public async Task<IActionResult> UpdateEmployeeCertificatesByEmployee(int empId, IEnumerable<PutCertificateDTO> putEmpCertificates)
         {
-            if (!GeneralValidator.isCorrectId(id))
+            if (!GeneralValidator.isCorrectId(empId))
             {
-                return BadRequest($"Employee id={id} isn't correct");
+                return BadRequest($"Employee id={empId} isn't correct");
             }
 
             if (putEmpCertificates == null || putEmpCertificates.Count() == 0)
@@ -348,7 +348,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("One or more certificates has empty name");
             }
 
-            Employee? employeeDatabase = await _employeeApiService.GetBasicEmployeeDataByIdAsync(id);
+            Employee? employeeDatabase = await _employeeApiService.GetBasicEmployeeDataByIdAsync(empId);
             if (employeeDatabase == null)
             {
                 return NotFound("Employee doesn't exist");
@@ -383,27 +383,68 @@ namespace Restaurants_REST_API.Controllers
 
         [HttpDelete]
         [Route("id")]
-        public async Task<IActionResult> RemoveEmployeeBy(int id)
+        public async Task<IActionResult> DeleteEmployeeBy(int empId)
         {
-            if (!GeneralValidator.isCorrectId(id))
+            if (!GeneralValidator.isCorrectId(empId))
             {
-                return BadRequest($"Employee id={id} is invalid");
+                return BadRequest($"Employee id={empId} is invalid");
             }
 
-            Employee? employeeDatabase = await _employeeApiService.GetBasicEmployeeDataByIdAsync(id);
+            Employee? employeeDatabase = await _employeeApiService.GetBasicEmployeeDataByIdAsync(empId);
             if (employeeDatabase == null)
             {
                 return NotFound($"Employee not found");
             }
 
             GetEmployeeDTO employeeDetailsDatabase = await _employeeApiService.GetDetailedEmployeeDataAsync(employeeDatabase);
-            bool isEmployeeHasBeenRemoved = await _employeeApiService.DeleteEmployeeDataByIdAsync(id, employeeDetailsDatabase);
+            bool isEmployeeHasBeenRemoved = await _employeeApiService.DeleteEmployeeDataByIdAsync(empId, employeeDetailsDatabase);
             if (!isEmployeeHasBeenRemoved)
             {
                 return BadRequest("Something went wrong unable to delete employee");
             }
 
             return Ok($"Employee has been removed");
+        }
+
+        [HttpDelete]
+        [Route("certificate/id")]
+        public async Task<IActionResult> DeleteEmployeeCertificateBy(int empId, int certId)
+        {
+            if (!GeneralValidator.isCorrectId(empId))
+            {
+                return BadRequest($"Employee id={empId} is invalid");
+            }
+
+            if (!GeneralValidator.isCorrectId(certId))
+            {
+                return BadRequest($"Certificate id={certId} is invalid");
+            }
+
+            Employee? employeeDatabase = await _employeeApiService.GetBasicEmployeeDataByIdAsync(empId);
+            if (employeeDatabase == null)
+            {
+                return NotFound("Employee not found");
+            }
+
+            GetEmployeeDTO employeeDetailsDatabase = await _employeeApiService.GetDetailedEmployeeDataAsync(employeeDatabase);
+            if (employeeDetailsDatabase.Certificates == null || employeeDetailsDatabase.Certificates.Count() == 0)
+            {
+                return NotFound("Employee certificates not found");
+            }
+
+            GetCertificateDTO? empCertificate = employeeDetailsDatabase.Certificates.Where(ec => ec.IdCertificate == certId).FirstOrDefault();
+            if (empCertificate == null)
+            {
+                return NotFound($"Certificate id={certId} not found in employee {employeeDetailsDatabase.FirstName}");
+            }
+
+            bool isCertificateHasBeenDeleted = await _employeeApiService.DeleteEmployeeCertificateAsync(empId, empCertificate);
+            if (!isCertificateHasBeenDeleted)
+            {
+                return BadRequest("Something went wrong unable to delete certificate");
+            }
+
+            return Ok("Certificate has been deleted");
         }
     }
 }
