@@ -552,6 +552,27 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
             return true;
         }
+
+        public async Task<bool> DeleteEmployeeFromRestaurantAsync(int empId, int restaurantId)
+        {
+            try
+            {
+                var deleteEmployeeFromRestaurantQuery = await
+                    (_context.EmployeesInRestaurants
+                    .Where(eir => eir.IdRestaurant == restaurantId && eir.IdEmployee == empId)
+                    .FirstAsync());
+
+                _context.Remove(deleteEmployeeFromRestaurantQuery);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return false;
+            }
+
+            return true;
+        }
     }
 
 }

@@ -77,7 +77,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpGet]
-        [Route("types")]
+        [Route("employee/types")]
         public async Task<IActionResult> GetAllEmployeeTypes()
         {
             var types = await _restaurantsApiService.GetEmployeeTypesAsync();
@@ -200,7 +200,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpPost]
-        [Route("hire-employee")]
+        [Route("employee/hire-emp")]
         public async Task<IActionResult> AddNewEmployeeToRestaurant(int empId, int typeId, int restaurantId)
         {
 
@@ -294,7 +294,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpPost]
-        [Route("new-type")]
+        [Route("employee/type")]
         public async Task<IActionResult> AddNewTypeOfEmployee(string name)
         {
             if (GeneralValidator.isEmptyNameOf(name))
@@ -318,7 +318,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpPut]
-        [Route("update-emp-type")]
+        [Route("employee/type")]
         public async Task<IActionResult> UpdateEmployeeType(int empId, int typeId, int restaurantId)
         {
             //checking if ids are valid
@@ -583,6 +583,53 @@ namespace Restaurants_REST_API.Controllers
             }
 
             return Ok($"Dish {dishDatabase.Name} has been removed from restaurant {restaurantDatabase.Name}");
+        }
+
+        [HttpDelete]
+        [Route("employee/fire-emp")]
+        public async Task<IActionResult> DeleteEmployeeFromRestaurant(int empId, int restaurantId)
+        {
+            if (!GeneralValidator.isCorrectId(empId))
+            {
+                return BadRequest($"Employee id={empId} is invalid");
+            }
+
+            if (!GeneralValidator.isCorrectId(restaurantId))
+            {
+                return BadRequest($"Restaurant id={restaurantId} is invalid");
+            }
+
+            Employee? employeeDatabase = await _employeeApiService.GetBasicEmployeeDataByIdAsync(empId);
+            if (employeeDatabase == null)
+            {
+                return NotFound("Employee not found");
+            }
+
+            Restaurant? restaurantDatabase = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(restaurantId);
+            if (restaurantDatabase == null)
+            {
+                return NotFound("Restaurant not found");
+            }
+
+            IEnumerable<EmployeesInRestaurant?> restaurantyWorkers = await _restaurantsApiService.GetHiredEmployeesByRestaurantIdAsync(restaurantId);
+            if (restaurantyWorkers == null || restaurantyWorkers.Count() == 0)
+            {
+                return NotFound($"Workers in restaurant {restaurantDatabase.Name} not found");
+            }
+
+            EmployeesInRestaurant? worker = restaurantyWorkers.Where(rw => rw?.IdRestaurant == restaurantId && rw.IdEmployee == empId).FirstOrDefault();
+            if (worker == null)
+            {
+                return NotFound($"Employee {employeeDatabase.FirstName} not found in restaurant {restaurantDatabase.Name}");
+            }
+
+            bool isEmployeeHasBeenRemoved = await _restaurantsApiService.DeleteEmployeeFromRestaurantAsync(empId, restaurantId);
+            if (!isEmployeeHasBeenRemoved)
+            {
+                return BadRequest("Something went wrong unable to delete employee from restaurant");
+            }
+
+            return Ok($"Employee {employeeDatabase.FirstName} has been removed from restaurant {restaurantDatabase.Name}");
         }
     }
 }
