@@ -538,5 +538,51 @@ namespace Restaurants_REST_API.Controllers
             return Ok($"Dish {dishDatabase.Name} has been deleted from all restaurants");
         }
 
+        [HttpDelete]
+        [Route("dish/by-restaurant/id")]
+        public async Task<IActionResult> DeleteDishbyRestaurant(int restaurantId, int dishId)
+        {
+            if (!GeneralValidator.isCorrectId(restaurantId))
+            {
+                return BadRequest($"Restaurant id={restaurantId} is invalid");
+            }
+
+            if (!GeneralValidator.isCorrectId(dishId))
+            {
+                return BadRequest($"Dish id={dishId} is invalid");
+            }
+
+            Dish? dishDatabase = await _restaurantsApiService.GetBasicDishDataByIdAsync(dishId);
+            if (dishDatabase == null)
+            {
+                return NotFound("Dish not found");
+            }
+
+            Restaurant? restaurantDatabase = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(restaurantId);
+            if (restaurantDatabase == null)
+            {
+                return NotFound("Restaurant not found");
+            }
+
+            IEnumerable<DishInRestaurant?> restaurantDishes = await _restaurantsApiService.GetRestaurantDishesByRestaurantIdAsync(restaurantId);
+            if (restaurantDishes == null || restaurantDishes.Count() == 0)
+            {
+                return NotFound($"Dishes in restaurant {restaurantDatabase.Name} not found");
+            }
+
+            DishInRestaurant? restaurantDish = restaurantDishes.Where(rd => rd?.IdDish == dishId).FirstOrDefault();
+            if (restaurantDish == null)
+            {
+                return NotFound("Dish not found in restaurant");
+            }
+
+            bool isDishHasBeenRenoved = await _restaurantsApiService.DeleteDishFromRestaurantAsync(restaurantId, dishId);
+            if (!isDishHasBeenRenoved)
+            {
+                return BadRequest("Something went wrong unable to remove dish");
+            }
+
+            return Ok($"Dish {dishDatabase.Name} has been removed from restaurant {restaurantDatabase.Name}");
+        }
     }
 }

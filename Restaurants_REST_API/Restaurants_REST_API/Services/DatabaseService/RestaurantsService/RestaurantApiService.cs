@@ -254,6 +254,11 @@ namespace Restaurants_REST_API.Services.Database_Service
                  select new EmployeesInRestaurant { IdRestaurantWorker = eir.IdRestaurantWorker, IdEmployee = eir.IdEmployee, IdRestaurant = restaurantId, IdType = eir.IdType }
                  ).ToListAsync();
         }
+        public async Task<IEnumerable<GetEmployeeTypeDTO?>> GetEmployeeTypesAsync()
+        {
+            return await _context.EmployeeTypes
+                .Select(x => new GetEmployeeTypeDTO { IdType = x.IdType, Name = x.Name }).ToListAsync();
+        }
 
         public async Task<Dish?> GetBasicDishDataByIdAsync(int dishId)
         {
@@ -284,10 +289,12 @@ namespace Restaurants_REST_API.Services.Database_Service
                  ).FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<GetEmployeeTypeDTO?>> GetEmployeeTypesAsync()
+        public async Task<IEnumerable<DishInRestaurant?>> GetRestaurantDishesByRestaurantIdAsync(int restaurantId)
         {
-            return await _context.EmployeeTypes
-                .Select(x => new GetEmployeeTypeDTO { IdType = x.IdType, Name = x.Name }).ToListAsync();
+            return await
+                (_context.RestaurantDishes
+                .Where(rd => rd.IdRestaurant == restaurantId))
+                .ToListAsync();
         }
 
         public async Task<bool> AddNewEmployeeTypeAsync(string name)
@@ -462,7 +469,10 @@ namespace Restaurants_REST_API.Services.Database_Service
             try
             {
                 var updateDishDataQuery = await
-                    (_context.Dishes.Where(d => d.IdDish == dishId)).FirstAsync();
+                    (_context.Dishes
+                    .Where(d => d.IdDish == dishId)
+                    .FirstAsync()
+                    );
 
                 updateDishDataQuery.Name = newDishData.Name;
                 updateDishDataQuery.Price = newDishData.Price;
@@ -511,6 +521,28 @@ namespace Restaurants_REST_API.Services.Database_Service
             {
                 //removing dish
                 _context.Remove(dishData);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<bool> DeleteDishFromRestaurantAsync(int restaurantId, int dishId)
+        {
+            try
+            {
+                var deleteDishFromRestaurantQuery = await
+                    (_context.RestaurantDishes
+                    .Where(rd => rd.IdRestaurant == restaurantId && rd.IdDish == dishId)
+                    .FirstAsync()
+                    );
+
+                _context.Remove(deleteDishFromRestaurantQuery);
+
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)
