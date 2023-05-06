@@ -6,11 +6,11 @@ namespace Restaurants_REST_API.Services.MapperService
 {
     public class MapDishDataService
     {
-        private readonly GetDishDTO _dishDetailsDatabase;
+        private readonly Dish _dishDetailsDatabase;
         private readonly PutDishDTO _newDishData;
         private readonly Dish dishUpdatedData;
 
-        public MapDishDataService(GetDishDTO dishDetailsDatabase, PutDishDTO newDishData)
+        public MapDishDataService(Dish dishDetailsDatabase, PutDishDTO newDishData)
         {
             _dishDetailsDatabase = dishDetailsDatabase;
             _newDishData = newDishData;

@@ -255,31 +255,31 @@ namespace Restaurants_REST_API.Services.Database_Service
                  ).ToListAsync();
         }
 
-        public async Task<GetDishDTO?> GetDetailedDishDataByIdAsync(int dishId)
+        public async Task<Dish?> GetBasicDishDataByIdAsync(int dishId)
         {
             return await
                 (from d in _context.Dishes
                  where d.IdDish == dishId
 
-                 select new GetDishDTO
+                 select new Dish
                  {
                      IdDish = dishId,
                      Name = d.Name,
-                     Price = d.Price,
-                     Restaurants = (from dir in _context.RestaurantDishes
-                                    join r in _context.Restaurants
-                                    on dir.IdRestaurant equals r.IdRestaurant
+                     Price = d.Price
+                     //Restaurants = (from dir in _context.RestaurantDishes
+                     //               join r in _context.Restaurants
+                     //               on dir.IdRestaurant equals r.IdRestaurant
 
-                                    where dir.IdDish == dishId
+                     //               where dir.IdDish == dishId
 
-                                    select new GetSimpleRestaurantDTO
-                                    {
-                                        IdRestaurant = dir.IdRestaurant,
-                                        Name = r.Name,
-                                        Status = r.RestaurantStatus,
-                                        BonusBudget = r.BonusBudget
-                                    }
-                                    ).ToList()
+                     //               select new GetSimpleRestaurantDTO
+                     //               {
+                     //                   IdRestaurant = dir.IdRestaurant,
+                     //                   Name = r.Name,
+                     //                   Status = r.RestaurantStatus,
+                     //                   BonusBudget = r.BonusBudget
+                     //               }
+                     //               ).ToList()
                  }
                  ).FirstOrDefaultAsync();
         }
@@ -504,5 +504,22 @@ namespace Restaurants_REST_API.Services.Database_Service
                 return true;
             }
         }
+
+        public async Task<bool> DeleteDishAsync(Dish dishData)
+        {
+            try
+            {
+                //removing dish
+                _context.Remove(dishData);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return false;
+            }
+            return true;
+        }
     }
+
 }
