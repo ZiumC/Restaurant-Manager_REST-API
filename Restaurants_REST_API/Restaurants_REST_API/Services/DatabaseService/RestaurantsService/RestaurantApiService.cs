@@ -4,7 +4,6 @@ using Restaurants_REST_API.DTOs.GetDTO;
 using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.DTOs.PostOrPutDTO;
 using Restaurants_REST_API.Models.Database;
-using System;
 
 namespace Restaurants_REST_API.Services.Database_Service
 {
@@ -50,8 +49,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                                                       IdDish = d.IdDish,
                                                       Name = d.Name,
                                                       Price = d.Price,
-                                                  }
-                                                  ).ToList(),
+                                                  }).ToList(),
 
                               RestaurantWorkers = (from eir in _context.EmployeesInRestaurants
                                                    join et in _context.EmployeeTypes
@@ -63,8 +61,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                                                    {
                                                        IdEmployee = eir.IdEmployee,
                                                        EmployeeType = et.Name
-                                                   }
-                                                   ).ToList(),
+                                                   }).ToList(),
 
                               RestaurantReservations = (from r in _context.Reservations
                                                         where r.IdRestauration == rest.IdRestaurant
@@ -85,10 +82,8 @@ namespace Restaurants_REST_API.Services.Database_Service
                                                                                        ComplainDate = c.ComplainDate,
                                                                                        Status = c.ComplainStatus,
                                                                                        Message = c.ComplainMessage
-                                                                                   }
-                                                                                   ).FirstOrDefault()
-                                                        }
-                                                        ).ToList(),
+                                                                                   }).FirstOrDefault()
+                                                        }).ToList(),
 
                               RestaurantComplains = (from c in _context.Complains
                                                      where c.IdRestaurant == rest.IdRestaurant
@@ -99,13 +94,11 @@ namespace Restaurants_REST_API.Services.Database_Service
                                                          ComplainDate = c.ComplainDate,
                                                          Status = c.ComplainStatus,
                                                          Message = c.ComplainMessage
-                                                     }
-                                                     ).ToList()
+                                                     }).ToList()
 
 
 
-                          }
-                          ).ToListAsync();
+                          }).ToListAsync();
         }
 
         public async Task<GetRestaurantDTO> GetDetailedRestaurantDataAsync(Restaurant restaurant)
@@ -126,8 +119,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                      Street = addr.Street,
                      BuildingNumber = addr.BuildingNumber,
                      LocalNumber = addr.LocalNumber
-                 }
-                 ).FirstAsync();
+                 }).FirstAsync();
 
             var getRestaurantDishesQuery = await
                 (from rd in _context.RestaurantDishes
@@ -141,8 +133,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                      IdDish = d.IdDish,
                      Name = d.Name,
                      Price = d.Price,
-                 }
-                 ).ToListAsync();
+                 }).ToListAsync();
 
             var getRestaurantWorkersQuery = await
                 (from eir in _context.EmployeesInRestaurants
@@ -155,8 +146,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                  {
                      IdEmployee = eir.IdEmployee,
                      EmployeeType = et.Name
-                 }
-                 ).ToListAsync();
+                 }).ToListAsync();
 
             var getRestaurantComplainsQuery = await
                 (from c in _context.Complains
@@ -168,8 +158,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                      ComplainDate = c.ComplainDate,
                      Status = c.ComplainStatus,
                      Message = c.ComplainMessage
-                 }
-                 ).ToListAsync();
+                 }).ToListAsync();
 
             var getRestaurantReservationsQuery = await
                 (from r in _context.Reservations
@@ -191,10 +180,8 @@ namespace Restaurants_REST_API.Services.Database_Service
                                                 ComplainDate = c.ComplainDate,
                                                 Status = c.ComplainStatus,
                                                 Message = c.ComplainMessage
-                                            }
-                                            ).FirstOrDefault()
-                 }
-                 ).ToListAsync();
+                                            }).FirstOrDefault()
+                 }).ToListAsync();
 
             return new GetRestaurantDTO
             {
@@ -215,7 +202,6 @@ namespace Restaurants_REST_API.Services.Database_Service
         public async Task<IEnumerable<GetReservationDTO>?> GetAllReservationsAsync()
         {
             return await (from r in _context.Reservations
-
                           select new GetReservationDTO
                           {
                               IdReservation = r.IdReservation,
@@ -233,11 +219,8 @@ namespace Restaurants_REST_API.Services.Database_Service
                                                          ComplainDate = c.ComplainDate,
                                                          Status = c.ComplainStatus,
                                                          Message = c.ComplainMessage
-                                                     }
-                                                   ).FirstOrDefault()
-                          }
-
-                          ).ToListAsync();
+                                                     }).FirstOrDefault()
+                          }).ToListAsync();
         }
 
         public async Task<Restaurant?> GetBasicRestaurantDataByIdAsync(int restaurantId)
@@ -257,24 +240,16 @@ namespace Restaurants_REST_API.Services.Database_Service
                     IdRestaurant = eir.IdRestaurant,
                     IdType = eir.IdType
                 }).ToListAsync();
-
-            //return await
-            //    (from eir in _context.EmployeesInRestaurants
-
-            //     where eir.IdRestaurant == restaurantId
-
-            //     select new EmployeesInRestaurant
-            //     {
-            //         IdRestaurantWorker = eir.IdRestaurantWorker,
-            //         IdEmployee = eir.IdEmployee,
-            //         IdRestaurant = restaurantId,
-            //         IdType = eir.IdType
-            //     }).ToListAsync();
         }
+
         public async Task<IEnumerable<GetEmployeeTypeDTO?>> GetEmployeeTypesAsync()
         {
             return await _context.EmployeeTypes
-                .Select(x => new GetEmployeeTypeDTO { IdType = x.IdType, Name = x.Name }).ToListAsync();
+                .Select(x => new GetEmployeeTypeDTO
+                {
+                    IdType = x.IdType,
+                    Name = x.Name
+                }).ToListAsync();
         }
 
         public async Task<Dish?> GetBasicDishDataByIdAsync(int dishId)
@@ -288,22 +263,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                      IdDish = dishId,
                      Name = d.Name,
                      Price = d.Price
-                     //Restaurants = (from dir in _context.RestaurantDishes
-                     //               join r in _context.Restaurants
-                     //               on dir.IdRestaurant equals r.IdRestaurant
-
-                     //               where dir.IdDish == dishId
-
-                     //               select new GetSimpleRestaurantDTO
-                     //               {
-                     //                   IdRestaurant = dir.IdRestaurant,
-                     //                   Name = r.Name,
-                     //                   Status = r.RestaurantStatus,
-                     //                   BonusBudget = r.BonusBudget
-                     //               }
-                     //               ).ToList()
-                 }
-                 ).FirstOrDefaultAsync();
+                 }).FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<DishInRestaurant?>> GetRestaurantDishesByRestaurantIdAsync(int restaurantId)
@@ -444,14 +404,14 @@ namespace Restaurants_REST_API.Services.Database_Service
             return true;
         }
 
-        public async Task<bool> UpdateRestaurantDataAsync(int id, Restaurant newRestaurantData)
+        public async Task<bool> UpdateRestaurantDataAsync(int restaurantId, Restaurant newRestaurantData)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
                 try
                 {
                     var updateRestaurantDataQuery = await
-                        (_context.Restaurants.Where(r => r.IdRestaurant == id)).FirstAsync();
+                        (_context.Restaurants.Where(r => r.IdRestaurant == restaurantId)).FirstAsync();
 
                     updateRestaurantDataQuery.Name = newRestaurantData.Name;
                     updateRestaurantDataQuery.RestaurantStatus = newRestaurantData.RestaurantStatus;
@@ -488,8 +448,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                 var updateDishDataQuery = await
                     (_context.Dishes
                     .Where(d => d.IdDish == dishId)
-                    .FirstAsync()
-                    );
+                    .FirstAsync());
 
                 updateDishDataQuery.Name = newDishData.Name;
                 updateDishDataQuery.Price = newDishData.Price;
@@ -514,8 +473,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                     var updateEmpTypeQuery = await
                         (_context.EmployeesInRestaurants
                         .Where(eir => eir.IdEmployee == empId && eir.IdRestaurant == restaurantId)
-                        .FirstAsync()
-                        );
+                        .FirstAsync());
 
                     updateEmpTypeQuery.IdType = typeId;
 
