@@ -70,9 +70,22 @@ namespace Restaurants_REST_API.Controllers
         [HttpGet("supervisors")]
         public async Task<IActionResult> GetSupervisors()
         {
+            IEnumerable<GetEmployeeDTO>? getAllSupervisors = null;
+            try
+            {
+                getAllSupervisors = await _employeeApiService.GetAllSupervisorsAsync();
+            }
+            catch (Exception ex)
+            {
+                return Problem($"Something went wrong: {ex.Message}");
+            }
 
-            
-            return Ok();
+            if (getAllSupervisors == null || getAllSupervisors.Count() == 0)
+            {
+                return NotFound("Supervisors not found");
+            }
+
+            return Ok(getAllSupervisors);
         }
 
         /// <summary>
@@ -87,10 +100,19 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest($"Supervisor id={supervisorId} is invalid");
             }
 
-            Employee? supervisorDatabase = await _employeeApiService.GetBasicSupervisorDataByIdAsync(supervisorId);
+            Employee? supervisorDatabase = null;
+            try
+            {
+                supervisorDatabase = await _employeeApiService.GetBasicSupervisorDataByIdAsync(supervisorId);
+            }
+            catch (Exception ex)
+            {
+                return Problem($"Something went wrong: {ex.Message}");
+            }
+
             if (supervisorDatabase == null)
             {
-                return NotFound($"Supervisor not found");
+                return NotFound($"Supervisor id={supervisorId} not found");
             }
 
             GetEmployeeDTO employeeDetailsDatabase = await _employeeApiService.GetDetailedEmployeeDataAsync(supervisorDatabase);
