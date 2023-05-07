@@ -503,6 +503,9 @@ namespace Restaurants_REST_API.Services.Database_Service
                     var employeeAddressQuery = await
                        (_context.Address.Where(a => a.IdAddress == employeeData.Address.IdAddress)).FirstAsync();
 
+                    _context.Remove(employeeAddressQuery);
+                    await _context.SaveChangesAsync();
+
                     var workerQuery = await
                        (_context.EmployeeRestaurant.Where(eir => eir.IdEmployee == empId)).ToListAsync();
 
@@ -515,9 +518,6 @@ namespace Restaurants_REST_API.Services.Database_Service
                         await _context.SaveChangesAsync();
                     }
 
-                    //removing address
-                    _context.Remove(employeeAddressQuery);
-                    await _context.SaveChangesAsync();
 
                     if (employeeData.Certificates != null && employeeData.Certificates.Count() > 0)
                     {
