@@ -225,7 +225,6 @@ namespace Restaurants_REST_API.Controllers
         /// <param name="empId">Employee id</param>
         /// <param name="typeId">Employee type id</param>
         /// <param name="restaurantId">Restaurant id</param>
-        /// <returns></returns>
         [HttpPost("{restaurantId}/employee/{empId}/type/{typeId}")]
         public async Task<IActionResult> AddNewEmployeeToRestaurant(int restaurantId, int empId, int typeId)
         {
@@ -272,7 +271,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound($"Restaurant id={restaurantId} not found");
             }
 
-            IEnumerable<EmployeesInRestaurant?> restaurantWorkers = await _restaurantsApiService.GetHiredEmployeesByRestaurantIdAsync(restaurantId);
+            IEnumerable<EmployeesInRestaurant?> restaurantWorkers = await _restaurantsApiService.GetHiredEmployeesInRestaurantsAsync();
             if (restaurantWorkers != null)
             {
                 //checking if employee exist in passed restaurant id
@@ -398,7 +397,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound("Restaurant not found");
             }
 
-            IEnumerable<EmployeesInRestaurant?> restaurantWorkers = await _restaurantsApiService.GetHiredEmployeesByRestaurantIdAsync(restaurantId);
+            IEnumerable<EmployeesInRestaurant?> restaurantWorkers = await _restaurantsApiService.GetHiredEmployeesInRestaurantsAsync();
             if (restaurantWorkers != null)
             {
                 //checking if employee exist in passed restaurant id
@@ -445,7 +444,7 @@ namespace Restaurants_REST_API.Controllers
                     var ownersCount = restaurantWorkers.Where(t => t?.IdType == 1).ToList();
                     if (ownersCount != null && ownersCount.Count() >= 1)
                     {
-                        return BadRequest($"Unable to add type Owner because owner already exists");
+                        return BadRequest("Unable update employee type to owner because owner already exists");
                     }
                 }
             }
@@ -664,13 +663,13 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound("Restaurant not found");
             }
 
-            IEnumerable<EmployeesInRestaurant?> restaurantyWorkers = await _restaurantsApiService.GetHiredEmployeesByRestaurantIdAsync(restaurantId);
-            if (restaurantyWorkers == null || restaurantyWorkers.Count() == 0)
+            IEnumerable<EmployeesInRestaurant?> restaurantsWorkers = await _restaurantsApiService.GetHiredEmployeesInRestaurantsAsync();
+            if (restaurantsWorkers == null || restaurantsWorkers.Count() == 0)
             {
                 return NotFound($"Workers in restaurant {restaurantDatabase.Name} not found");
             }
 
-            EmployeesInRestaurant? worker = restaurantyWorkers.Where(rw => rw?.IdRestaurant == restaurantId && rw.IdEmployee == empId).FirstOrDefault();
+            EmployeesInRestaurant? worker = restaurantsWorkers.Where(rw => rw?.IdRestaurant == restaurantId && rw.IdEmployee == empId).FirstOrDefault();
             if (worker == null)
             {
                 return NotFound($"Employee {employeeDatabase.FirstName} not found in restaurant {restaurantDatabase.Name}");
