@@ -29,7 +29,6 @@ namespace Restaurants_REST_API.Controllers
         /// <summary>
         /// Returns all employees details
         /// </summary>
-        /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> GetAllEmployees()
         {
@@ -381,7 +380,7 @@ namespace Restaurants_REST_API.Controllers
         /// <param name="certificateId">Certificate id to update</param>
         /// <param name="putEmpCertificates">Certificate data to update</param>
         [HttpPut("{empId}/certificate/{certificateId}")]
-        public async Task<IActionResult> UpdateEmployeeCertificatesByEmployee(int empId, int certificateId, PutCertificateDTO putEmpCertificates)
+        public async Task<IActionResult> UpdateEmployeeCertificatesBy(int empId, int certificateId, PutCertificateDTO putEmpCertificates)
         {
             if (!GeneralValidator.isCorrectId(empId))
             {

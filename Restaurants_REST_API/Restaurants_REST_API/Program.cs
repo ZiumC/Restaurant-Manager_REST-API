@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Restaurants_REST_API.DbContexts;
 using Restaurants_REST_API.Services.Database_Service;
 using Restaurants_REST_API.Services.DatabaseService.CustomersService;
