@@ -25,6 +25,9 @@ namespace Restaurants_REST_API.Controllers
             _config = config;
         }
 
+        /// <summary>
+        /// Returns all restaurants details
+        /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetAllRestaurants()
         {
@@ -37,12 +40,11 @@ namespace Restaurants_REST_API.Controllers
 
             return Ok(restaurants);
         }
-        
+
         /// <summary>
-        /// asdasdasdsdads
+        /// Returns restaurant details by restaurant id
         /// </summary>
-        /// <param name="restaurantId">asdasdasd</param>
-        /// <returns></returns>
+        /// <param name="restaurantId">Restaurant id</param>
         [HttpGet("{restaurantId}")]
         public async Task<IActionResult> GetRestaurantBy(int restaurantId)
         {
@@ -62,8 +64,12 @@ namespace Restaurants_REST_API.Controllers
 
             return Ok(restaurantDTO);
         }
-        [HttpGet]
-        [Route("dish/{dishId}")]
+
+        /// <summary>
+        /// Returns dish details by dish id
+        /// </summary>
+        /// <param name="dishId">Dish id</param>
+        [HttpGet("dish/{dishId}")]
         public async Task<IActionResult> GetDishBy(int dishId)
         {
             if (!GeneralValidator.isCorrectId(dishId))
@@ -80,8 +86,10 @@ namespace Restaurants_REST_API.Controllers
             return Ok(dishDetailsData);
         }
 
-        [HttpGet]
-        [Route("employee/types")]
+        /// <summary>
+        /// Returns all employee types
+        /// </summary>
+        [HttpGet("employee/types")]
         public async Task<IActionResult> GetAllEmployeeTypes()
         {
             var types = await _restaurantsApiService.GetEmployeeTypesAsync();
@@ -93,6 +101,10 @@ namespace Restaurants_REST_API.Controllers
             return Ok(types);
         }
 
+        /// <summary>
+        /// Adds new restaurant
+        /// </summary>
+        /// <param name="newRestaurant">New restaurant basic data</param>
         [HttpPost]
         public async Task<IActionResult> AddNewRestaurant(PostRestaurantDTO newRestaurant)
         {
@@ -146,8 +158,11 @@ namespace Restaurants_REST_API.Controllers
             return Ok("Restaurant has been added");
         }
 
-        [HttpPost]
-        [Route("dish")]
+        /// <summary>
+        /// Adds new dish
+        /// </summary>
+        /// <param name="newDish">New dish basic data</param>
+        [HttpPost("dish")]
         public async Task<IActionResult> AddNewDish(PostDishDTO newDish)
         {
             if (newDish == null)
@@ -203,9 +218,16 @@ namespace Restaurants_REST_API.Controllers
             return Ok("Dish has been added");
         }
 
-        [HttpPost]
-        [Route("{restaurantId}/employee/{empId}/type/{typeId}")]
-        public async Task<IActionResult> AddNewEmployeeToRestaurant(int empId, int typeId, int restaurantId)
+        /// <summary>
+        /// Adds existing employee to restaurant with specified role. 
+        /// Employee can have only one role at a restaurant
+        /// </summary>
+        /// <param name="empId">Employee id</param>
+        /// <param name="typeId">Employee type id</param>
+        /// <param name="restaurantId">Restaurant id</param>
+        /// <returns></returns>
+        [HttpPost("{restaurantId}/employee/{empId}/type/{typeId}")]
+        public async Task<IActionResult> AddNewEmployeeToRestaurant(int restaurantId, int empId, int typeId)
         {
 
             if (!GeneralValidator.isCorrectId(empId))
@@ -297,8 +319,11 @@ namespace Restaurants_REST_API.Controllers
             return Ok($"Employee {employeeDatabase.FirstName} has been hired in restaurant {restaurantDatabase.Name}");
         }
 
-        [HttpPost]
-        [Route("employee/type")]
+        /// <summary>
+        /// Adds new employee type
+        /// </summary>
+        /// <param name="name">New employee type name</param>
+        [HttpPost("employee/type")]
         public async Task<IActionResult> AddNewTypeOfEmployee(string name)
         {
             if (GeneralValidator.isEmptyNameOf(name))
@@ -321,9 +346,14 @@ namespace Restaurants_REST_API.Controllers
             return Ok("New employee type has been added");
         }
 
-        [HttpPut]
-        [Route("{restaurantId}/employee/{empId}/type/{typeId}")]
-        public async Task<IActionResult> UpdateEmployeeType(int empId, int typeId, int restaurantId)
+        /// <summary>
+        /// Updates employee type in restaurant
+        /// </summary>
+        /// <param name="empId">Employee id</param>
+        /// <param name="typeId">Employee type id</param>
+        /// <param name="restaurantId">Restaurant id</param>
+        [HttpPut("{restaurantId}/employee/{empId}/type/{typeId}")]
+        public async Task<IActionResult> UpdateEmployeeType(int restaurantId, int empId, int typeId)
         {
             //checking if ids are valid
             if (!GeneralValidator.isCorrectId(empId))
@@ -429,8 +459,12 @@ namespace Restaurants_REST_API.Controllers
             return Ok("Employee type has been updated");
         }
 
-        [HttpPut]
-        [Route("{restaurantId}")]
+        /// <summary>
+        /// Updates existing restaurant basic data by restaurant id
+        /// </summary>
+        /// <param name="restaurantId">Restaurant id</param>
+        /// <param name="putRestaurantData">Restaurant basic data</param>
+        [HttpPut("{restaurantId}")]
         public async Task<IActionResult> UpdateRestaurantData(int restaurantId, PutRestaurantDTO putRestaurantData)
         {
             if (!GeneralValidator.isCorrectId(restaurantId))
@@ -486,8 +520,12 @@ namespace Restaurants_REST_API.Controllers
             return Ok("Restaurant data has been updated");
         }
 
-        [HttpPut]
-        [Route("dish/{dishId}")]
+        /// <summary>
+        /// Updates existing dish basic data by dish id
+        /// </summary>
+        /// <param name="dishId">Dish id</param>
+        /// <param name="putDishData">Dish basic data</param>
+        [HttpPut("dish/{dishId}")]
         public async Task<IActionResult> UpdateDishData(int dishId, PutDishDTO putDishData)
         {
             if (!GeneralValidator.isCorrectId(dishId))
@@ -518,8 +556,11 @@ namespace Restaurants_REST_API.Controllers
             return Ok("Dish data has been updated");
         }
 
-        [HttpDelete]
-        [Route("dish/{dishId}")]
+        /// <summary>
+        /// Removes dish data from all restaurants
+        /// </summary>
+        /// <param name="dishId">Dish id</param>
+        [HttpDelete("dish/{dishId}")]
         public async Task<IActionResult> DeleteDishBy(int dishId)
         {
             if (!GeneralValidator.isCorrectId(dishId))
@@ -542,6 +583,11 @@ namespace Restaurants_REST_API.Controllers
             return Ok($"Dish {dishDatabase.Name} has been deleted from all restaurants");
         }
 
+        /// <summary>
+        /// Removes dish only from specific restaurant
+        /// </summary>
+        /// <param name="restaurantId">Restaurant id</param>
+        /// <param name="dishId">Dish id</param>
         [HttpDelete("{restaurantId}/dish/{dishId}")]
         public async Task<IActionResult> DeleteDishbyRestaurant(int restaurantId, int dishId)
         {
@@ -588,8 +634,12 @@ namespace Restaurants_REST_API.Controllers
             return Ok($"Dish {dishDatabase.Name} has been removed from restaurant {restaurantDatabase.Name}");
         }
 
-        [HttpDelete]
-        [Route("{restaurantId}/employee/{empId}")]
+        /// <summary>
+        /// Removes employee only from specific restaurant
+        /// </summary>
+        /// <param name="empId">Employee id</param>
+        /// <param name="restaurantId">Restaurant id</param>
+        [HttpDelete("{restaurantId}/employee/{empId}")]
         public async Task<IActionResult> DeleteEmployeeFromRestaurant(int empId, int restaurantId)
         {
             if (!GeneralValidator.isCorrectId(empId))
