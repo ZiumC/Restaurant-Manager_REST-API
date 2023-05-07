@@ -26,6 +26,10 @@ namespace Restaurants_REST_API.Controllers
             _config = config;
         }
 
+        /// <summary>
+        /// Returns all employees details
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> GetAllEmployees()
         {
@@ -39,65 +43,59 @@ namespace Restaurants_REST_API.Controllers
             return Ok(employees);
         }
 
-        [HttpGet]
-        [Route("id")]
-        public async Task<IActionResult> GetEmployeeBy(int id)
+        /// <summary>
+        /// Returns employee details by employee id
+        /// </summary>
+        /// <param name="empId">Employee id</param>
+        [HttpGet("{empId}")]
+        public async Task<IActionResult> GetEmployeeBy(int empId)
         {
-            if (!GeneralValidator.isCorrectId(id))
+            if (!GeneralValidator.isCorrectId(empId))
             {
-                return BadRequest($"Employee id={id} is invalid");
+                return BadRequest($"Employee id={empId} is invalid");
             }
 
-            Employee? employee = await _employeeApiService.GetBasicEmployeeDataByIdAsync(id);
+            Employee? employee = await _employeeApiService.GetBasicEmployeeDataByIdAsync(empId);
             if (employee == null)
             {
-                return NotFound($"Employee id={id} not found");
+                return NotFound($"Employee id={empId} not found");
             }
 
             return Ok(await _employeeApiService.GetDetailedEmployeeDataAsync(employee));
         }
 
-        [HttpGet]
-        [Route("supervisors")]
+        /// <summary>
+        /// Returns all supervisors details 
+        /// </summary>
+        [HttpGet("supervisors")]
         public async Task<IActionResult> GetSupervisors()
         {
-            IEnumerable<int>? supervisorsId = await _employeeApiService.GetSupervisorsIdAsync();
 
-            if (supervisorsId == null || supervisorsId.Count() == 0)
-            {
-                return NotFound("Supervisors not found");
-
-            }
-
-            return Ok(await _employeeApiService.GetDetailedSupervisorsDataAsync((List<int>)supervisorsId));
+            
+            return Ok();
         }
 
-        /*
-         * This method uses GetSupervisorsDetailsAsync(List<int>) because implementation of 
-         * GetSupervisorDetailsByIdAsync(int id) in interface IEmployeeApiService would very similar!
-         */
-        [HttpGet]
-        [Route("supervisor/id")]
-        public async Task<IActionResult> GetSupervisorBy(int id)
+        /// <summary>
+        /// Returns supervisor details by supervisor id
+        /// </summary>
+        /// <param name="supervisorId">Supervisor id</param>
+        [HttpGet("supervisor/{supervisorId}")]
+        public async Task<IActionResult> GetSupervisorBy(int supervisorId)
         {
-            if (!GeneralValidator.isCorrectId(id))
+            if (!GeneralValidator.isCorrectId(supervisorId))
             {
-                return BadRequest($"Supervisor id={id} is invalid");
+                return BadRequest($"Supervisor id={supervisorId} is invalid");
             }
 
-            IEnumerable<int>? supervisorsIdList = await _employeeApiService.GetSupervisorsIdAsync();
-
-            if (supervisorsIdList == null)
-            {
-                return NotFound($"Supervisors not found");
-            }
-
-            if (!supervisorsIdList.Contains(id))
+            Employee? supervisorDatabase = await _employeeApiService.GetBasicSupervisorDataByIdAsync(supervisorId);
+            if (supervisorDatabase == null)
             {
                 return NotFound($"Supervisor not found");
             }
 
-            return Ok(await _employeeApiService.GetDetailedSupervisorsDataAsync(new List<int> { id }));
+            GetEmployeeDTO employeeDetailsDatabase = await _employeeApiService.GetDetailedEmployeeDataAsync(supervisorDatabase);
+
+            return Ok(employeeDetailsDatabase);
         }
 
         [HttpGet]

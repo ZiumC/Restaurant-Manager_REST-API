@@ -11,15 +11,7 @@ namespace Restaurants_REST_API.Services.Database_Service
         public Task<IEnumerable<GetEmployeeDTO>> GetAllEmployeesAsync();
         public Task<Employee?> GetBasicEmployeeDataByIdAsync(int empId);
         public Task<GetEmployeeDTO> GetDetailedEmployeeDataAsync(Employee employeeData);
-        public Task<IEnumerable<GetEmployeeDTO>> GetDetailedSupervisorsDataAsync(List<int> supervisorsId);
-        public Task<IEnumerable<int>?> GetSupervisorsIdAsync();
-
-        /*
-         * this method is doesn't implemented because implementation would be very similar to
-         * implementation of GetSupervisorsDetailsAsync(List<int>)
-         */
-        //public Task<Employee> GetSupervisorDetailsByIdAsync(int id);
-
+        public Task<Employee?> GetBasicSupervisorDataByIdAsync(int supervisorId);
         public Task<Employee?> GetBasicOwnerDataAsync();
         public Task<IEnumerable<GetEmployeeDTO>> GetDetailedEmployeeDataByRestaurantIdAsync(int restaurantId);
         public Task<bool> AddNewEmployeeAsync(PostEmployeeDTO newEmployee, bool certificatesExist);

@@ -117,68 +117,103 @@ namespace Restaurants_REST_API.Services.Database_Service
             };
         }
 
-        public async Task<IEnumerable<int>?> GetSupervisorsIdAsync()
+        public async Task<Employee?> GetBasicSupervisorDataByIdAsync(int supervisorId)
         {
-            return await (from eir in _context.EmployeesInRestaurants
-                          join et in _context.EmployeeTypes
-                          on eir.IdType equals et.IdType
+            int? chefTypeId = null;
+            try
+            {
+                chefTypeId = int.Parse(_config["ApplicationSettings:ChefTypeId"]);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return null;
+            }
 
-                          where eir.IdType == 2
-                          select eir.IdEmployee
+            var supervisorQuery = await
+                (from eir in _context.EmployeesInRestaurants
+                 join e in _context.Employees
+                 on eir.IdEmployee equals e.IdEmployee
 
-                         ).ToListAsync();
+                 where eir.IdType == chefTypeId
+                 select new Employee
+                 {
+                    IdEmployee = e.IdEmployee,
+                    FirstName = e.FirstName,
+                    LastName = e.LastName,
+                    PESEL = e.PESEL,
+                    HiredDate = e.HiredDate,
+                    FirstPromotionChefDate = e.FirstPromotionChefDate,
+                    Salary = e.Salary,
+                    BonusSalary = e.BonusSalary,
+                    IsOwner = e.IsOwner,
+                 }).FirstOrDefaultAsync();
+
+            return supervisorQuery;
         }
 
-        public async Task<IEnumerable<GetEmployeeDTO>> GetDetailedSupervisorsDataAsync(List<int> supervisorsID)
-        {
+        //public async Task<IEnumerable<int>?> GetSupervisorsIdAsync()
+        //{
+        //    return await (from eir in _context.EmployeesInRestaurants
+        //                  join et in _context.EmployeeTypes
+        //                  on eir.IdType equals et.IdType
 
-            return await (from emp in _context.Employees
-                          join addr in _context.Address
-                          on emp.IdAddress equals addr.IdAddress
+        //                  where eir.IdType == 2
+        //                  select eir.IdEmployee
 
-                          where supervisorsID.Contains(emp.IdEmployee)
+        //                 ).ToListAsync();
+        //}
 
-                          select new GetEmployeeDTO
-                          {
-                              IdEmployee = emp.IdEmployee,
-                              FirstName = emp.FirstName,
-                              LastName = emp.LastName,
-                              PESEL = emp.PESEL,
-                              Salary = emp.Salary,
-                              BonusSalary = emp.BonusSalary,
-                              HiredDate = emp.HiredDate,
-                              IsOwner = emp.IsOwner,
-                              FirstPromotionChefDate = emp.FirstPromotionChefDate,
+        //public async Task<IEnumerable<GetEmployeeDTO>> GetDetailedSupervisorsDataAsync(List<int> supervisorsID)
+        //{
 
-                              Address = (from addr in _context.Address
-                                         where addr.IdAddress == emp.IdAddress
+        //    return await (from emp in _context.Employees
+        //                  join addr in _context.Address
+        //                  on emp.IdAddress equals addr.IdAddress
 
-                                         select new GetAddressDTO
-                                         {
-                                             IdAddress = addr.IdAddress,
-                                             City = addr.City,
-                                             Street = addr.Street,
-                                             BuildingNumber = addr.BuildingNumber,
-                                             LocalNumber = addr.LocalNumber,
-                                         }
-                                         ).First(),
+        //                  where supervisorsID.Contains(emp.IdEmployee)
 
-                              Certificates = (from empCert in _context.EmployeeCertificates
-                                              join cert in _context.Certificates
-                                              on empCert.IdCertificate equals cert.IdCertificate
+        //                  select new GetEmployeeDTO
+        //                  {
+        //                      IdEmployee = emp.IdEmployee,
+        //                      FirstName = emp.FirstName,
+        //                      LastName = emp.LastName,
+        //                      PESEL = emp.PESEL,
+        //                      Salary = emp.Salary,
+        //                      BonusSalary = emp.BonusSalary,
+        //                      HiredDate = emp.HiredDate,
+        //                      IsOwner = emp.IsOwner,
+        //                      FirstPromotionChefDate = emp.FirstPromotionChefDate,
 
-                                              where empCert.IdEmployee == emp.IdEmployee
+        //                      Address = (from addr in _context.Address
+        //                                 where addr.IdAddress == emp.IdAddress
 
-                                              select new GetCertificateDTO
-                                              {
-                                                  IdCertificate = cert.IdCertificate,
-                                                  Name = cert.Name,
-                                                  ExpirationDate = empCert.ExpirationDate
-                                              }).ToList()
+        //                                 select new GetAddressDTO
+        //                                 {
+        //                                     IdAddress = addr.IdAddress,
+        //                                     City = addr.City,
+        //                                     Street = addr.Street,
+        //                                     BuildingNumber = addr.BuildingNumber,
+        //                                     LocalNumber = addr.LocalNumber,
+        //                                 }
+        //                                 ).First(),
 
-                          }).ToListAsync();
+        //                      Certificates = (from empCert in _context.EmployeeCertificates
+        //                                      join cert in _context.Certificates
+        //                                      on empCert.IdCertificate equals cert.IdCertificate
 
-        }
+        //                                      where empCert.IdEmployee == emp.IdEmployee
+
+        //                                      select new GetCertificateDTO
+        //                                      {
+        //                                          IdCertificate = cert.IdCertificate,
+        //                                          Name = cert.Name,
+        //                                          ExpirationDate = empCert.ExpirationDate
+        //                                      }).ToList()
+
+        //                  }).ToListAsync();
+
+        //}
 
         // Owner employee type should has always id equals 1.
         public async Task<Employee?> GetBasicOwnerDataAsync()
