@@ -65,7 +65,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Returns all supervisors details 
+        /// Returns all supervisors details from any restaurants
         /// </summary>
         [HttpGet("supervisors")]
         public async Task<IActionResult> GetSupervisors()
@@ -89,7 +89,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Returns supervisor details by supervisor id
+        /// Returns supervisor details by supervisor id from any restaurant
         /// </summary>
         /// <param name="supervisorId">Supervisor id</param>
         [HttpGet("supervisor/{supervisorId}")]
@@ -146,22 +146,25 @@ namespace Restaurants_REST_API.Controllers
             return Ok(employeeDetailsDatabase);
         }
 
-        [HttpGet]
-        [Route("by-restaurant/id")]
-        public async Task<IActionResult> GetEmployeeByRestaurant(int id)
+        /// <summary>
+        /// Returns employees details by restaurant id
+        /// </summary>
+        /// <param name="restaurantId">Restaurant id</param>
+        [HttpGet("restaurant/{restaurantId}")]
+        public async Task<IActionResult> GetEmployeeByRestaurant(int restaurantId)
         {
-            if (!GeneralValidator.isCorrectId(id))
+            if (!GeneralValidator.isCorrectId(restaurantId))
             {
-                return BadRequest($"Restaurant id={id} is invalid");
+                return BadRequest($"Restaurant id={restaurantId} is invalid");
             }
 
-            Restaurant? restaurant = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(id);
+            Restaurant? restaurant = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(restaurantId);
             if (restaurant == null)
             {
-                return NotFound($"Restaurant not found");
+                return NotFound($"Restaurant id={restaurantId} not found");
             }
 
-            IEnumerable<GetEmployeeDTO> employeesInRestaurant = await _employeeApiService.GetDetailedEmployeeDataByRestaurantIdAsync(id);
+            IEnumerable<GetEmployeeDTO> employeesInRestaurant = await _employeeApiService.GetDetailedEmployeeDataByRestaurantIdAsync(restaurantId);
 
             if (employeesInRestaurant.Count() == 0)
             {
@@ -171,6 +174,10 @@ namespace Restaurants_REST_API.Controllers
             return Ok(employeesInRestaurant);
         }
 
+        /// <summary>
+        /// Adds new employee
+        /// </summary>
+        /// <param name="newEmployee">Employee details data</param>
         [HttpPost]
         public async Task<IActionResult> AddNewEmployee(PostEmployeeDTO? newEmployee)
         {
@@ -261,13 +268,17 @@ namespace Restaurants_REST_API.Controllers
             return Ok("New Employee has been added");
         }
 
-        [HttpPost]
-        [Route("certificate/by-employee/id")]
-        public async Task<IActionResult> AddCertificateByEmployee(int id, IEnumerable<PostCertificateDTO> newCertificates)
+        /// <summary>
+        /// Adds new certificate to employee by employee id
+        /// </summary>
+        /// <param name="empId">Employee id</param>
+        /// <param name="newCertificates">Certificates data</param>
+        [HttpPost("{empId}/certificate")]
+        public async Task<IActionResult> AddCertificateByEmployee(int empId, IEnumerable<PostCertificateDTO> newCertificates)
         {
-            if (!GeneralValidator.isCorrectId(id))
+            if (!GeneralValidator.isCorrectId(empId))
             {
-                return BadRequest($"Employee id={id} is invalid");
+                return BadRequest($"Employee id={empId} is invalid");
             }
 
             if (newCertificates == null || newCertificates.Count() == 0)
@@ -281,13 +292,13 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("One or more certificates has empty name");
             }
 
-            Employee? employeeDatabase = await _employeeApiService.GetBasicEmployeeDataByIdAsync(id);
+            Employee? employeeDatabase = await _employeeApiService.GetBasicEmployeeDataByIdAsync(empId);
             if (employeeDatabase == null)
             {
                 return NotFound("Employee not found");
             }
 
-            bool isCertificateHasBeenAdded = await _employeeApiService.AddNewEmployeeCertificatesAsync(id, newCertificates);
+            bool isCertificateHasBeenAdded = await _employeeApiService.AddNewEmployeeCertificatesAsync(empId, newCertificates);
             if (!isCertificateHasBeenAdded)
             {
                 return BadRequest($"Something went wrong unable to add certificates to employee {employeeDatabase.FirstName}");
@@ -296,13 +307,17 @@ namespace Restaurants_REST_API.Controllers
             return Ok($"Certificate has been added to employee {employeeDatabase.FirstName}");
         }
 
-        [HttpPut]
-        [Route("id")]
-        public async Task<IActionResult> UpdateEmployeeDataByEmployee(int id, PutEmployeeDTO? putEmpData)
+        /// <summary>
+        /// Updates existing employee basic data by employee id
+        /// </summary>
+        /// <param name="empId">Employee id</param>
+        /// <param name="putEmpData">Basic employee data</param>
+        [HttpPut("{empId}")]
+        public async Task<IActionResult> UpdateEmployeeDataByEmployee(int empId, PutEmployeeDTO? putEmpData)
         {
-            if (!GeneralValidator.isCorrectId(id))
+            if (!GeneralValidator.isCorrectId(empId))
             {
-                return BadRequest($"Id={id} isn't correct");
+                return BadRequest($"Id={empId} isn't correct");
             }
 
             if (putEmpData == null)
@@ -341,7 +356,7 @@ namespace Restaurants_REST_API.Controllers
             }
 
             //checking if employee exist
-            Employee? employeeDatabase = await _employeeApiService.GetBasicEmployeeDataByIdAsync(id);
+            Employee? employeeDatabase = await _employeeApiService.GetBasicEmployeeDataByIdAsync(empId);
             if (employeeDatabase == null)
             {
                 return NotFound("Employee doesn't exist");
@@ -351,7 +366,7 @@ namespace Restaurants_REST_API.Controllers
             MapEmployeeDataService employeeDataMapper = new MapEmployeeDataService(employeeDetailsDatabase, putEmpData);
             Employee employeeUpdatedData = employeeDataMapper.GetEmployeeUpdatedData();
 
-            bool isEmployeeUpdated = await _employeeApiService.UpdateEmployeeDataByIdAsync(id, employeeUpdatedData);
+            bool isEmployeeUpdated = await _employeeApiService.UpdateEmployeeDataByIdAsync(empId, employeeUpdatedData);
             if (!isEmployeeUpdated)
             {
                 return BadRequest("Something went wrong unable to update employee");
@@ -359,16 +374,21 @@ namespace Restaurants_REST_API.Controllers
             return Ok("Employee has been updated");
         }
 
-        [HttpPut]
-        [Route("certificates/by-employee/id")]
-        public async Task<IActionResult> UpdateEmployeeCertificatesByEmployee(int empId, IEnumerable<PutCertificateDTO> putEmpCertificates)
+        /// <summary>
+        /// Updates existing employee certificate by employee id and certificate id
+        /// </summary>
+        /// <param name="empId">Employee id</param>
+        /// <param name="certificateId">Certificate id to update</param>
+        /// <param name="putEmpCertificates">Certificate data to update</param>
+        [HttpPut("{empId}/certificate/{certificateId}")]
+        public async Task<IActionResult> UpdateEmployeeCertificatesByEmployee(int empId, int certificateId, PutCertificateDTO? putEmpCertificates)
         {
             if (!GeneralValidator.isCorrectId(empId))
             {
                 return BadRequest($"Employee id={empId} isn't correct");
             }
 
-            if (putEmpCertificates == null || putEmpCertificates.Count() == 0)
+            if (putEmpCertificates == null)
             {
                 return BadRequest("Certificates can't be empty");
             }
@@ -413,8 +433,11 @@ namespace Restaurants_REST_API.Controllers
             return Ok("Employee certificates has been updated");
         }
 
-        [HttpDelete]
-        [Route("id")]
+        /// <summary>
+        /// Removes employee data
+        /// </summary>
+        /// <param name="empId">Employee id</param>
+        [HttpDelete("{empId}")]
         public async Task<IActionResult> DeleteEmployeeBy(int empId)
         {
             if (!GeneralValidator.isCorrectId(empId))
@@ -438,18 +461,22 @@ namespace Restaurants_REST_API.Controllers
             return Ok($"Employee has been removed");
         }
 
-        [HttpDelete]
-        [Route("certificate/id")]
-        public async Task<IActionResult> DeleteEmployeeCertificateBy(int empId, int certId)
+        /// <summary>
+        /// Removes employee certificate
+        /// </summary>
+        /// <param name="empId">Employee id</param>
+        /// <param name="certificateId">Employee certificate id</param>
+        [HttpDelete("{empId}/certificate/{certificateId}")]
+        public async Task<IActionResult> DeleteEmployeeCertificateBy(int empId, int certificateId)
         {
             if (!GeneralValidator.isCorrectId(empId))
             {
                 return BadRequest($"Employee id={empId} is invalid");
             }
 
-            if (!GeneralValidator.isCorrectId(certId))
+            if (!GeneralValidator.isCorrectId(certificateId))
             {
-                return BadRequest($"Certificate id={certId} is invalid");
+                return BadRequest($"Certificate id={certificateId} is invalid");
             }
 
             Employee? employeeDatabase = await _employeeApiService.GetBasicEmployeeDataByIdAsync(empId);
@@ -464,10 +491,10 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound("Employee certificates not found");
             }
 
-            GetCertificateDTO? empCertificate = employeeDetailsDatabase.Certificates.Where(ec => ec.IdCertificate == certId).FirstOrDefault();
+            GetCertificateDTO? empCertificate = employeeDetailsDatabase.Certificates.Where(ec => ec.IdCertificate == certificateId).FirstOrDefault();
             if (empCertificate == null)
             {
-                return NotFound($"Certificate id={certId} not found in employee {employeeDetailsDatabase.FirstName}");
+                return NotFound($"Certificate id={certificateId} not found in employee {employeeDetailsDatabase.FirstName}");
             }
 
             bool isCertificateHasBeenDeleted = await _employeeApiService.DeleteEmployeeCertificateAsync(empId, empCertificate);
