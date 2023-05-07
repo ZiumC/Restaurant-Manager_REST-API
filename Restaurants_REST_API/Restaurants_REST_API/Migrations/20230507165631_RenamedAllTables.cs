@@ -168,13 +168,13 @@ namespace Restaurants_REST_API.Migrations
                         column: x => x.IdReservation,
                         principalTable: "Reservation",
                         principalColumn: "IdReservation",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Complaint_Restaurant_IdRestaurant",
                         column: x => x.IdRestaurant,
                         principalTable: "Restaurant",
                         principalColumn: "IdRestaurant",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -195,13 +195,13 @@ namespace Restaurants_REST_API.Migrations
                         column: x => x.IdCertificate,
                         principalTable: "Certificate",
                         principalColumn: "IdCertificate",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_EmployeeCertificate_Employee_IdEmployee",
                         column: x => x.IdEmployee,
                         principalTable: "Employee",
                         principalColumn: "IdEmployee",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -222,19 +222,19 @@ namespace Restaurants_REST_API.Migrations
                         column: x => x.IdEmployee,
                         principalTable: "Employee",
                         principalColumn: "IdEmployee",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_EmployeeRestaurant_EmployeeType_IdType",
                         column: x => x.IdType,
                         principalTable: "EmployeeType",
                         principalColumn: "IdType",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_EmployeeRestaurant_Restaurant_IdRestaurant",
                         column: x => x.IdRestaurant,
                         principalTable: "Restaurant",
                         principalColumn: "IdRestaurant",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -254,13 +254,13 @@ namespace Restaurants_REST_API.Migrations
                         column: x => x.IdDish,
                         principalTable: "Dish",
                         principalColumn: "IdDish",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_RestaurantDishe_Restaurant_IdRestaurant",
                         column: x => x.IdRestaurant,
                         principalTable: "Restaurant",
                         principalColumn: "IdRestaurant",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
@@ -365,7 +365,7 @@ namespace Restaurants_REST_API.Migrations
                 column: "IdAddress",
                 principalTable: "Address",
                 principalColumn: "IdAddress",
-                onDelete: ReferentialAction.NoAction);
+                onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Reservation_Client_IdClient",
@@ -373,7 +373,7 @@ namespace Restaurants_REST_API.Migrations
                 column: "IdClient",
                 principalTable: "Client",
                 principalColumn: "IdClient",
-                onDelete: ReferentialAction.NoAction);
+                onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Reservation_Restaurant_IdRestauration",
@@ -553,13 +553,13 @@ namespace Restaurants_REST_API.Migrations
                         column: x => x.IdReservation,
                         principalTable: "Reservations",
                         principalColumn: "IdReservation",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Complains_Restaurants_IdRestaurant",
                         column: x => x.IdRestaurant,
                         principalTable: "Restaurants",
                         principalColumn: "IdRestaurant",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -580,13 +580,13 @@ namespace Restaurants_REST_API.Migrations
                         column: x => x.IdCertificate,
                         principalTable: "Certificates",
                         principalColumn: "IdCertificate",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_EmployeeCertificates_Employees_IdEmployee",
                         column: x => x.IdEmployee,
                         principalTable: "Employees",
                         principalColumn: "IdEmployee",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -607,19 +607,19 @@ namespace Restaurants_REST_API.Migrations
                         column: x => x.IdEmployee,
                         principalTable: "Employees",
                         principalColumn: "IdEmployee",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_EmployeesInRestaurants_EmployeeTypes_IdType",
                         column: x => x.IdType,
                         principalTable: "EmployeeTypes",
                         principalColumn: "IdType",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_EmployeesInRestaurants_Restaurants_IdRestaurant",
                         column: x => x.IdRestaurant,
                         principalTable: "Restaurants",
                         principalColumn: "IdRestaurant",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -639,13 +639,13 @@ namespace Restaurants_REST_API.Migrations
                         column: x => x.IdDish,
                         principalTable: "Dishes",
                         principalColumn: "IdDish",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_RestaurantDishes_Restaurants_IdRestaurant",
                         column: x => x.IdRestaurant,
                         principalTable: "Restaurants",
                         principalColumn: "IdRestaurant",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
@@ -750,7 +750,7 @@ namespace Restaurants_REST_API.Migrations
                 column: "IdAddress",
                 principalTable: "Address",
                 principalColumn: "IdAddress",
-                onDelete: ReferentialAction.NoAction);
+                onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Reservations_Clients_IdClient",
@@ -758,7 +758,7 @@ namespace Restaurants_REST_API.Migrations
                 column: "IdClient",
                 principalTable: "Clients",
                 principalColumn: "IdClient",
-                onDelete: ReferentialAction.NoAction);
+                onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Reservations_Restaurants_IdRestauration",
@@ -766,7 +766,7 @@ namespace Restaurants_REST_API.Migrations
                 column: "IdRestauration",
                 principalTable: "Restaurants",
                 principalColumn: "IdRestaurant",
-                onDelete: ReferentialAction.NoAction);
+                onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Restaurants_Address_IdAddress",
@@ -774,7 +774,7 @@ namespace Restaurants_REST_API.Migrations
                 column: "IdAddress",
                 principalTable: "Address",
                 principalColumn: "IdAddress",
-                onDelete: ReferentialAction.NoAction);
+                onDelete: ReferentialAction.Cascade);
         }
     }
 }

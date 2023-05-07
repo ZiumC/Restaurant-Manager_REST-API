@@ -6,11 +6,11 @@ namespace Restaurants_REST_API.DTOs.PostOrPutDTO
     {
         [Required]
         [MaxLength(50)]
-        [MinLength(5)]
+        [MinLength(2)]
         public string City { get; set; }
         [Required]
         [MaxLength(50)]
-        [MinLength(5)]
+        [MinLength(2)]
         public string Street { get; set; }
         [Required]
         [MaxLength(5)]

@@ -45,7 +45,7 @@ namespace Restaurants_REST_API.Migrations
                 column: "IdDish",
                 principalTable: "Dish",
                 principalColumn: "IdDish",
-                onDelete: ReferentialAction.NoAction);
+                onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_RestaurantDish_Restaurant_IdRestaurant",
@@ -53,7 +53,7 @@ namespace Restaurants_REST_API.Migrations
                 column: "IdRestaurant",
                 principalTable: "Restaurant",
                 principalColumn: "IdRestaurant",
-                onDelete: ReferentialAction.NoAction);
+                onDelete: ReferentialAction.Cascade);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -95,7 +95,7 @@ namespace Restaurants_REST_API.Migrations
                 column: "IdDish",
                 principalTable: "Dish",
                 principalColumn: "IdDish",
-                onDelete: ReferentialAction.NoAction);
+                onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_RestaurantDishe_Restaurant_IdRestaurant",
@@ -103,7 +103,7 @@ namespace Restaurants_REST_API.Migrations
                 column: "IdRestaurant",
                 principalTable: "Restaurant",
                 principalColumn: "IdRestaurant",
-                onDelete: ReferentialAction.NoAction);
+                onDelete: ReferentialAction.Cascade);
         }
     }
 }
