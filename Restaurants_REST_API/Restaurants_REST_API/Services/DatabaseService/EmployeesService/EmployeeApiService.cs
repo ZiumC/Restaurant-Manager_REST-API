@@ -114,7 +114,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             };
         }
 
-        // Chef employee type should has always id equals 2. 
+        // Employee chef type should have always id equals 2. 
         public async Task<IEnumerable<GetEmployeeDTO>?> GetAllSupervisorsAsync()
         {
             int? chefTypeId = null;
@@ -177,7 +177,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             return supervisorsQuery;
         }
 
-        // Chef employee type should has always id equals 2. 
+        // Employee chef type should have always id equals 2. 
         public async Task<Employee?> GetBasicSupervisorDataByIdAsync(int supervisorId)
         {
             int? chefTypeId = null;
@@ -204,6 +204,44 @@ namespace Restaurants_REST_API.Services.Database_Service
                      FirstName = emp.FirstName,
                      LastName = emp.LastName,
                      PESEL = emp.PESEL,
+                     Salary = emp.Salary,
+                     BonusSalary = emp.BonusSalary,
+                     IsOwner = emp.IsOwner,
+                     HiredDate = emp.HiredDate,
+                     FirstPromotionChefDate = emp.FirstPromotionChefDate,
+                     IdAddress = emp.IdAddress,
+                 }).FirstOrDefaultAsync();
+
+            return supervisorQuery;
+        }
+
+        // Employee owner type should have always id equals 1.
+        public async Task<Employee?> GetBasicOwnerDataAsync()
+        {
+            int? ownerTypeId = null;
+            try
+            {
+                ownerTypeId = int.Parse(_config["ApplicationSettings:OwnerTypeId"]);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                throw new Exception("Bad value to parse");
+            }
+
+            Employee? ownerQuery = await
+                (from emp in _context.Employees
+                 join eir in _context.EmployeesInRestaurants
+                 on emp.IdEmployee equals eir.IdEmployee
+
+                 where eir.IdType == ownerTypeId
+
+                 select new Employee
+                 {
+                     IdEmployee = emp.IdEmployee,
+                     FirstName = emp.FirstName,
+                     LastName = emp.LastName,
+                     PESEL = emp.PESEL,
                      HiredDate = emp.HiredDate,
                      FirstPromotionChefDate = emp.FirstPromotionChefDate,
                      Salary = emp.Salary,
@@ -212,35 +250,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                      IdAddress = emp.IdAddress,
                  }).FirstOrDefaultAsync();
 
-            return supervisorQuery;
-        }
-
-        // Owner employee type should has always id equals 1.
-        public async Task<Employee?> GetBasicOwnerDataAsync()
-        {
-            int? ownerId = null;
-            try
-            {
-                ownerId = int.Parse(_config["ApplicationSettings:OwnerTypeId"]);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-                return null;
-            }
-
-            return await (from eir in _context.EmployeesInRestaurants
-                          join et in _context.EmployeeTypes
-                          on eir.IdType equals et.IdType
-
-                          join emp in _context.Employees
-                          on eir.IdEmployee equals emp.IdEmployee
-
-                          where et.IdType == ownerId
-
-                          select emp
-                          ).FirstOrDefaultAsync();
-
+            return ownerQuery;
         }
 
         public async Task<IEnumerable<GetEmployeeDTO>> GetDetailedEmployeeDataByRestaurantIdAsync(int restaurantId)

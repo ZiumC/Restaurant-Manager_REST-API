@@ -120,18 +120,30 @@ namespace Restaurants_REST_API.Controllers
             return Ok(employeeDetailsDatabase);
         }
 
-        [HttpGet]
-        [Route("owner")]
+        /// <summary>
+        /// Returns owner details
+        /// </summary>
+        [HttpGet("owner")]
         public async Task<IActionResult> GetOwnerDetails()
         {
-            Employee? ownerDatabase = await _employeeApiService.GetBasicOwnerDataAsync();
+            Employee? ownerDatabase = null;
+            try
+            {
+                ownerDatabase = await _employeeApiService.GetBasicOwnerDataAsync();
+            }
+            catch (Exception ex)
+            {
+                return Problem($"Something went wrong: {ex.Message}");
+            }
 
             if (ownerDatabase == null)
             {
                 return NotFound("Owner not found");
             }
 
-            return Ok(await _employeeApiService.GetDetailedEmployeeDataAsync(ownerDatabase));
+            GetEmployeeDTO employeeDetailsDatabase = await _employeeApiService.GetDetailedEmployeeDataAsync(ownerDatabase);
+
+            return Ok(employeeDetailsDatabase);
         }
 
         [HttpGet]
