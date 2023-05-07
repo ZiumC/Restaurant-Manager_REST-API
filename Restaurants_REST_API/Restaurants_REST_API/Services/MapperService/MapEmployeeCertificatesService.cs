@@ -1,57 +1,58 @@
 ﻿using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.DTOs.PutDTO;
+using Restaurants_REST_API.Models.Database;
 
 namespace Restaurants_REST_API.Services.MapperService
 {
     public class MapEmployeeCertificatesService
     {
         private readonly GetEmployeeDTO _employeeDetailsDatabase;
-        private readonly IEnumerable<PutCertificateDTO> _newCertificatesData;
-        private List<PutCertificateDTO> updatedCertificateNames = new List<PutCertificateDTO>();
-        private List<int> updatedCertificatesId = new List<int>();
+        private readonly PutCertificateDTO _newCertificatesData;
+        private readonly int _certificateId;
+        private PutCertificateDTO updatedCertificate = new PutCertificateDTO();
 
-        public MapEmployeeCertificatesService(GetEmployeeDTO employeeDetailsDatabase, IEnumerable<PutCertificateDTO> certificatesData)
+        public MapEmployeeCertificatesService(GetEmployeeDTO employeeDetailsDatabase, PutCertificateDTO certificatesData, int certificateId)
         {
             _employeeDetailsDatabase = employeeDetailsDatabase;
             _newCertificatesData = certificatesData;
+            _certificateId = certificateId;
         }
 
         private void UpdateEmployeeCertificates()
         {
+            GetCertificateDTO oldCertificateQuery = _employeeDetailsDatabase.Certificates
+                .Where(ec => ec.IdCertificate == _certificateId).First();
 
-            if (_employeeDetailsDatabase.Certificates == null)
+            string oldName = oldCertificateQuery.Name.ToLower();
+            string newName = _newCertificatesData.Name.ToLower();
+
+            DateTime oldExpirationDate = oldCertificateQuery.ExpirationDate.Date;
+            DateTime newExpirationDate = _newCertificatesData.ExpirationDate.Date;
+
+            if (oldName.Equals(newName))
             {
-                throw new Exception("Employee doesn't have any certificates");
+                updatedCertificate.Name = oldName;
+            }
+            else
+            {
+                updatedCertificate.Name = newName;
             }
 
-            for (int i = 0; i < _employeeDetailsDatabase.Certificates.Count(); i++)
+            if (oldExpirationDate == newExpirationDate)
             {
-                var oldEmpCert = _employeeDetailsDatabase.Certificates.ElementAt(i);
-
-                string oldName = oldEmpCert.Name.ToLower();
-                string newName = _newCertificatesData.ElementAt(i).Name.ToLower();
-
-                DateTime oldExpirationDate = oldEmpCert.ExpirationDate.Date;
-                DateTime newExpirationDate = _newCertificatesData.ElementAt(i).ExpirationDate.Date;
-
-                if (!oldName.Equals(newName) || oldExpirationDate != newExpirationDate)
-                {
-                    updatedCertificateNames.Add(new PutCertificateDTO { Name = newName, ExpirationDate = newExpirationDate });
-                    updatedCertificatesId.Add(_employeeDetailsDatabase.Certificates.ElementAt(i).IdCertificate);
-                }
+                updatedCertificate.ExpirationDate = oldExpirationDate;
+            }
+            else
+            {
+                updatedCertificate.ExpirationDate = newExpirationDate;
             }
 
         }
 
-        public List<PutCertificateDTO> GetUpdatedCertificateNames()
+        public PutCertificateDTO GetUpdatedCertificateNames()
         {
             UpdateEmployeeCertificates();
-            return updatedCertificateNames;
-        }
-
-        public List<int> GetUpdatedCertificatesId()
-        {
-            return updatedCertificatesId;
+            return updatedCertificate;
         }
     }
 }

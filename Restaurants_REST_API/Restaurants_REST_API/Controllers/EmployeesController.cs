@@ -381,23 +381,21 @@ namespace Restaurants_REST_API.Controllers
         /// <param name="certificateId">Certificate id to update</param>
         /// <param name="putEmpCertificates">Certificate data to update</param>
         [HttpPut("{empId}/certificate/{certificateId}")]
-        public async Task<IActionResult> UpdateEmployeeCertificatesByEmployee(int empId, int certificateId, PutCertificateDTO? putEmpCertificates)
+        public async Task<IActionResult> UpdateEmployeeCertificatesByEmployee(int empId, int certificateId, PutCertificateDTO putEmpCertificates)
         {
             if (!GeneralValidator.isCorrectId(empId))
             {
-                return BadRequest($"Employee id={empId} isn't correct");
+                return BadRequest($"Employee id={empId} is invalid");
             }
 
-            if (putEmpCertificates == null)
+            if (!GeneralValidator.isCorrectId(certificateId))
             {
-                return BadRequest("Certificates can't be empty");
+                return BadRequest($"Certificate id={certificateId} is invalid");
             }
 
-
-            int countOfEmptyCertificateName = putEmpCertificates.Where(pec => pec.Name.Replace("\\s", "").Equals("")).ToList().Count();
-            if (countOfEmptyCertificateName > 0)
+            if (GeneralValidator.isEmptyNameOf(putEmpCertificates.Name))
             {
-                return BadRequest("One or more certificates has empty name");
+                return BadRequest("Certificate has empty name");
             }
 
             Employee? employeeDatabase = await _employeeApiService.GetBasicEmployeeDataByIdAsync(empId);
@@ -409,10 +407,13 @@ namespace Restaurants_REST_API.Controllers
             GetEmployeeDTO employeeDetailsDatabase = await _employeeApiService.GetDetailedEmployeeDataAsync(employeeDatabase);
             if (employeeDetailsDatabase.Certificates != null && employeeDetailsDatabase.Certificates.Count() > 0)
             {
-                if (putEmpCertificates.Count() > employeeDetailsDatabase.Certificates.Count())
+                GetCertificateDTO? employeeCertificate = employeeDetailsDatabase.Certificates
+                    .Where(ec => ec.IdCertificate == certificateId)
+                    .FirstOrDefault();
+
+                if (employeeCertificate == null)
                 {
-                    return BadRequest($"Employee doesn't have {putEmpCertificates.Count()} certificates. " +
-                        $"Currenthy employee have only {employeeDetailsDatabase.Certificates.Count()} certificates");
+                    return NotFound($"Employee certificate id={certificateId} not found");
                 }
             }
             else
@@ -420,17 +421,16 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound("Employee certificates not found");
             }
 
-            MapEmployeeCertificatesService employeeCertificatesMapper = new MapEmployeeCertificatesService(employeeDetailsDatabase, putEmpCertificates);
-            List<PutCertificateDTO> updatedCertificatesData = employeeCertificatesMapper.GetUpdatedCertificateNames();
-            List<int> updatedCertificatesId = employeeCertificatesMapper.GetUpdatedCertificatesId();
+            MapEmployeeCertificatesService employeeCertificateMapper = new MapEmployeeCertificatesService(employeeDetailsDatabase, putEmpCertificates, certificateId);
+            PutCertificateDTO updatedCertificateData = employeeCertificateMapper.GetUpdatedCertificateNames();
 
-            bool isCertificatesHasBeenUpdated = await _employeeApiService.UpdateEmployeeCertificatesByIdAsync(updatedCertificatesData, updatedCertificatesId);
+            bool isCertificatesHasBeenUpdated = await _employeeApiService.UpdateEmployeeCertificatesByIdAsync(certificateId ,updatedCertificateData);
             if (!isCertificatesHasBeenUpdated)
             {
-                return BadRequest("Unable to update certificates name");
+                return Problem("Unable to update certificate");
             }
 
-            return Ok("Employee certificates has been updated");
+            return Ok("Employee certificate has been updated");
         }
 
         /// <summary>
@@ -462,7 +462,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Removes employee certificate
+        /// Removes employee certificate data
         /// </summary>
         /// <param name="empId">Employee id</param>
         /// <param name="certificateId">Employee certificate id</param>

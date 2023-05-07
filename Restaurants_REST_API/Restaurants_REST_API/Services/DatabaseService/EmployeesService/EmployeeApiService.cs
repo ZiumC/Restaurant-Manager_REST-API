@@ -461,32 +461,27 @@ namespace Restaurants_REST_API.Services.Database_Service
 
         }
 
-        public async Task<bool> UpdateEmployeeCertificatesByIdAsync(List<PutCertificateDTO> updatedCertificatesData, List<int> certificatesId)
+        public async Task<bool> UpdateEmployeeCertificatesByIdAsync(int certificateId, PutCertificateDTO updatedCertificatesData)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
                 try
                 {
-                    for (int i = 0; i < certificatesId.Count(); i++)
-                    {
-                        var updateCertNameQuery = await
+                    var updateCertNameQuery = await
                             (_context.Certificates
-                            .Where(c => c.IdCertificate == certificatesId.ElementAt(i))
+                            .Where(c => c.IdCertificate == certificateId)
                             .FirstAsync());
 
-                        updateCertNameQuery.Name = updatedCertificatesData.ElementAt(i).Name;
+                    updateCertNameQuery.Name = updatedCertificatesData.Name;
+                    await _context.SaveChangesAsync();
 
-                        await _context.SaveChangesAsync();
+                    var updateCertExpiriationDateQuery = await
+                           (_context.EmployeeCertificates
+                           .Where(ec => ec.IdCertificate == certificateId)
+                           .FirstAsync());
 
-                        var updateCertExpiriationDateQuery = await
-                            (_context.EmployeeCertificates
-                            .Where(ec => ec.IdCertificate == certificatesId.ElementAt(i))
-                            .FirstAsync());
-
-                        updateCertExpiriationDateQuery.ExpirationDate = updatedCertificatesData.ElementAt(i).ExpirationDate;
-                        await _context.SaveChangesAsync();
-                    }
-
+                    updateCertExpiriationDateQuery.ExpirationDate = updatedCertificatesData.ExpirationDate;
+                    await _context.SaveChangesAsync();
                 }
                 catch (Exception ex)
                 {
@@ -550,30 +545,23 @@ namespace Restaurants_REST_API.Services.Database_Service
 
         public async Task<bool> DeleteEmployeeCertificateAsync(int empId, GetCertificateDTO employeeCertificateData)
         {
-            using (var transaction = await _context.Database.BeginTransactionAsync())
+            try
             {
-                try
+                Certificate certificateToDelete = new Certificate
                 {
+                    IdCertificate = employeeCertificateData.IdCertificate,
+                    Name = employeeCertificateData.Name
+                };
 
-                    Certificate certificateToDelete = new Certificate
-                    {
-                        IdCertificate = employeeCertificateData.IdCertificate,
-                        Name = employeeCertificateData.Name
-                    };
-
-                    //removing employee certificate
-                    _context.Remove(certificateToDelete);
-                    await _context.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.ToString());
-                    await transaction.RollbackAsync();
-                    return false;
-                }
-                await transaction.CommitAsync();
-                return true;
+                _context.Remove(certificateToDelete);
+                await _context.SaveChangesAsync();
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return false;
+            }
+            return true;
         }
     }
 }
