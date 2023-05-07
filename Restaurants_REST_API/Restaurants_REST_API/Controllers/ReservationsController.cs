@@ -19,6 +19,9 @@ namespace Restaurants_REST_API.Controllers
             _reservationsApiService = reservationsApiService;
         }
 
+        /// <summary>
+        /// Returns all reservations data
+        /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetAllReservations()
         {
@@ -32,43 +35,47 @@ namespace Restaurants_REST_API.Controllers
             return Ok(reservations);
         }
 
-        [HttpGet]
-        [Route("id")]
-        public async Task<IActionResult> GetReservationBy(int id)
+        /// <summary>
+        /// Returns reservation details by reservation id
+        /// </summary>
+        /// <param name="reservationId">Reservation id</param>
+        [HttpGet("{reservationId}")]
+        public async Task<IActionResult> GetReservationBy(int reservationId)
         {
-            if (!GeneralValidator.isCorrectId(id))
+            if (!GeneralValidator.isCorrectId(reservationId))
             {
-                return BadRequest($"Incorrect id, expected id grater than 0 but got {id}");
+                return BadRequest($"reservation id={reservationId} is invalid");
             }
 
-            GetReservationDTO? reservation = await _reservationsApiService.GetReservationByIdAsync(id);
+            GetReservationDTO? reservation = await _reservationsApiService.GetReservationByIdAsync(reservationId);
 
             if (reservation == null)
             {
-                return NotFound($"Reservation {id} not found");
+                return NotFound($"Reservation {reservationId} not found");
             }
 
             return Ok(reservation);
         }
 
-        [HttpGet]
-        [Route("by-restaurant/id")]
-        public async Task<IActionResult> GetReservationsByRestaurant(int id)
+        /// <summary>
+        /// Returns reservations details from specified restaurant id
+        /// </summary>
+        /// <param name="restaurantId">Restaurant id</param>
+        [HttpGet("restaurant/{restaurantId}")]
+        public async Task<IActionResult> GetReservationsByRestaurant(int restaurantId)
         {
-            if (!GeneralValidator.isCorrectId(id))
+            if (!GeneralValidator.isCorrectId(restaurantId))
             {
-                return BadRequest($"Restaurant id={id} is invalid");
+                return BadRequest($"Restaurant id={restaurantId} is invalid");
             }
 
-            Restaurant? restaurant = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(id);
-
+            Restaurant? restaurant = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(restaurantId);
             if (restaurant == null)
             {
                 return NotFound($"Restaurant not found");
             }
 
-            IEnumerable<GetReservationDTO>? reservations = await _reservationsApiService.GetRestaurantReservationsAsync(id);
-
+            IEnumerable<GetReservationDTO>? reservations = await _reservationsApiService.GetRestaurantReservationsAsync(restaurantId);
             if (reservations == null || reservations.Count() == 0)
             {
                 return NotFound("Reservations not found");
@@ -77,16 +84,19 @@ namespace Restaurants_REST_API.Controllers
             return Ok(reservations);
         }
 
-        [HttpGet]
-        [Route("by-client/id")]
-        public async Task<IActionResult> GetReservationsByClient(int id)
+        /// <summary>
+        /// Returns reservations details by client id
+        /// </summary>
+        /// <param name="clientId">Client id</param>
+        [HttpGet("client/{clientId}")]
+        public async Task<IActionResult> GetReservationsByClient(int clientId)
         {
-            if (!GeneralValidator.isCorrectId(id))
+            if (!GeneralValidator.isCorrectId(clientId))
             {
-                return BadRequest($"Client id={id} is invalid");
+                return BadRequest($"Client id={clientId} is invalid");
             }
 
-            GetClientDTO? client = await _reservationsApiService.GetReservationsByClientIdAsync(id);
+            GetClientDTO? client = await _reservationsApiService.GetReservationsByClientIdAsync(clientId);
 
             if (client == null)
             {
