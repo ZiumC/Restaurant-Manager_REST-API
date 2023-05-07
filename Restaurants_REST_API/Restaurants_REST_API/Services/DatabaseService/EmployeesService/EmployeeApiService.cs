@@ -20,7 +20,7 @@ namespace Restaurants_REST_API.Services.Database_Service
         public async Task<IEnumerable<GetEmployeeDTO>> GetAllEmployeesAsync()
         {
 
-            return await (from emp in _context.Employees
+            return await (from emp in _context.Employee
 
                           select new GetEmployeeDTO
                           {
@@ -46,8 +46,8 @@ namespace Restaurants_REST_API.Services.Database_Service
                                              LocalNumber = addr.LocalNumber,
                                          }).First(),
 
-                              Certificates = (from empCert in _context.EmployeeCertificates
-                                              join cert in _context.Certificates
+                              Certificates = (from empCert in _context.EmployeeCertificate
+                                              join cert in _context.Certificate
                                               on empCert.IdCertificate equals cert.IdCertificate
 
                                               where empCert.IdEmployee == emp.IdEmployee
@@ -65,7 +65,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 
         public async Task<Employee?> GetBasicEmployeeDataByIdAsync(int empId)
         {
-            return await _context.Employees
+            return await _context.Employee
                 .Where(e => e.IdEmployee == empId)
                 .FirstOrDefaultAsync();
         }
@@ -97,8 +97,8 @@ namespace Restaurants_REST_API.Services.Database_Service
                     LocalNumber = address.LocalNumber
                 },
 
-                Certificates = await (from empCert in _context.EmployeeCertificates
-                                      join cert in _context.Certificates
+                Certificates = await (from empCert in _context.EmployeeCertificate
+                                      join cert in _context.Certificate
                                       on empCert.IdCertificate equals cert.IdCertificate
 
                                       where empCert.IdEmployee == employee.IdEmployee
@@ -129,8 +129,8 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
 
             IEnumerable<GetEmployeeDTO> supervisorsQuery = await
-                (from emp in _context.Employees
-                 join eir in _context.EmployeesInRestaurants
+                (from emp in _context.Employee
+                 join eir in _context.EmployeeRestaurant
                  on emp.IdEmployee equals eir.IdEmployee
 
                  where eir.IdType == chefTypeId
@@ -159,8 +159,8 @@ namespace Restaurants_REST_API.Services.Database_Service
                                     LocalNumber = addr.LocalNumber,
                                 }).First(),
 
-                     Certificates = (from empCert in _context.EmployeeCertificates
-                                     join cert in _context.Certificates
+                     Certificates = (from empCert in _context.EmployeeCertificate
+                                     join cert in _context.Certificate
                                      on empCert.IdCertificate equals cert.IdCertificate
 
                                      where empCert.IdEmployee == emp.IdEmployee
@@ -192,8 +192,8 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
 
             Employee? supervisorQuery = await
-                (from emp in _context.Employees
-                 join eir in _context.EmployeesInRestaurants
+                (from emp in _context.Employee
+                 join eir in _context.EmployeeRestaurant
                  on emp.IdEmployee equals eir.IdEmployee
 
                  where eir.IdType == chefTypeId && emp.IdEmployee == supervisorId
@@ -230,8 +230,8 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
 
             Employee? ownerQuery = await
-                (from emp in _context.Employees
-                 join eir in _context.EmployeesInRestaurants
+                (from emp in _context.Employee
+                 join eir in _context.EmployeeRestaurant
                  on emp.IdEmployee equals eir.IdEmployee
 
                  where eir.IdType == ownerTypeId
@@ -255,8 +255,8 @@ namespace Restaurants_REST_API.Services.Database_Service
 
         public async Task<IEnumerable<GetEmployeeDTO>> GetDetailedEmployeeDataByRestaurantIdAsync(int restaurantId)
         {
-            return await (from eir in _context.EmployeesInRestaurants
-                          join emp in _context.Employees
+            return await (from eir in _context.EmployeeRestaurant
+                          join emp in _context.Employee
                           on eir.IdEmployee equals emp.IdEmployee
 
                           join addr in _context.Address
@@ -289,8 +289,8 @@ namespace Restaurants_REST_API.Services.Database_Service
                                          }
                                          ).First(),
 
-                              Certificates = (from empCert in _context.EmployeeCertificates
-                                              join cert in _context.Certificates
+                              Certificates = (from empCert in _context.EmployeeCertificate
+                                              join cert in _context.Certificate
                                               on empCert.IdCertificate equals cert.IdCertificate
 
                                               where empCert.IdEmployee == emp.IdEmployee
@@ -356,7 +356,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 
                             var newDatabaseEmpCertificate = _context.Add
                                 (
-                                   new EmployeeCertificates
+                                   new EmployeeCertificate
                                    {
                                        IdCertificate = newDatabaseCertificate.Entity.IdCertificate,
                                        IdEmployee = newDatabaseEmployee.Entity.IdEmployee,
@@ -399,7 +399,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 
                         var newEmployeeCertificate = _context.Add
                             (
-                                new EmployeeCertificates
+                                new EmployeeCertificate
                                 {
                                     IdEmployee = empId,
                                     ExpirationDate = postCert.ExpirationDate,
@@ -428,7 +428,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                 try
                 {
                     var updateEmployeeQuery = await
-                        (_context.Employees
+                        (_context.Employee
                         .Where(e => e.IdEmployee == id)
                         .FirstAsync());
 
@@ -468,7 +468,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                 try
                 {
                     var updateCertNameQuery = await
-                            (_context.Certificates
+                            (_context.Certificate
                             .Where(c => c.IdCertificate == certificateId)
                             .FirstAsync());
 
@@ -476,7 +476,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                     await _context.SaveChangesAsync();
 
                     var updateCertExpiriationDateQuery = await
-                           (_context.EmployeeCertificates
+                           (_context.EmployeeCertificate
                            .Where(ec => ec.IdCertificate == certificateId)
                            .FirstAsync());
 
@@ -504,12 +504,12 @@ namespace Restaurants_REST_API.Services.Database_Service
                        (_context.Address.Where(a => a.IdAddress == employeeData.Address.IdAddress)).FirstAsync();
 
                     var workerQuery = await
-                       (_context.EmployeesInRestaurants.Where(eir => eir.IdEmployee == empId)).ToListAsync();
+                       (_context.EmployeeRestaurant.Where(eir => eir.IdEmployee == empId)).ToListAsync();
 
-                    foreach (EmployeesInRestaurant worker in workerQuery)
+                    foreach (EmployeeRestaurant worker in workerQuery)
                     {
                         var singleWorkerQuery = await
-                            (_context.EmployeesInRestaurants.Where(eir => eir.IdEmployee == empId)).FirstAsync();
+                            (_context.EmployeeRestaurant.Where(eir => eir.IdEmployee == empId)).FirstAsync();
 
                         _context.Remove(singleWorkerQuery);
                         await _context.SaveChangesAsync();
@@ -524,7 +524,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                         foreach (GetCertificateDTO empCert in employeeData.Certificates)
                         {
                             var certificateQuery = await
-                                (_context.Certificates.Where(c => c.IdCertificate == empCert.IdCertificate)).FirstAsync();
+                                (_context.Certificate.Where(c => c.IdCertificate == empCert.IdCertificate)).FirstAsync();
 
                             //removing each employee certificate
                             _context.Remove(certificateQuery);

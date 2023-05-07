@@ -5,6 +5,6 @@
         public int IdCertificate { get; set; }
         public string Name { get; set; }
 
-        public virtual ICollection<EmployeeCertificates> EmployeeCertificates { get; set; }
+        public virtual ICollection<EmployeeCertificate> EmployeeCertificates { get; set; }
     }
 }

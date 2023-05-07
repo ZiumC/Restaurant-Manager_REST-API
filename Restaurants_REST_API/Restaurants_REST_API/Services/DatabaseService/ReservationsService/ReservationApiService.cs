@@ -15,7 +15,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 
         public async Task<IEnumerable<GetReservationDTO>?> GetAllReservationsAsync()
         {
-            return await (from r in _context.Reservations
+            return await (from r in _context.Reservation
 
                           select new GetReservationDTO
                           {
@@ -25,15 +25,15 @@ namespace Restaurants_REST_API.Services.Database_Service
                               ReservationGrade = r.ReservationGrade,
                               HowManyPeoples = r.HowManyPeoples,
 
-                              ReservationComplain = (from c in _context.Complains
+                              ReservationComplaint = (from c in _context.Complaint
                                                      where c.IdReservation == r.IdReservation
 
-                                                     select new GetComplainDTO
+                                                     select new GetComplaintDTO
                                                      {
-                                                         IdComplain = c.IdComplain,
-                                                         ComplainDate = c.ComplainDate,
-                                                         Status = c.ComplainStatus,
-                                                         Message = c.ComplainMessage
+                                                         IdComplaint = c.IdComplaint,
+                                                         ComplaintDate = c.ComplainDate,
+                                                         Status = c.ComplaintStatus,
+                                                         Message = c.ComplaintMessage
 
                                                      }
                                                    ).FirstOrDefault()
@@ -45,7 +45,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 
         public async Task<IEnumerable<GetReservationDTO>?> GetRestaurantReservationsAsync(int restaurantId)
         {
-            return await (from r in _context.Reservations
+            return await (from r in _context.Reservation
 
                           where r.IdRestauration == restaurantId
 
@@ -57,15 +57,15 @@ namespace Restaurants_REST_API.Services.Database_Service
                               ReservationGrade = r.ReservationGrade,
                               HowManyPeoples = r.HowManyPeoples,
 
-                              ReservationComplain = (from c in _context.Complains
+                              ReservationComplaint = (from c in _context.Complaint
                                                      where c.IdReservation == r.IdReservation
 
-                                                     select new GetComplainDTO
+                                                     select new GetComplaintDTO
                                                      {
-                                                         IdComplain = c.IdComplain,
-                                                         ComplainDate = c.ComplainDate,
-                                                         Status = c.ComplainStatus,
-                                                         Message = c.ComplainMessage
+                                                         IdComplaint = c.IdComplaint,
+                                                         ComplaintDate = c.ComplainDate,
+                                                         Status = c.ComplaintStatus,
+                                                         Message = c.ComplaintMessage
                                                      }
                                                    ).FirstOrDefault()
                           }
@@ -74,7 +74,7 @@ namespace Restaurants_REST_API.Services.Database_Service
         }
         public async Task<GetReservationDTO?> GetReservationByIdAsync(int reservationId)
         {
-            return await (from r in _context.Reservations
+            return await (from r in _context.Reservation
                           where r.IdReservation == reservationId
 
                           select new GetReservationDTO
@@ -84,15 +84,15 @@ namespace Restaurants_REST_API.Services.Database_Service
                               Status = r.ReservationStatus,
                               ReservationGrade = r.ReservationGrade,
                               HowManyPeoples = r.HowManyPeoples,
-                              ReservationComplain = (from c in _context.Complains
+                              ReservationComplaint = (from c in _context.Complaint
                                                      where c.IdReservation == reservationId
 
-                                                     select new GetComplainDTO
+                                                     select new GetComplaintDTO
                                                      {
-                                                         IdComplain = c.IdComplain,
-                                                         ComplainDate = c.ComplainDate,
-                                                         Status = c.ComplainStatus,
-                                                         Message = c.ComplainMessage
+                                                         IdComplaint = c.IdComplaint,
+                                                         ComplaintDate = c.ComplainDate,
+                                                         Status = c.ComplaintStatus,
+                                                         Message = c.ComplaintMessage
                                                      }
                                                    ).FirstOrDefault()
                           }
@@ -101,7 +101,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 
         public async Task<GetClientDTO?> GetReservationsByClientIdAsync(int clientId)
         {
-            return await (from cli in _context.Clients
+            return await (from cli in _context.Client
                           where cli.IdClient == clientId
 
                           select new GetClientDTO
@@ -109,7 +109,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                               IdClient = cli.IdClient,
                               Name = cli.Name,
                               IsBusinessman = cli.IsBusinessman,
-                              ClientReservations = (from r in _context.Reservations
+                              ClientReservations = (from r in _context.Reservation
                                                     where r.IdClient == clientId
 
                                                     select new GetReservationDTO
@@ -119,15 +119,15 @@ namespace Restaurants_REST_API.Services.Database_Service
                                                         Status = r.ReservationStatus,
                                                         ReservationGrade = r.ReservationGrade,
                                                         HowManyPeoples = r.HowManyPeoples,
-                                                        ReservationComplain = (from c in _context.Complains
+                                                        ReservationComplaint = (from c in _context.Complaint
                                                                                where c.IdReservation == r.IdReservation
 
-                                                                               select new GetComplainDTO
+                                                                               select new GetComplaintDTO
                                                                                {
-                                                                                   IdComplain = c.IdComplain,
-                                                                                   ComplainDate = c.ComplainDate,
-                                                                                   Status = c.ComplainStatus,
-                                                                                   Message = c.ComplainMessage
+                                                                                   IdComplaint = c.IdComplaint,
+                                                                                   ComplaintDate = c.ComplainDate,
+                                                                                   Status = c.ComplaintStatus,
+                                                                                   Message = c.ComplaintMessage
                                                                                }
                                                                                ).FirstOrDefault()
                                                     }

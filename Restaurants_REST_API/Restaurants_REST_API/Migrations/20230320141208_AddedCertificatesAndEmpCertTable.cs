@@ -40,13 +40,13 @@ namespace Restaurants_REST_API.Migrations
                         column: x => x.IdCertificate,
                         principalTable: "Certificates",
                         principalColumn: "IdCertificate",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_EmployeeCertificates_Employees_IdEmployee",
                         column: x => x.IdEmployee,
                         principalTable: "Employees",
                         principalColumn: "IdEmployee",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.InsertData(

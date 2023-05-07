@@ -1,9 +1,9 @@
 ﻿namespace Restaurants_REST_API.DTOs.GetDTOs
 {
-    public class GetComplainDTO
+    public class GetComplaintDTO
     {
-        public int IdComplain { get; set; }
-        public DateTime ComplainDate { get; set; }
+        public int IdComplaint { get; set; }
+        public DateTime ComplaintDate { get; set; }
         public string Status { get; set; }
         public string Message { get; set; }
     }

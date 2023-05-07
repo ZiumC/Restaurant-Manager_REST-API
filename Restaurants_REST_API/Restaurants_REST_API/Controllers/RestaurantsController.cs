@@ -271,7 +271,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound($"Restaurant id={restaurantId} not found");
             }
 
-            IEnumerable<EmployeesInRestaurant?> restaurantWorkers = await _restaurantsApiService.GetHiredEmployeesInRestaurantsAsync();
+            IEnumerable<EmployeeRestaurant?> restaurantWorkers = await _restaurantsApiService.GetHiredEmployeesInRestaurantsAsync();
             if (restaurantWorkers != null)
             {
                 //checking if employee exist in passed restaurant id
@@ -397,7 +397,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound("Restaurant not found");
             }
 
-            IEnumerable<EmployeesInRestaurant?> restaurantWorkers = await _restaurantsApiService.GetHiredEmployeesInRestaurantsAsync();
+            IEnumerable<EmployeeRestaurant?> restaurantWorkers = await _restaurantsApiService.GetHiredEmployeesInRestaurantsAsync();
             if (restaurantWorkers != null)
             {
                 //checking if employee exist in passed restaurant id
@@ -612,13 +612,13 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound("Restaurant not found");
             }
 
-            IEnumerable<DishInRestaurant?> restaurantDishes = await _restaurantsApiService.GetRestaurantDishesByRestaurantIdAsync(restaurantId);
+            IEnumerable<RestaurantDish?> restaurantDishes = await _restaurantsApiService.GetRestaurantDishesByRestaurantIdAsync(restaurantId);
             if (restaurantDishes == null || restaurantDishes.Count() == 0)
             {
                 return NotFound($"Dishes in restaurant {restaurantDatabase.Name} not found");
             }
 
-            DishInRestaurant? restaurantDish = restaurantDishes.Where(rd => rd?.IdDish == dishId).FirstOrDefault();
+            RestaurantDish? restaurantDish = restaurantDishes.Where(rd => rd?.IdDish == dishId).FirstOrDefault();
             if (restaurantDish == null)
             {
                 return NotFound("Dish not found in restaurant");
@@ -663,13 +663,13 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound("Restaurant not found");
             }
 
-            IEnumerable<EmployeesInRestaurant?> restaurantsWorkers = await _restaurantsApiService.GetHiredEmployeesInRestaurantsAsync();
+            IEnumerable<EmployeeRestaurant?> restaurantsWorkers = await _restaurantsApiService.GetHiredEmployeesInRestaurantsAsync();
             if (restaurantsWorkers == null || restaurantsWorkers.Count() == 0)
             {
                 return NotFound($"Workers in restaurant {restaurantDatabase.Name} not found");
             }
 
-            EmployeesInRestaurant? worker = restaurantsWorkers.Where(rw => rw?.IdRestaurant == restaurantId && rw.IdEmployee == empId).FirstOrDefault();
+            EmployeeRestaurant? worker = restaurantsWorkers.Where(rw => rw?.IdRestaurant == restaurantId && rw.IdEmployee == empId).FirstOrDefault();
             if (worker == null)
             {
                 return NotFound($"Employee {employeeDatabase.FirstName} not found in restaurant {restaurantDatabase.Name}");
