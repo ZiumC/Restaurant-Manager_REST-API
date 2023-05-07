@@ -2,7 +2,7 @@
 
 namespace Restaurants_REST_API.Models.Database
 {
-    public class EmployeeCertificates
+    public class EmployeeCertificate
     {
 
         public int IdEmployeeCertificate { get; set; }

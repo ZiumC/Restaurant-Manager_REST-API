@@ -25,6 +25,6 @@ namespace Restaurants_REST_API.Models.Database
         public virtual Restaurant Restaurant { get; set; }
 
 
-        public virtual Complain Complain { get; set; }
+        public virtual Complaint Complaint { get; set; }
     }
 }

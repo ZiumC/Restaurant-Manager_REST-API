@@ -105,29 +105,29 @@ namespace Restaurants_REST_API.DbContexts
                 });
             });
 
-            modelBuilder.Entity<Complain>(c =>
+            modelBuilder.Entity<Complaint>(c =>
             {
-                c.HasKey(e => e.IdComplain);
+                c.HasKey(e => e.IdComplaint);
                 c.Property(e => e.ComplainDate).IsRequired();
-                c.Property(e => e.ComplainStatus).IsRequired().HasMaxLength(50);
-                c.Property(e => e.ComplainMessage).IsRequired().HasMaxLength(350);
+                c.Property(e => e.ComplaintStatus).IsRequired().HasMaxLength(50);
+                c.Property(e => e.ComplaintMessage).IsRequired().HasMaxLength(350);
 
-                c.HasData(new Complain
+                c.HasData(new Complaint
                 {
-                    IdComplain = 1,
+                    IdComplaint = 1,
                     ComplainDate = DateTime.Parse("2023-01-01"),
-                    ComplainStatus = "Canceled",
-                    ComplainMessage = "Zupa była za słona, obsługa była niemiła",
+                    ComplaintStatus = "Canceled",
+                    ComplaintMessage = "Zupa była za słona, obsługa była niemiła",
                     IdReservation = 1,
                     IdRestaurant = 1
                 });
 
-                c.HasData(new Complain
+                c.HasData(new Complaint
                 {
-                    IdComplain = 2,
+                    IdComplaint = 2,
                     ComplainDate = DateTime.Parse("2023-11-08"),
-                    ComplainStatus = "New",
-                    ComplainMessage = "Na kotlecie była mucha",
+                    ComplaintStatus = "New",
+                    ComplaintMessage = "Na kotlecie była mucha",
                     IdReservation = 3,
                     IdRestaurant = 1
                 });
@@ -226,18 +226,18 @@ namespace Restaurants_REST_API.DbContexts
                 c.HasData(new Certificate { IdCertificate = 3, Name = "Polish Cuisine" });
             });
 
-            modelBuilder.Entity<EmployeeCertificates>(ec =>
+            modelBuilder.Entity<EmployeeCertificate>(ec =>
             {
                 ec.HasKey(e => e.IdEmployeeCertificate);
                 ec.Property(e => e.ExpirationDate).IsRequired();
 
-                ec.HasData(new EmployeeCertificates { IdEmployeeCertificate = 1, IdCertificate = 1, IdEmployee = 1, ExpirationDate = DateTime.Parse("2023-11-11") });
-                ec.HasData(new EmployeeCertificates { IdEmployeeCertificate = 2, IdCertificate = 1, IdEmployee = 2, ExpirationDate = DateTime.Parse("2023-11-11") });
-                ec.HasData(new EmployeeCertificates { IdEmployeeCertificate = 3, IdCertificate = 2, IdEmployee = 1, ExpirationDate = DateTime.Parse("2023-10-09") });
-                ec.HasData(new EmployeeCertificates { IdEmployeeCertificate = 4, IdCertificate = 2, IdEmployee = 4, ExpirationDate = DateTime.Parse("2023-10-09") });
-                ec.HasData(new EmployeeCertificates { IdEmployeeCertificate = 5, IdCertificate = 2, IdEmployee = 3, ExpirationDate = DateTime.Parse("2023-10-09") });
-                ec.HasData(new EmployeeCertificates { IdEmployeeCertificate = 6, IdCertificate = 3, IdEmployee = 1, ExpirationDate = DateTime.Parse("2023-11-12") });
-                ec.HasData(new EmployeeCertificates { IdEmployeeCertificate = 7, IdCertificate = 3, IdEmployee = 5, ExpirationDate = DateTime.Parse("2023-11-12") });
+                ec.HasData(new EmployeeCertificate { IdEmployeeCertificate = 1, IdCertificate = 1, IdEmployee = 1, ExpirationDate = DateTime.Parse("2023-11-11") });
+                ec.HasData(new EmployeeCertificate { IdEmployeeCertificate = 2, IdCertificate = 1, IdEmployee = 2, ExpirationDate = DateTime.Parse("2023-11-11") });
+                ec.HasData(new EmployeeCertificate { IdEmployeeCertificate = 3, IdCertificate = 2, IdEmployee = 1, ExpirationDate = DateTime.Parse("2023-10-09") });
+                ec.HasData(new EmployeeCertificate { IdEmployeeCertificate = 4, IdCertificate = 2, IdEmployee = 4, ExpirationDate = DateTime.Parse("2023-10-09") });
+                ec.HasData(new EmployeeCertificate { IdEmployeeCertificate = 5, IdCertificate = 2, IdEmployee = 3, ExpirationDate = DateTime.Parse("2023-10-09") });
+                ec.HasData(new EmployeeCertificate { IdEmployeeCertificate = 6, IdCertificate = 3, IdEmployee = 1, ExpirationDate = DateTime.Parse("2023-11-12") });
+                ec.HasData(new EmployeeCertificate { IdEmployeeCertificate = 7, IdCertificate = 3, IdEmployee = 5, ExpirationDate = DateTime.Parse("2023-11-12") });
             });
 
             modelBuilder.Entity<EmployeeType>(et =>
@@ -251,16 +251,16 @@ namespace Restaurants_REST_API.DbContexts
                 et.HasData(new EmployeeType { IdType = 4, Name = "Waiter" });
             });
 
-            modelBuilder.Entity<EmployeesInRestaurant>(eir =>
+            modelBuilder.Entity<EmployeeRestaurant>(eir =>
             {
                 eir.HasKey(e => e.IdRestaurantWorker);
 
-                eir.HasData(new EmployeesInRestaurant { IdRestaurantWorker = 1, IdType = 1, IdEmployee = 1, IdRestaurant = 1 });
-                eir.HasData(new EmployeesInRestaurant { IdRestaurantWorker = 2, IdType = 2, IdEmployee = 2, IdRestaurant = 1 });
-                eir.HasData(new EmployeesInRestaurant { IdRestaurantWorker = 3, IdType = 3, IdEmployee = 3, IdRestaurant = 1 });
-                eir.HasData(new EmployeesInRestaurant { IdRestaurantWorker = 4, IdType = 3, IdEmployee = 4, IdRestaurant = 1 });
-                eir.HasData(new EmployeesInRestaurant { IdRestaurantWorker = 5, IdType = 4, IdEmployee = 5, IdRestaurant = 1 });
-                eir.HasData(new EmployeesInRestaurant { IdRestaurantWorker = 6, IdType = 1, IdEmployee = 1, IdRestaurant = 2 });
+                eir.HasData(new EmployeeRestaurant { IdRestaurantWorker = 1, IdType = 1, IdEmployee = 1, IdRestaurant = 1 });
+                eir.HasData(new EmployeeRestaurant { IdRestaurantWorker = 2, IdType = 2, IdEmployee = 2, IdRestaurant = 1 });
+                eir.HasData(new EmployeeRestaurant { IdRestaurantWorker = 3, IdType = 3, IdEmployee = 3, IdRestaurant = 1 });
+                eir.HasData(new EmployeeRestaurant { IdRestaurantWorker = 4, IdType = 3, IdEmployee = 4, IdRestaurant = 1 });
+                eir.HasData(new EmployeeRestaurant { IdRestaurantWorker = 5, IdType = 4, IdEmployee = 5, IdRestaurant = 1 });
+                eir.HasData(new EmployeeRestaurant { IdRestaurantWorker = 6, IdType = 1, IdEmployee = 1, IdRestaurant = 2 });
             });
 
 
@@ -279,32 +279,32 @@ namespace Restaurants_REST_API.DbContexts
             });
 
 
-            modelBuilder.Entity<DishInRestaurant>(d =>
+            modelBuilder.Entity<RestaurantDish>(d =>
             {
                 d.HasKey(e => e.IdRestaurantDish);
 
-                d.HasData(new DishInRestaurant { IdRestaurantDish = 1, IdDish = 1, IdRestaurant = 1 });
-                d.HasData(new DishInRestaurant { IdRestaurantDish = 2, IdDish = 2, IdRestaurant = 1 });
-                d.HasData(new DishInRestaurant { IdRestaurantDish = 3, IdDish = 3, IdRestaurant = 1 });
-                d.HasData(new DishInRestaurant { IdRestaurantDish = 4, IdDish = 4, IdRestaurant = 1 });
-                d.HasData(new DishInRestaurant { IdRestaurantDish = 5, IdDish = 5, IdRestaurant = 1 });
-                d.HasData(new DishInRestaurant { IdRestaurantDish = 6, IdDish = 6, IdRestaurant = 1 });
-                d.HasData(new DishInRestaurant { IdRestaurantDish = 7, IdDish = 6, IdRestaurant = 2 });
+                d.HasData(new RestaurantDish { IdRestaurantDish = 1, IdDish = 1, IdRestaurant = 1 });
+                d.HasData(new RestaurantDish { IdRestaurantDish = 2, IdDish = 2, IdRestaurant = 1 });
+                d.HasData(new RestaurantDish { IdRestaurantDish = 3, IdDish = 3, IdRestaurant = 1 });
+                d.HasData(new RestaurantDish { IdRestaurantDish = 4, IdDish = 4, IdRestaurant = 1 });
+                d.HasData(new RestaurantDish { IdRestaurantDish = 5, IdDish = 5, IdRestaurant = 1 });
+                d.HasData(new RestaurantDish { IdRestaurantDish = 6, IdDish = 6, IdRestaurant = 1 });
+                d.HasData(new RestaurantDish { IdRestaurantDish = 7, IdDish = 6, IdRestaurant = 2 });
             });
 
         }
 
         public DbSet<Address> Address { get; set; }
-        public DbSet<Restaurant> Restaurants { get; set; }
-        public DbSet<Client> Clients { get; set; }
-        public DbSet<Reservation> Reservations { get; set; }
-        public DbSet<Complain> Complains { get; set; }
-        public DbSet<Employee> Employees { get; set; }
-        public DbSet<Certificate> Certificates { get; set; }
-        public DbSet<EmployeeCertificates> EmployeeCertificates { get; set; }
-        public DbSet<EmployeeType> EmployeeTypes { get; set; }
-        public DbSet<EmployeesInRestaurant> EmployeesInRestaurants { get; set; }
-        public DbSet<Dish> Dishes { get; set; }
-        public DbSet<DishInRestaurant> RestaurantDishes { get; set; }
+        public DbSet<Restaurant> Restaurant { get; set; }
+        public DbSet<Client> Client { get; set; }
+        public DbSet<Reservation> Reservation { get; set; }
+        public DbSet<Complaint> Complaint { get; set; }
+        public DbSet<Employee> Employee { get; set; }
+        public DbSet<Certificate> Certificate { get; set; }
+        public DbSet<EmployeeCertificate> EmployeeCertificate { get; set; }
+        public DbSet<EmployeeType> EmployeeType { get; set; }
+        public DbSet<EmployeeRestaurant> EmployeeRestaurant { get; set; }
+        public DbSet<Dish> Dish { get; set; }
+        public DbSet<RestaurantDish> RestaurantDish { get; set; }
     }
 }

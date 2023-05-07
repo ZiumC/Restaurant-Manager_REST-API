@@ -39,13 +39,13 @@ namespace Restaurants_REST_API.Migrations
                         column: x => x.IdDish,
                         principalTable: "Dishes",
                         principalColumn: "IdDish",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_RestaurantDishes_Restaurants_IdRestaurant",
                         column: x => x.IdRestaurant,
                         principalTable: "Restaurants",
                         principalColumn: "IdRestaurant",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.InsertData(

@@ -19,8 +19,8 @@ namespace Restaurants_REST_API.Models.Database
         [ForeignKey(nameof(IdAddress))]
         public virtual Address Address { get; set; }
 
-        public virtual ICollection<EmployeeCertificates> EmployeeCertificates { get; set; }
+        public virtual ICollection<EmployeeCertificate> EmployeeCertificates { get; set; }
 
-        public virtual ICollection<EmployeesInRestaurant> EmployeeInRestaurant { get; set; }
+        public virtual ICollection<EmployeeRestaurant> EmployeeInRestaurant { get; set; }
     }
 }

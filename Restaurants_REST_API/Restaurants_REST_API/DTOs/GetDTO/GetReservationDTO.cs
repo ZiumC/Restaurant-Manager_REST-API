@@ -11,6 +11,6 @@ namespace Restaurants_REST_API.DTOs.GetDTOs
         public int? ReservationGrade { get; set; }
         [Required]
         public int HowManyPeoples { get; set; }
-        public GetComplainDTO? ReservationComplain { get; set; }
+        public GetComplaintDTO? ReservationComplaint { get; set; }
     }
 }

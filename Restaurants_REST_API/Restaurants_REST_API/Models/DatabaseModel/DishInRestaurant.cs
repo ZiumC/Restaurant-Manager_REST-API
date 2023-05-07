@@ -2,7 +2,7 @@
 
 namespace Restaurants_REST_API.Models.Database
 {
-    public class DishInRestaurant
+    public class RestaurantDish
     {
         public int IdRestaurantDish { get; set; }
 

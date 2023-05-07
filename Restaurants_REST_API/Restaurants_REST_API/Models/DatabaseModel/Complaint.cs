@@ -2,12 +2,12 @@
 
 namespace Restaurants_REST_API.Models.Database
 {
-    public class Complain
+    public class Complaint
     {
-        public int IdComplain { get; set; }
+        public int IdComplaint { get; set; }
         public DateTime ComplainDate { get; set; }
-        public string ComplainStatus { get; set; }
-        public string ComplainMessage { get; set; }
+        public string ComplaintStatus { get; set; }
+        public string ComplaintMessage { get; set; }
 
 
         public int IdRestaurant { get; set; }

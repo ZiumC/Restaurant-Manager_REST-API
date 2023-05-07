@@ -32,7 +32,7 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
             throw new NotImplementedException();
         }
 
-        public Task<bool> AddNewComplainByReservationIdAsync(int reservationId, GetComplainDTO newComplain)
+        public Task<bool> AddNewComplainByReservationIdAsync(int reservationId, GetComplaintDTO newComplain)
         {
             throw new NotImplementedException();
         }

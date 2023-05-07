@@ -31,7 +31,7 @@ namespace Restaurants_REST_API.Migrations
                         column: x => x.IdAddress,
                         principalTable: "Address",
                         principalColumn: "IdAddress",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateIndex(

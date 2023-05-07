@@ -16,10 +16,10 @@ namespace Restaurants_REST_API.Models.Database
 
         public virtual ICollection<Reservation> Reservations { get; set; }
 
-        public virtual ICollection<EmployeesInRestaurant> RestaurantEmployees { get; set; }
+        public virtual ICollection<EmployeeRestaurant> RestaurantEmployees { get; set; }
 
-        public virtual ICollection<DishInRestaurant> RestaurantDishes { get; set; }
+        public virtual ICollection<RestaurantDish> RestaurantDishes { get; set; }
 
-        public virtual ICollection<Complain> Complains { get; set; }
+        public virtual ICollection<Complaint> Complaints { get; set; }
     }
 }
