@@ -107,6 +107,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                           }
                           ).ToListAsync();
         }
+
         public async Task<GetRestaurantDTO> GetDetailedRestaurantDataAsync(Restaurant restaurant)
         {
             int restaurantId = restaurant.IdRestaurant;
@@ -241,18 +242,34 @@ namespace Restaurants_REST_API.Services.Database_Service
 
         public async Task<Restaurant?> GetBasicRestaurantDataByIdAsync(int restaurantId)
         {
-            return await _context.Restaurants.Where(e => e.IdRestaurant == restaurantId).FirstOrDefaultAsync();
+            return await _context.Restaurants
+                .Where(e => e.IdRestaurant == restaurantId)
+                .FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<EmployeesInRestaurant?>> GetHiredEmployeesByRestaurantIdAsync(int restaurantId)
+        public async Task<IEnumerable<EmployeesInRestaurant?>> GetHiredEmployeesInRestaurantsAsync()
         {
-            return await
-                (from eir in _context.EmployeesInRestaurants
+            return await _context.EmployeesInRestaurants
+                .Select(eir => new EmployeesInRestaurant
+                {
+                    IdRestaurantWorker = eir.IdRestaurantWorker,
+                    IdEmployee = eir.IdEmployee,
+                    IdRestaurant = eir.IdRestaurant,
+                    IdType = eir.IdType
+                }).ToListAsync();
 
-                 where eir.IdRestaurant == restaurantId
+            //return await
+            //    (from eir in _context.EmployeesInRestaurants
 
-                 select new EmployeesInRestaurant { IdRestaurantWorker = eir.IdRestaurantWorker, IdEmployee = eir.IdEmployee, IdRestaurant = restaurantId, IdType = eir.IdType }
-                 ).ToListAsync();
+            //     where eir.IdRestaurant == restaurantId
+
+            //     select new EmployeesInRestaurant
+            //     {
+            //         IdRestaurantWorker = eir.IdRestaurantWorker,
+            //         IdEmployee = eir.IdEmployee,
+            //         IdRestaurant = restaurantId,
+            //         IdType = eir.IdType
+            //     }).ToListAsync();
         }
         public async Task<IEnumerable<GetEmployeeTypeDTO?>> GetEmployeeTypesAsync()
         {
