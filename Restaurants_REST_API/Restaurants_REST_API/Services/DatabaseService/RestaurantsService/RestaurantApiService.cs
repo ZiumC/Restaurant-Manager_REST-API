@@ -55,11 +55,16 @@ namespace Restaurants_REST_API.Services.Database_Service
                                                    join et in _context.EmployeeType
                                                    on eir.IdType equals et.IdType
 
+                                                   join e in _context.Employee
+                                                   on eir.IdEmployee equals e.IdEmployee
+
                                                    where eir.IdRestaurant == rest.IdRestaurant
 
                                                    select new GetRestaurantWorkersDTO
                                                    {
                                                        IdEmployee = eir.IdEmployee,
+                                                       FirstName = e.FirstName,
+                                                       LastName = e.LastName,
                                                        EmployeeType = et.Name
                                                    }).ToList(),
 
@@ -74,27 +79,27 @@ namespace Restaurants_REST_API.Services.Database_Service
                                                             ReservationGrade = r.ReservationGrade,
                                                             HowManyPeoples = r.HowManyPeoples,
                                                             ReservationComplaint = (from c in _context.Complaint
-                                                                                   where c.IdReservation == r.IdReservation
+                                                                                    where c.IdReservation == r.IdReservation
 
-                                                                                   select new GetComplaintDTO
-                                                                                   {
-                                                                                       IdComplaint = c.IdComplaint,
-                                                                                       ComplaintDate = c.ComplainDate,
-                                                                                       Status = c.ComplaintStatus,
-                                                                                       Message = c.ComplaintMessage
-                                                                                   }).FirstOrDefault()
+                                                                                    select new GetComplaintDTO
+                                                                                    {
+                                                                                        IdComplaint = c.IdComplaint,
+                                                                                        ComplaintDate = c.ComplainDate,
+                                                                                        Status = c.ComplaintStatus,
+                                                                                        Message = c.ComplaintMessage
+                                                                                    }).FirstOrDefault()
                                                         }).ToList(),
 
                               RestaurantComplaints = (from c in _context.Complaint
-                                                     where c.IdRestaurant == rest.IdRestaurant
+                                                      where c.IdRestaurant == rest.IdRestaurant
 
-                                                     select new GetComplaintDTO
-                                                     {
-                                                         IdComplaint = c.IdComplaint,
-                                                         ComplaintDate = c.ComplainDate,
-                                                         Status = c.ComplaintStatus,
-                                                         Message = c.ComplaintMessage
-                                                     }).ToList()
+                                                      select new GetComplaintDTO
+                                                      {
+                                                          IdComplaint = c.IdComplaint,
+                                                          ComplaintDate = c.ComplainDate,
+                                                          Status = c.ComplaintStatus,
+                                                          Message = c.ComplaintMessage
+                                                      }).ToList()
 
 
 
@@ -140,11 +145,16 @@ namespace Restaurants_REST_API.Services.Database_Service
                  join et in _context.EmployeeType
                  on eir.IdType equals et.IdType
 
+                 join e in _context.Employee
+                 on eir.IdEmployee equals e.IdEmployee
+
                  where eir.IdRestaurant == restaurantId
 
                  select new GetRestaurantWorkersDTO
                  {
                      IdEmployee = eir.IdEmployee,
+                     FirstName = e.FirstName,
+                     LastName = e.LastName,
                      EmployeeType = et.Name
                  }).ToListAsync();
 
@@ -172,15 +182,15 @@ namespace Restaurants_REST_API.Services.Database_Service
                      ReservationGrade = r.ReservationGrade,
                      HowManyPeoples = r.HowManyPeoples,
                      ReservationComplaint = (from c in _context.Complaint
-                                            where c.IdReservation == r.IdReservation
+                                             where c.IdReservation == r.IdReservation
 
-                                            select new GetComplaintDTO
-                                            {
-                                                IdComplaint = c.IdComplaint,
-                                                ComplaintDate = c.ComplainDate,
-                                                Status = c.ComplaintStatus,
-                                                Message = c.ComplaintMessage
-                                            }).FirstOrDefault()
+                                             select new GetComplaintDTO
+                                             {
+                                                 IdComplaint = c.IdComplaint,
+                                                 ComplaintDate = c.ComplainDate,
+                                                 Status = c.ComplaintStatus,
+                                                 Message = c.ComplaintMessage
+                                             }).FirstOrDefault()
                  }).ToListAsync();
 
             return new GetRestaurantDTO
@@ -211,15 +221,15 @@ namespace Restaurants_REST_API.Services.Database_Service
                               HowManyPeoples = r.HowManyPeoples,
 
                               ReservationComplaint = (from c in _context.Complaint
-                                                     where c.IdReservation == r.IdReservation
+                                                      where c.IdReservation == r.IdReservation
 
-                                                     select new GetComplaintDTO
-                                                     {
-                                                         IdComplaint = c.IdComplaint,
-                                                         ComplaintDate = c.ComplainDate,
-                                                         Status = c.ComplaintStatus,
-                                                         Message = c.ComplaintMessage
-                                                     }).FirstOrDefault()
+                                                      select new GetComplaintDTO
+                                                      {
+                                                          IdComplaint = c.IdComplaint,
+                                                          ComplaintDate = c.ComplainDate,
+                                                          Status = c.ComplaintStatus,
+                                                          Message = c.ComplaintMessage
+                                                      }).FirstOrDefault()
                           }).ToListAsync();
         }
 
