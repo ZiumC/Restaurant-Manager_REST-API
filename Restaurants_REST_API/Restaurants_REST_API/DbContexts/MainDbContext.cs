@@ -62,8 +62,8 @@ namespace Restaurants_REST_API.DbContexts
                 r.Property(e => e.BonusBudget).HasColumnType("money");
                 r.Property(e => e.RestaurantStatus).IsRequired().HasMaxLength(50);
 
-                r.HasData(new Restaurant { IdRestaurant = 1, Name = "Pod Lasem", RestaurantStatus = "Working", BonusBudget = null, IdAddress = 1 });
-                r.HasData(new Restaurant { IdRestaurant = 2, Name = "Zapiecek", RestaurantStatus = "Under construction", BonusBudget = null, IdAddress = 2 });
+                r.HasData(new Restaurant { IdRestaurant = 1, Name = "Pod Lasem", RestaurantStatus = "Working", BonusBudget = 1230, IdAddress = 1 });
+                r.HasData(new Restaurant { IdRestaurant = 2, Name = "Zapiecek", RestaurantStatus = "Under construction", BonusBudget = 400, IdAddress = 2 });
             });
 
             modelBuilder.Entity<Reservation>(r =>

@@ -354,6 +354,11 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Building number can't be empty");
             }
 
+            decimal minimumBonus = decimal.Parse(_config["ApplicationSettings:BasicBonus"]);
+            if (!GeneralValidator.isCorrectBonus(putEmpData.BonusSalary, minimumBonus)) 
+            {
+                return BadRequest("Bonus salary is invalid");
+            }
             //checking if employee exist
             Employee? employeeDatabase = await _employeeApiService.GetBasicEmployeeDataByIdAsync(empId);
             if (employeeDatabase == null)

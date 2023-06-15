@@ -4,9 +4,9 @@
     {
         public static bool isCorrectId(int? id)
         {
-            if (id == null) 
+            if (id == null)
             {
-                return false;   
+                return false;
             }
 
             return id > 0;
@@ -20,6 +20,11 @@
             }
 
             return fieldToCheck.Replace("\\s", "") == "";
+        }
+
+        public static bool isCorrectBonus(decimal current, decimal minimum)
+        {
+            return current >= minimum;
         }
     }
 }
