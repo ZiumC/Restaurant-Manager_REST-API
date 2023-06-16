@@ -140,14 +140,19 @@ namespace Restaurants_REST_API.Controllers
 
             if (GeneralValidator.isEmptyNameOf(newRestaurant.Status))
             {
-                return BadRequest("Restaurant statuc can't be empty");
+                return BadRequest("Restaurant status can't be empty");
             }
-
 
             IEnumerable<GetRestaurantDTO?> allRestaurants = await _restaurantsApiService.GetAllRestaurantsAsync();
             if (RestaurantValidator.isRestaurantExistIn(allRestaurants, newRestaurant))
             {
                 return BadRequest("Restaurant already exist");
+            }
+
+            Employee? ownerData = await _employeeApiService.GetBasicOwnerDataAsync();
+            if (ownerData == null)
+            {
+                return NotFound("Owner not found, unable to add new restaurant");
             }
 
             bool isRestaurantAdded = await _restaurantsApiService.AddNewRestaurantAsync(newRestaurant);
