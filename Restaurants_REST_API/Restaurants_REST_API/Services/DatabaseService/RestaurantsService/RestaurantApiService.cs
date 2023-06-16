@@ -11,10 +11,12 @@ namespace Restaurants_REST_API.Services.Database_Service
     {
 
         private readonly MainDbContext _context;
+        private readonly IConfiguration _configuration;
 
-        public RestaurantApiService(MainDbContext context)
+        public RestaurantApiService(MainDbContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         public async Task<IEnumerable<GetRestaurantDTO?>> GetAllRestaurantsAsync()
@@ -332,10 +334,18 @@ namespace Restaurants_REST_API.Services.Database_Service
                                Name = newRestaurant.Name,
                                RestaurantStatus = newRestaurant.Status,
                                BonusBudget = newRestaurant.BonusBudget,
-                               IdAddress = newDatabaseAddress.Entity.IdAddress
+                               IdAddress = newDatabaseAddress.Entity.IdAddress,
                            }
                         );
                     await _context.SaveChangesAsync();
+
+                    var queryForChef = await _context.Employee
+                        .Where(e => e.IsOwner.ToLower() == "y" || e.IsOwner.ToLower() == "t")
+                        .FirstAsync();
+
+                    int ownerTypeId = int.Parse(_configuration["ApplicationSettings:OwnerTypeId"]);
+
+                    await AddNewEmployeeToRestaurantAsync(queryForChef.IdEmployee, ownerTypeId , newDatabaseRestaurant.Entity.IdRestaurant);
                 }
                 catch (Exception ex)
                 {

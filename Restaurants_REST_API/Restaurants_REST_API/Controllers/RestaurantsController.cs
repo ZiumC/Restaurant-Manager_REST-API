@@ -276,7 +276,7 @@ namespace Restaurants_REST_API.Controllers
             {
                 //checking if employee exist in passed restaurant id
                 int? empIdInRestaurantQuery = restaurantWorkers
-                    .Where(rw => rw?.IdEmployee == empId)
+                    .Where(rw => rw?.IdEmployee == empId && rw.IdRestaurant == restaurantId)
                     .Select(rw => rw?.IdEmployee)
                     .FirstOrDefault();
 
