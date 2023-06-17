@@ -506,6 +506,11 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Building number can't be empty");
             }
 
+            if (putRestaurantData.BonusBudget != null && putRestaurantData.BonusBudget < 0)
+            {
+                return BadRequest("Restaurant bonus budget can't be less than 0");
+            }
+
             Restaurant? restaurantDatabase = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(restaurantId);
             if (restaurantDatabase == null)
             {
