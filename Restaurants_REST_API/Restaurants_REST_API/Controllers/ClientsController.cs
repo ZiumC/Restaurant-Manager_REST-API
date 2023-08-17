@@ -11,7 +11,7 @@ namespace Restaurants_REST_API.Controllers
      * different so this is why this controller may have 
      * similar endpoints to others existing controllers
      */
-    [Route("api/client")]
+    [Route("api/[controller]")]
     [ApiController]
     public class ClientsController : ControllerBase
     {
@@ -23,7 +23,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpGet("{clientId}")]
-        public async Task<IActionResult> GetAllClientReservations(int clientId) 
+        public async Task<IActionResult> GetClientData(int clientId) 
         {
             if (!GeneralValidator.isCorrectId(clientId))
             {
@@ -39,14 +39,14 @@ namespace Restaurants_REST_API.Controllers
 
             IEnumerable<GetReservationDTO>? reservations = await _clientApiService.GetAllReservationsDataByClientIdAsync(clientId);
 
-            if (reservations == null || reservations.Count() == 0) 
+            if (reservations != null && reservations.Count() > 0) 
             {
-                return NotFound($"Reservations not found");
+                clientData.ClientReservations = reservations.ToList();
             }
-
-            clientData.ClientReservations = reservations.ToList();
 
             return Ok(clientData);
         }
+
+
     }
 }

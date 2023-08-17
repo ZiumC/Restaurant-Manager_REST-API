@@ -25,7 +25,8 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
                     Name = c.Name,
                     IsBusinessman = c.IsBusinessman,
                     ClientReservations = null
-                }).FirstOrDefaultAsync();
+                })
+                .FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<GetReservationDTO>?> GetAllReservationsDataByClientIdAsync(int clientId)
