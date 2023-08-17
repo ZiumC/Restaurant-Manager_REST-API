@@ -10,6 +10,6 @@ namespace Restaurants_REST_API.DTOs.PostDTO
         [Required]
         public int HowManyPeoples { get; set; }
         [Required]
-        public int RestaurantId { get; set; }
+        public int IdRestaurant { get; set; }
     }
 }

@@ -42,7 +42,7 @@ namespace Restaurants_REST_API.Controllers
         [HttpGet("{reservationId}")]
         public async Task<IActionResult> GetReservationBy(int reservationId)
         {
-            if (!GeneralValidator.isCorrectId(reservationId))
+            if (!GeneralValidator.isNumberGtZero(reservationId))
             {
                 return BadRequest($"reservation id={reservationId} is invalid");
             }
@@ -64,7 +64,7 @@ namespace Restaurants_REST_API.Controllers
         [HttpGet("restaurant/{restaurantId}")]
         public async Task<IActionResult> GetReservationsByRestaurant(int restaurantId)
         {
-            if (!GeneralValidator.isCorrectId(restaurantId))
+            if (!GeneralValidator.isNumberGtZero(restaurantId))
             {
                 return BadRequest($"Restaurant id={restaurantId} is invalid");
             }
@@ -91,7 +91,7 @@ namespace Restaurants_REST_API.Controllers
         [HttpGet("client/{clientId}")]
         public async Task<IActionResult> GetReservationsByClient(int clientId)
         {
-            if (!GeneralValidator.isCorrectId(clientId))
+            if (!GeneralValidator.isNumberGtZero(clientId))
             {
                 return BadRequest($"Client id={clientId} is invalid");
             }
