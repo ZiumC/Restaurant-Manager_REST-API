@@ -3,7 +3,6 @@ using Restaurants_REST_API.DbContexts;
 using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.DTOs.PostDTO;
 using Restaurants_REST_API.Models.Database;
-using System.Xml.Linq;
 
 namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
 {
@@ -109,17 +108,35 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
             return true;
         }
 
+        public async Task<bool> UpdateReservationByClientIdAsync(int clientId, GetReservationDTO reservation)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var updateReservation = await (_context.Reservation
+                        .Where(r => r.IdReservation == reservation.IdReservation && r.IdClient == clientId))
+                        .FirstAsync();
+
+                    updateReservation.ReservationStatus = reservation.Status;
+
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    await transaction.RollbackAsync();
+                    return false;
+                }
+                await transaction.CommitAsync();
+                return true;
+            }
+        }
+
         public async Task<bool> CancelReservationByClientIdReservationIdAsync(int clientId, int reservationId)
         {
             throw new NotImplementedException();
         }
-
-        public async Task<bool> ConfirmReservationByClientIdReservationIdAsync(int clientId, int reservationId)
-        {
-            throw new NotImplementedException();
-        }
-
-
 
         public async Task<bool> MakeComplaintByClientIdAsync(int clientId, PostComplaintDTO newComplaint)
         {

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Restaurants_REST_API.DTOs.GetDTO;
 using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.DTOs.PostDTO;
 using Restaurants_REST_API.Services.Database_Service;
@@ -20,11 +19,14 @@ namespace Restaurants_REST_API.Controllers
     {
         private readonly IClientApiService _clientApiService;
         private readonly IRestaurantApiService _restaurantApiService;
+        private readonly IConfiguration _config;
 
-        public ClientsController(IClientApiService clientApiService, IRestaurantApiService restaurantApiService) 
+
+        public ClientsController(IClientApiService clientApiService, IRestaurantApiService restaurantApiService, IConfiguration config)
         {
             _clientApiService = clientApiService;
             _restaurantApiService = restaurantApiService;
+            _config = config;
         }
 
         /// <summary>
@@ -32,7 +34,7 @@ namespace Restaurants_REST_API.Controllers
         /// </summary>
         /// <param name="clientId">Client id</param>
         [HttpGet("{clientId}")]
-        public async Task<IActionResult> GetClientDataAsync(int clientId) 
+        public async Task<IActionResult> GetClientData(int clientId)
         {
             if (!GeneralValidator.isNumberGtZero(clientId))
             {
@@ -40,15 +42,15 @@ namespace Restaurants_REST_API.Controllers
             }
 
             GetClientDataDTO? clientData = await _clientApiService.GetClientDataByIdAsync(clientId);
-            
-            if (clientData == null) 
+
+            if (clientData == null)
             {
                 return NotFound("Client not found");
             }
 
             IEnumerable<GetReservationDTO>? reservations = await _clientApiService.GetAllReservationsDataByClientIdAsync(clientId);
 
-            if (reservations != null && reservations.Count() > 0) 
+            if (reservations != null && reservations.Count() > 0)
             {
                 clientData.ClientReservations = reservations.ToList();
             }
@@ -62,7 +64,7 @@ namespace Restaurants_REST_API.Controllers
         /// <param name="clientId">Client id</param>
         /// <param name="reservationId">Reservation id</param>
         [HttpGet("{clientId}/reservation/{reservationId}")]
-        public async Task<IActionResult> GetClientReservationDataAsync(int clientId, int reservationId) 
+        public async Task<IActionResult> GetClientReservationData(int clientId, int reservationId)
         {
             if (!GeneralValidator.isNumberGtZero(clientId))
             {
@@ -83,7 +85,7 @@ namespace Restaurants_REST_API.Controllers
 
             GetReservationDTO? reservationDetails = await _clientApiService.GetReservationDetailsByCliennIdReservationIdAsync(clientId, reservationId);
 
-            if (reservationDetails == null) 
+            if (reservationDetails == null)
             {
                 return NotFound("Reservation not found");
             }
@@ -92,14 +94,14 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpPost("{clientId}/reservation")]
-        public async Task<IActionResult> MakeReservationAsync(int clientId, PostReservationDTO newReservation) 
+        public async Task<IActionResult> MakeReservation(int clientId, PostReservationDTO newReservation)
         {
             if (!GeneralValidator.isNumberGtZero(clientId))
             {
                 return BadRequest($"Client id={clientId} is invalid");
             }
 
-            if (newReservation == null) 
+            if (newReservation == null)
             {
                 return BadRequest("Reservation details are invalid");
             }
@@ -133,12 +135,51 @@ namespace Restaurants_REST_API.Controllers
 
             bool isReservationMade = await _clientApiService.MakeReservationByClientIdAsync(clientId, newReservation);
 
-            if (!isReservationMade) 
+            if (!isReservationMade)
             {
                 return BadRequest("Unable to make reservation in that restaurant");
             }
 
             return Ok("Reservation has been made");
+        }
+
+        [HttpPut("{clientId}/reservation/{reservationId}")]
+        public async Task<IActionResult> ConfirmReservation(int clientId, int reservationId)
+        {
+            if (!GeneralValidator.isNumberGtZero(clientId))
+            {
+                return BadRequest($"Client id={clientId} is invalid");
+            }
+
+            if (!GeneralValidator.isNumberGtZero(reservationId))
+            {
+                return BadRequest($"Reservation id={reservationId} is invalid");
+            }
+
+            GetReservationDTO? reservationDetails = await _clientApiService.GetReservationDetailsByCliennIdReservationIdAsync(clientId, reservationId);
+            if (reservationDetails == null)
+            {
+                return NotFound("Reservation associated with client not found");
+            }
+
+            string currentReservationStatus = reservationDetails.Status;
+            if (currentReservationStatus == _config["ApplicationSettings:ReservationStatus:New"])
+            {
+                reservationDetails.Status = _config["ApplicationSettings:ReservationStatus:Confirmed"];
+
+                bool isConfirmed = await _clientApiService.UpdateReservationByClientIdAsync(clientId, reservationDetails);
+                if (!isConfirmed) 
+                {
+                    return BadRequest("Unable to confirm reservation");
+                }
+                return Ok("Reservation has been confirmed");
+            }
+            else if (currentReservationStatus == _config["ApplicationSettings:ReservationStatus:Confirmed"])
+            {
+                return BadRequest("Reservation is already confirmed");
+            }
+
+            return BadRequest("Reservation can't be confirmed because is canceled or finished");
         }
 
     }
