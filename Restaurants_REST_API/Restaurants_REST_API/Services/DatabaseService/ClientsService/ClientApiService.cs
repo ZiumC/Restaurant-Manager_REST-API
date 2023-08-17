@@ -52,6 +52,31 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
                           }).ToListAsync();
         }
 
+        public async Task<GetReservationDTO?> GetReservationDetailsByCliennIdReservationIdAsync(int clientId, int reservationId)
+        {
+            return await (from r in _context.Reservation
+                          join c in _context.Client
+                          on r.IdClient equals c.IdClient
+                          where c.IdClient == clientId && r.IdReservation == reservationId
+                          select new GetReservationDTO 
+                          {
+                            IdReservation = r.IdReservation,
+                            ReservationDate = r.ReservationDate,
+                            Status = r.ReservationStatus,
+                            ReservationGrade = r.ReservationGrade,
+                            HowManyPeoples = r.HowManyPeoples,
+                            ReservationComplaint = _context.Complaint
+                                                    .Where(c => c.IdReservation == r.IdReservation)
+                                                    .Select(c => new GetComplaintDTO
+                                                    {
+                                                        IdComplaint = c.IdComplaint,
+                                                        ComplaintDate = c.ComplainDate,
+                                                        Status = c.ComplaintStatus,
+                                                        Message = c.ComplaintMessage
+                                                    }).FirstOrDefault()
+                          }).FirstOrDefaultAsync();
+        }
+
         public async Task<bool> CancelReservationByClientIdReservationIdAsync(int clientId, int reservationId)
         {
             throw new NotImplementedException();
@@ -63,10 +88,6 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
         }
 
 
-        public async Task<GetReservationDTO?> GetReservationDetailsByReservationIdAsync(int reservationId)
-        {
-            throw new NotImplementedException();
-        }
 
         public async Task<bool> MakeComplaintByClientIdAsync(int clientId, PostComplaintDTO newComplaint)
         {
