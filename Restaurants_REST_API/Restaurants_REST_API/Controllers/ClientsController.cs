@@ -22,6 +22,10 @@ namespace Restaurants_REST_API.Controllers
             _clientApiService = clientApiService;
         }
 
+        /// <summary>
+        /// Return full client data with all reservations
+        /// </summary>
+        /// <param name="clientId">Client id</param>
         [HttpGet("{clientId}")]
         public async Task<IActionResult> GetClientData(int clientId) 
         {
@@ -47,6 +51,11 @@ namespace Restaurants_REST_API.Controllers
             return Ok(clientData);
         }
 
+        /// <summary>
+        /// Returns details of exactly one reservation that client has.
+        /// </summary>
+        /// <param name="clientId">Client id</param>
+        /// <param name="reservationId">Reservation id</param>
         [HttpGet("{clientId}/reservation/{reservationId}")]
         public async Task<IActionResult> GetClientReservationData(int clientId, int reservationId) 
         {
