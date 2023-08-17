@@ -99,12 +99,12 @@ namespace Restaurants_REST_API.Services.Database_Service
                           ).FirstOrDefaultAsync();
         }
 
-        public async Task<GetClientDTO?> GetReservationsByClientIdAsync(int clientId)
+        public async Task<GetClientDataDTO?> GetReservationsByClientIdAsync(int clientId)
         {
             return await (from cli in _context.Client
                           where cli.IdClient == clientId
 
-                          select new GetClientDTO
+                          select new GetClientDataDTO
                           {
                               IdClient = cli.IdClient,
                               Name = cli.Name,

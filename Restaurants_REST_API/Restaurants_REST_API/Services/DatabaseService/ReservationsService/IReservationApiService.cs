@@ -7,6 +7,6 @@ namespace Restaurants_REST_API.Services.Database_Service
         public Task<IEnumerable<GetReservationDTO>?> GetAllReservationsAsync();
         public Task<GetReservationDTO?> GetReservationByIdAsync(int reservationId);
         public Task<IEnumerable<GetReservationDTO>?> GetRestaurantReservationsAsync(int restaurantId);
-        public Task<GetClientDTO?> GetReservationsByClientIdAsync(int clientId);
+        public Task<GetClientDataDTO?> GetReservationsByClientIdAsync(int clientId);
     }
 }

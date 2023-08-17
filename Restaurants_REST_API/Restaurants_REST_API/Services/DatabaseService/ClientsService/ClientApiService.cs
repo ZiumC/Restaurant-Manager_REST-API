@@ -1,4 +1,5 @@
-﻿using Restaurants_REST_API.DbContexts;
+﻿using Microsoft.EntityFrameworkCore;
+using Restaurants_REST_API.DbContexts;
 using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.DTOs.PostDTO;
 
@@ -8,9 +9,46 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
     {
         private readonly MainDbContext _context;
 
+
         public ClientApiService(MainDbContext context)
         {
             _context = context;
+        }
+
+        public async Task<GetClientDataDTO?> GetClientDataByIdAsync(int clientId) 
+        {
+            return await _context.Client
+                .Where(c => c.IdClient == clientId)
+                .Select(c => new GetClientDataDTO
+                {
+                    IdClient = c.IdClient,
+                    Name = c.Name,
+                    IsBusinessman = c.IsBusinessman,
+                    ClientReservations = null
+                }).FirstOrDefaultAsync();
+        }
+
+        public async Task<IEnumerable<GetReservationDTO>?> GetAllReservationsDataByClientIdAsync(int clientId)
+        {
+            return await (from r in _context.Reservation
+                          where r.IdClient == clientId
+                          select new GetReservationDTO 
+                          {
+                            IdReservation = r.IdReservation,
+                            ReservationDate = r.ReservationDate,
+                            Status = r.ReservationStatus,
+                            ReservationGrade = r.ReservationGrade,
+                            HowManyPeoples = r.HowManyPeoples,
+                            ReservationComplaint = _context.Complaint
+                                                    .Where(c => c.IdReservation == r.IdReservation)
+                                                    .Select(c => new GetComplaintDTO 
+                                                    { 
+                                                        IdComplaint = c.IdComplaint,
+                                                        ComplaintDate = c.ComplainDate,
+                                                        Status = c.ComplaintStatus,
+                                                        Message = c.ComplaintMessage
+                                                    }).FirstOrDefault()
+                          }).ToListAsync();
         }
 
         public async Task<bool> CancelReservationByClientIdReservationIdAsync(int clientId, int reservationId)
@@ -23,10 +61,6 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<GetReservationDTO>?> GetAllReservationsDataByClientIdAsync(int clientId)
-        {
-            throw new NotImplementedException();
-        }
 
         public async Task<GetReservationDTO?> GetReservationDetailsByReservationIdAsync(int reservationId)
         {
