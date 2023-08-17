@@ -9,7 +9,7 @@ namespace Restaurants_REST_API.Controllers
      * different so this is why this controller may have 
      * similar endpoints to others existing controllers
      */
-    [Route("api/[controller]")]
+    [Route("api/client")]
     [ApiController]
     public class ClientsController : ControllerBase
     {

@@ -1,15 +1,16 @@
 ﻿using Restaurants_REST_API.DTOs.GetDTOs;
+using Restaurants_REST_API.DTOs.PostDTO;
 
 namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
 {
     public interface IClientApiService
     {
-        public Task<GetClientDTO?> GetClientDataByIdAsync(int reservationId);
-        public Task<GetReservationDTO> GetReservationDetailsByIdAsync(int reservationId);
-        public Task<IEnumerable<int>> GetAllReservationsIdAsync();
-        public Task<IEnumerable<GetReservationDTO?>> GetAllReservationsByClientIdAsync(int clientId);
-        public Task<bool> AddNewReservationByRestaurantIdAsync(int restaurantId, GetReservationDTO newReserwation);
-        public Task<bool> AddNewComplainByReservationIdAsync(int reservationId, GetComplaintDTO newComplain);
-        public Task<bool> UpdateReservationByIdAsync(int reservationId);
+        public Task<IEnumerable<GetReservationDTO>?> GetAllReservationsDataByClientIdAsync(int clientId);
+        public Task<GetReservationDTO?> GetReservationDetailsByReservationIdAsync(int reservationId);
+        public Task<bool> MakeReservationAsync(PostReservationDTO newReservation);
+        public Task<bool> ConfirmReservationByClientIdReservationIdAsync(int clientId, int reservationId);
+        public Task<bool> CancelReservationByClientIdReservationIdAsync(int clientId, int reservationId);
+        public Task<bool> MakeComplaintByClientIdAsync(int clientId, PostComplaintDTO newComplaint);
+        public Task<bool> RateReservationByReservationIdAsync(int reserationId, int reservationGrade);
     }
 }
