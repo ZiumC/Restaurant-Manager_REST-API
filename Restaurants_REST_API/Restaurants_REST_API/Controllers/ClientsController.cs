@@ -47,6 +47,37 @@ namespace Restaurants_REST_API.Controllers
             return Ok(clientData);
         }
 
+        [HttpGet("{clientId}/reservation/{reservationId}")]
+        public async Task<IActionResult> GetClientReservationData(int clientId, int reservationId) 
+        {
+            if (!GeneralValidator.isCorrectId(clientId))
+            {
+                return BadRequest($"Client id={clientId} is invalid");
+            }
+
+            if (!GeneralValidator.isCorrectId(reservationId))
+            {
+                return BadRequest($"Reservation id={reservationId} is invalid");
+            }
+
+            GetClientDataDTO? clientData = await _clientApiService.GetClientDataByIdAsync(clientId);
+
+            if (clientData == null)
+            {
+                return NotFound("Client not found");
+            }
+
+            GetReservationDTO? reservationDetails = await _clientApiService.GetReservationDetailsByCliennIdReservationIdAsync(clientId, reservationId);
+
+            if (reservationDetails == null) 
+            {
+                return NotFound("Reservation not found");
+            }
+
+            return Ok(reservationDetails);
+        }
+
+
 
     }
 }
