@@ -96,7 +96,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest($"Client id={clientId} is invalid");
             }
 
-            GetClientDTO? client = await _reservationsApiService.GetReservationsByClientIdAsync(clientId);
+            GetClientDataDTO? client = await _reservationsApiService.GetReservationsByClientIdAsync(clientId);
 
             if (client == null)
             {

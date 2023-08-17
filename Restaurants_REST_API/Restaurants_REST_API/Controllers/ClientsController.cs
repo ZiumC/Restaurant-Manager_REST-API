@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Restaurants_REST_API.DTOs.GetDTOs;
+using Restaurants_REST_API.Services.DatabaseService.CustomersService;
+using Restaurants_REST_API.Services.ValidatorService;
 
 namespace Restaurants_REST_API.Controllers
 {
@@ -13,6 +15,38 @@ namespace Restaurants_REST_API.Controllers
     [ApiController]
     public class ClientsController : ControllerBase
     {
+        private readonly IClientApiService _clientApiService;
 
+        public ClientsController(IClientApiService clientApiService) 
+        {
+            _clientApiService = clientApiService;
+        }
+
+        [HttpGet("{clientId}")]
+        public async Task<IActionResult> GetAllClientReservations(int clientId) 
+        {
+            if (!GeneralValidator.isCorrectId(clientId))
+            {
+                return BadRequest($"Client id={clientId} is invalid");
+            }
+
+            GetClientDataDTO? clientData = await _clientApiService.GetClientDataByIdAsync(clientId);
+            
+            if (clientData == null) 
+            {
+                return NotFound("Client not found");
+            }
+
+            IEnumerable<GetReservationDTO>? reservations = await _clientApiService.GetAllReservationsDataByClientIdAsync(clientId);
+
+            if (reservations == null || reservations.Count() == 0) 
+            {
+                return NotFound($"Reservations not found");
+            }
+
+            clientData.ClientReservations = reservations.ToList();
+
+            return Ok(clientData);
+        }
     }
 }

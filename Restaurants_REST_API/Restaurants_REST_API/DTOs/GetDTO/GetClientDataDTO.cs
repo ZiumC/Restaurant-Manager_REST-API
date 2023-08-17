@@ -1,6 +1,6 @@
 ﻿namespace Restaurants_REST_API.DTOs.GetDTOs
 {
-    public class GetClientDTO
+    public class GetClientDataDTO
     {
         public int IdClient { get; set; }
         public string Name { get; set; }
