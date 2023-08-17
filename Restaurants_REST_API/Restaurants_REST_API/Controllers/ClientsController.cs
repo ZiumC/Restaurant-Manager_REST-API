@@ -93,6 +93,11 @@ namespace Restaurants_REST_API.Controllers
             return Ok(reservationDetails);
         }
 
+        /// <summary>
+        /// Adds new reservation to database, makes connections between relations.
+        /// </summary>
+        /// <param name="clientId">Client id</param>
+        /// <param name="newReservation">Reservation data</param>
         [HttpPost("{clientId}/reservation")]
         public async Task<IActionResult> MakeReservation(int clientId, PostReservationDTO newReservation)
         {
@@ -143,6 +148,11 @@ namespace Restaurants_REST_API.Controllers
             return Ok("Reservation has been made");
         }
 
+        /// <summary>
+        /// Updates reservation data, this method confirms reservation
+        /// </summary>
+        /// <param name="clientId">Client id</param>
+        /// <param name="reservationId">Reservation id</param>
         [HttpPut("{clientId}/reservation/{reservationId}")]
         public async Task<IActionResult> ConfirmReservation(int clientId, int reservationId)
         {
