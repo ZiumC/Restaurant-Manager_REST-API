@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Restaurants_REST_API.DTOs.GetDTO;
 using Restaurants_REST_API.DTOs.GetDTOs;
+using Restaurants_REST_API.DTOs.PostDTO;
+using Restaurants_REST_API.Services.Database_Service;
 using Restaurants_REST_API.Services.DatabaseService.CustomersService;
 using Restaurants_REST_API.Services.ValidatorService;
 
@@ -16,10 +19,12 @@ namespace Restaurants_REST_API.Controllers
     public class ClientsController : ControllerBase
     {
         private readonly IClientApiService _clientApiService;
+        private readonly IRestaurantApiService _restaurantApiService;
 
-        public ClientsController(IClientApiService clientApiService) 
+        public ClientsController(IClientApiService clientApiService, IRestaurantApiService restaurantApiService) 
         {
             _clientApiService = clientApiService;
+            _restaurantApiService = restaurantApiService;
         }
 
         /// <summary>
@@ -27,9 +32,9 @@ namespace Restaurants_REST_API.Controllers
         /// </summary>
         /// <param name="clientId">Client id</param>
         [HttpGet("{clientId}")]
-        public async Task<IActionResult> GetClientData(int clientId) 
+        public async Task<IActionResult> GetClientDataAsync(int clientId) 
         {
-            if (!GeneralValidator.isCorrectId(clientId))
+            if (!GeneralValidator.isNumberGtZero(clientId))
             {
                 return BadRequest($"Client id={clientId} is invalid");
             }
@@ -57,14 +62,14 @@ namespace Restaurants_REST_API.Controllers
         /// <param name="clientId">Client id</param>
         /// <param name="reservationId">Reservation id</param>
         [HttpGet("{clientId}/reservation/{reservationId}")]
-        public async Task<IActionResult> GetClientReservationData(int clientId, int reservationId) 
+        public async Task<IActionResult> GetClientReservationDataAsync(int clientId, int reservationId) 
         {
-            if (!GeneralValidator.isCorrectId(clientId))
+            if (!GeneralValidator.isNumberGtZero(clientId))
             {
                 return BadRequest($"Client id={clientId} is invalid");
             }
 
-            if (!GeneralValidator.isCorrectId(reservationId))
+            if (!GeneralValidator.isNumberGtZero(reservationId))
             {
                 return BadRequest($"Reservation id={reservationId} is invalid");
             }
@@ -86,7 +91,55 @@ namespace Restaurants_REST_API.Controllers
             return Ok(reservationDetails);
         }
 
+        [HttpPost("{clientId}/reservation")]
+        public async Task<IActionResult> MakeReservationAsync(int clientId, PostReservationDTO newReservation) 
+        {
+            if (!GeneralValidator.isNumberGtZero(clientId))
+            {
+                return BadRequest($"Client id={clientId} is invalid");
+            }
 
+            if (newReservation == null) 
+            {
+                return BadRequest("Reservation details are invalid");
+            }
+
+            if (!GeneralValidator.isNumberGtZero(newReservation.IdRestaurant))
+            {
+                return BadRequest($"Restaurant id={newReservation.IdRestaurant} is invalid");
+            }
+
+            if (!GeneralValidator.isNumberGtZero(newReservation.HowManyPeoples))
+            {
+                return BadRequest("Number of reservation peoples is invalid");
+            }
+
+            var clientData = await _clientApiService.GetClientDataByIdAsync(clientId);
+            if (clientData == null)
+            {
+                return NotFound("Client not found");
+            }
+
+            var restaurantBasicData = await _restaurantApiService.GetBasicRestaurantDataByIdAsync(newReservation.IdRestaurant);
+            if (restaurantBasicData == null)
+            {
+                return NotFound("Restaurant not found");
+            }
+
+            if (newReservation.ReservationDate < DateTime.Now)
+            {
+                return BadRequest("Reservation date can't be older than now");
+            }
+
+            bool isReservationMade = await _clientApiService.MakeReservationByClientIdAsync(clientId, newReservation);
+
+            if (!isReservationMade) 
+            {
+                return BadRequest("Unable to make reservation in that restaurant");
+            }
+
+            return Ok("Reservation has been made");
+        }
 
     }
 }

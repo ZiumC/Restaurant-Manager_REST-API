@@ -48,7 +48,7 @@ namespace Restaurants_REST_API.Controllers
         [HttpGet("{restaurantId}")]
         public async Task<IActionResult> GetRestaurantBy(int restaurantId)
         {
-            if (!GeneralValidator.isCorrectId(restaurantId))
+            if (!GeneralValidator.isNumberGtZero(restaurantId))
             {
                 return BadRequest($"Restaurant id={restaurantId} is invalid");
             }
@@ -72,7 +72,7 @@ namespace Restaurants_REST_API.Controllers
         [HttpGet("dish/{dishId}")]
         public async Task<IActionResult> GetDishBy(int dishId)
         {
-            if (!GeneralValidator.isCorrectId(dishId))
+            if (!GeneralValidator.isNumberGtZero(dishId))
             {
                 return BadRequest($"Dish id={dishId} is invalid");
             }
@@ -194,7 +194,7 @@ namespace Restaurants_REST_API.Controllers
 
             foreach (int restaurantId in newDish.IdRestaurants)
             {
-                if (!GeneralValidator.isCorrectId(restaurantId))
+                if (!GeneralValidator.isNumberGtZero(restaurantId))
                 {
                     return BadRequest("One or many restaurant id isn't correct");
                 }
@@ -234,17 +234,17 @@ namespace Restaurants_REST_API.Controllers
         public async Task<IActionResult> AddNewEmployeeToRestaurant(int restaurantId, int empId, int typeId)
         {
 
-            if (!GeneralValidator.isCorrectId(empId))
+            if (!GeneralValidator.isNumberGtZero(empId))
             {
                 return BadRequest("Employee id isn't correct");
             }
 
-            if (!GeneralValidator.isCorrectId(typeId))
+            if (!GeneralValidator.isNumberGtZero(typeId))
             {
                 return BadRequest("Restaurant id isn't correct");
             }
 
-            if (!GeneralValidator.isCorrectId(restaurantId))
+            if (!GeneralValidator.isNumberGtZero(restaurantId))
             {
                 return BadRequest("Restaurant id isn't correct");
             }
@@ -360,17 +360,17 @@ namespace Restaurants_REST_API.Controllers
         public async Task<IActionResult> UpdateEmployeeType(int restaurantId, int empId, int typeId)
         {
             //checking if ids are valid
-            if (!GeneralValidator.isCorrectId(empId))
+            if (!GeneralValidator.isNumberGtZero(empId))
             {
                 return BadRequest($"Employee id={empId} is invalid");
             }
 
-            if (!GeneralValidator.isCorrectId(typeId))
+            if (!GeneralValidator.isNumberGtZero(typeId))
             {
                 return BadRequest($"Employee type id={typeId} is invalid");
             }
 
-            if (!GeneralValidator.isCorrectId(restaurantId))
+            if (!GeneralValidator.isNumberGtZero(restaurantId))
             {
                 return BadRequest($"Restaurant id={restaurantId} is invalid");
             }
@@ -471,7 +471,7 @@ namespace Restaurants_REST_API.Controllers
         [HttpPut("{restaurantId}")]
         public async Task<IActionResult> UpdateRestaurantData(int restaurantId, PutRestaurantDTO putRestaurantData)
         {
-            if (!GeneralValidator.isCorrectId(restaurantId))
+            if (!GeneralValidator.isNumberGtZero(restaurantId))
             {
                 return BadRequest($"Restaurant id={restaurantId} is invalid");
             }
@@ -537,7 +537,7 @@ namespace Restaurants_REST_API.Controllers
         [HttpPut("dish/{dishId}")]
         public async Task<IActionResult> UpdateDishData(int dishId, PutDishDTO putDishData)
         {
-            if (!GeneralValidator.isCorrectId(dishId))
+            if (!GeneralValidator.isNumberGtZero(dishId))
             {
                 return BadRequest($"Dish id={dishId} is invalid");
             }
@@ -572,7 +572,7 @@ namespace Restaurants_REST_API.Controllers
         [HttpDelete("dish/{dishId}")]
         public async Task<IActionResult> DeleteDishBy(int dishId)
         {
-            if (!GeneralValidator.isCorrectId(dishId))
+            if (!GeneralValidator.isNumberGtZero(dishId))
             {
                 return BadRequest($"Dish id={dishId} is invalid");
             }
@@ -600,12 +600,12 @@ namespace Restaurants_REST_API.Controllers
         [HttpDelete("{restaurantId}/dish/{dishId}")]
         public async Task<IActionResult> DeleteDishbyRestaurant(int restaurantId, int dishId)
         {
-            if (!GeneralValidator.isCorrectId(restaurantId))
+            if (!GeneralValidator.isNumberGtZero(restaurantId))
             {
                 return BadRequest($"Restaurant id={restaurantId} is invalid");
             }
 
-            if (!GeneralValidator.isCorrectId(dishId))
+            if (!GeneralValidator.isNumberGtZero(dishId))
             {
                 return BadRequest($"Dish id={dishId} is invalid");
             }
@@ -651,12 +651,12 @@ namespace Restaurants_REST_API.Controllers
         [HttpDelete("{restaurantId}/employee/{empId}")]
         public async Task<IActionResult> DeleteEmployeeFromRestaurant(int empId, int restaurantId)
         {
-            if (!GeneralValidator.isCorrectId(empId))
+            if (!GeneralValidator.isNumberGtZero(empId))
             {
                 return BadRequest($"Employee id={empId} is invalid");
             }
 
-            if (!GeneralValidator.isCorrectId(restaurantId))
+            if (!GeneralValidator.isNumberGtZero(restaurantId))
             {
                 return BadRequest($"Restaurant id={restaurantId} is invalid");
             }

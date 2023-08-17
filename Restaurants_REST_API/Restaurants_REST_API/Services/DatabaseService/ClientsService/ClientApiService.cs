@@ -2,17 +2,21 @@
 using Restaurants_REST_API.DbContexts;
 using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.DTOs.PostDTO;
+using Restaurants_REST_API.Models.Database;
+using System.Xml.Linq;
 
 namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
 {
     public class ClientApiService : IClientApiService
     {
         private readonly MainDbContext _context;
+        private readonly IConfiguration _configuration;
 
 
-        public ClientApiService(MainDbContext context)
+        public ClientApiService(MainDbContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         public async Task<GetClientDataDTO?> GetClientDataByIdAsync(int clientId)
@@ -77,6 +81,34 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
                           }).FirstOrDefaultAsync();
         }
 
+        public async Task<bool> MakeReservationByClientIdAsync(int clientId, PostReservationDTO newReservation)
+        {
+            try
+            {
+                var newReservatin = _context.Add
+                (
+                    new Reservation
+                    {
+                        ReservationDate = newReservation.ReservationDate,
+                        HowManyPeoples = newReservation.HowManyPeoples,
+                        IdClient = clientId,
+                        ReservationGrade = null,
+                        ReservationStatus = _configuration["ApplicationSettings:ReservationStatus:New"],
+                        IdRestauration = newReservation.IdRestaurant
+                    }
+                );
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return false;
+            }
+
+            return true;
+        }
+
         public async Task<bool> CancelReservationByClientIdReservationIdAsync(int clientId, int reservationId)
         {
             throw new NotImplementedException();
@@ -94,10 +126,6 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
             throw new NotImplementedException();
         }
 
-        public async Task<bool> MakeReservationAsync(PostReservationDTO newReservation)
-        {
-            throw new NotImplementedException();
-        }
 
         public async Task<bool> RateReservationByReservationIdAsync(int reserationId, int reservationGrade)
         {

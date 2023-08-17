@@ -49,7 +49,7 @@ namespace Restaurants_REST_API.Controllers
         [HttpGet("{empId}")]
         public async Task<IActionResult> GetEmployeeBy(int empId)
         {
-            if (!GeneralValidator.isCorrectId(empId))
+            if (!GeneralValidator.isNumberGtZero(empId))
             {
                 return BadRequest($"Employee id={empId} is invalid");
             }
@@ -94,7 +94,7 @@ namespace Restaurants_REST_API.Controllers
         [HttpGet("supervisor/{supervisorId}")]
         public async Task<IActionResult> GetSupervisorBy(int supervisorId)
         {
-            if (!GeneralValidator.isCorrectId(supervisorId))
+            if (!GeneralValidator.isNumberGtZero(supervisorId))
             {
                 return BadRequest($"Supervisor id={supervisorId} is invalid");
             }
@@ -152,7 +152,7 @@ namespace Restaurants_REST_API.Controllers
         [HttpGet("restaurant/{restaurantId}")]
         public async Task<IActionResult> GetEmployeeByRestaurant(int restaurantId)
         {
-            if (!GeneralValidator.isCorrectId(restaurantId))
+            if (!GeneralValidator.isNumberGtZero(restaurantId))
             {
                 return BadRequest($"Restaurant id={restaurantId} is invalid");
             }
@@ -275,7 +275,7 @@ namespace Restaurants_REST_API.Controllers
         [HttpPost("{empId}/certificate")]
         public async Task<IActionResult> AddCertificateByEmployee(int empId, IEnumerable<PostCertificateDTO> newCertificates)
         {
-            if (!GeneralValidator.isCorrectId(empId))
+            if (!GeneralValidator.isNumberGtZero(empId))
             {
                 return BadRequest($"Employee id={empId} is invalid");
             }
@@ -314,7 +314,7 @@ namespace Restaurants_REST_API.Controllers
         [HttpPut("{empId}")]
         public async Task<IActionResult> UpdateEmployeeDataByEmployee(int empId, PutEmployeeDTO? putEmpData)
         {
-            if (!GeneralValidator.isCorrectId(empId))
+            if (!GeneralValidator.isNumberGtZero(empId))
             {
                 return BadRequest($"Id={empId} isn't correct");
             }
@@ -387,12 +387,12 @@ namespace Restaurants_REST_API.Controllers
         [HttpPut("{empId}/certificate/{certificateId}")]
         public async Task<IActionResult> UpdateEmployeeCertificatesBy(int empId, int certificateId, PutCertificateDTO putEmpCertificates)
         {
-            if (!GeneralValidator.isCorrectId(empId))
+            if (!GeneralValidator.isNumberGtZero(empId))
             {
                 return BadRequest($"Employee id={empId} is invalid");
             }
 
-            if (!GeneralValidator.isCorrectId(certificateId))
+            if (!GeneralValidator.isNumberGtZero(certificateId))
             {
                 return BadRequest($"Certificate id={certificateId} is invalid");
             }
@@ -444,7 +444,7 @@ namespace Restaurants_REST_API.Controllers
         [HttpDelete("{empId}")]
         public async Task<IActionResult> DeleteEmployeeBy(int empId)
         {
-            if (!GeneralValidator.isCorrectId(empId))
+            if (!GeneralValidator.isNumberGtZero(empId))
             {
                 return BadRequest($"Employee id={empId} is invalid");
             }
@@ -473,12 +473,12 @@ namespace Restaurants_REST_API.Controllers
         [HttpDelete("{empId}/certificate/{certificateId}")]
         public async Task<IActionResult> DeleteEmployeeCertificateBy(int empId, int certificateId)
         {
-            if (!GeneralValidator.isCorrectId(empId))
+            if (!GeneralValidator.isNumberGtZero(empId))
             {
                 return BadRequest($"Employee id={empId} is invalid");
             }
 
-            if (!GeneralValidator.isCorrectId(certificateId))
+            if (!GeneralValidator.isNumberGtZero(certificateId))
             {
                 return BadRequest($"Certificate id={certificateId} is invalid");
             }

@@ -2,7 +2,7 @@
 {
     public class GeneralValidator
     {
-        public static bool isCorrectId(int? id)
+        public static bool isNumberGtZero(int? id)
         {
             if (id == null)
             {
