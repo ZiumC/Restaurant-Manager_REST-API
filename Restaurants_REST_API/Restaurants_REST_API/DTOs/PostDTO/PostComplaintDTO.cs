@@ -7,9 +7,5 @@ namespace Restaurants_REST_API.DTOs.PostDTO
     {
         [Required]
         public string Message { get; set; }
-        [Required]
-        public int ReservationId { get; set; }
-        [Required]
-        public int RestaurantId { get; set; }
     }
 }

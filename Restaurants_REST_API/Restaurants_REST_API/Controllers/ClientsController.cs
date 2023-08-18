@@ -177,6 +177,11 @@ namespace Restaurants_REST_API.Controllers
             string confirmedStatus = _config["ApplicationSettings:ReservationStatus:Confirmed"];
             if (currentReservationStatus == newStatus)
             {
+                if (reservationDetails.ReservationDate <= DateTime.Now)
+                {
+                    return BadRequest("Unable to confirm reservation because date of reservation is passed away");
+                }
+
                 reservationDetails.Status = confirmedStatus;
 
                 bool isConfirmed = await _clientApiService.UpdateReservationByClientIdAsync(clientId, reservationDetails);
@@ -192,17 +197,20 @@ namespace Restaurants_REST_API.Controllers
             }
             else
             {
-                return BadRequest("Reservation can't be confirmed because is canceled or finished");
+                return BadRequest("Reservation can't be confirmed because is canceled or rated");
             }
 
         }
 
         /// <summary>
-        /// Updates reservation data, this method cancels reservation. This is duplication of method ConfirmReservation, 
-        /// because in future could be different logic implemented
+        /// Updates reservation data, this method cancels reservation.
         /// </summary>
-        /// <param name="clientId"></param>
-        /// <param name="reservationId"></param>
+        /// <param name="clientId">Client id</param>
+        /// <param name="reservationId">Reservation id</param>
+        /*
+         * This is duplication of method ConfirmReservation, 
+         * because in future could be different logic implemented
+        */
         [HttpPut("{clientId}/reservation/{reservationId}/cancel")]
         public async Task<IActionResult> CancelReseration(int clientId, int reservationId)
         {
@@ -228,6 +236,11 @@ namespace Restaurants_REST_API.Controllers
             string canceledStatus = _config["ApplicationSettings:ReservationStatus:Canceled"];
             if (currentReservationStatus == newStatus || currentReservationStatus == confirmedStatus)
             {
+                if (reservationDetails.ReservationDate <= DateTime.Now)
+                {
+                    return BadRequest("Unable to cancel reservation because date of reservation is passed away");
+                }
+
                 reservationDetails.Status = _config["ApplicationSettings:ReservationStatus:Canceled"];
 
                 bool isConfirmed = await _clientApiService.UpdateReservationByClientIdAsync(clientId, reservationDetails);
@@ -243,7 +256,7 @@ namespace Restaurants_REST_API.Controllers
             }
             else
             {
-                return BadRequest("Reservation can't be canceled because is finished");
+                return BadRequest("Reservation can't be canceled because is rated");
             }
         }
     }
