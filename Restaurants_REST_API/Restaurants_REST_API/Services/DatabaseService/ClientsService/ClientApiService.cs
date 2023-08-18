@@ -108,7 +108,7 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
             return true;
         }
 
-        public async Task<bool> UpdateReservationStatusByClientIdAsync(int clientId, GetReservationDTO reservation)
+        public async Task<bool> UpdateReservationByClientIdAsync(int clientId, GetReservationDTO reservation)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -119,6 +119,13 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
                         .FirstAsync();
 
                     updateReservation.ReservationStatus = reservation.Status;
+                    updateReservation.ReservationGrade = reservation.ReservationGrade;
+                    
+                    var reservationComplaint = reservation.ReservationComplaint;
+                    if (reservationComplaint != null) 
+                    {
+                        reservationComplaint.Status = reservation.ReservationComplaint.Status;
+                    }
 
                     await _context.SaveChangesAsync();
                 }
@@ -168,12 +175,6 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
                 await transaction.CommitAsync();
                 return true;
             }
-        }
-
-
-        public async Task<bool> RateReservationByReservationIdAsync(int reserationId, int reservationGrade)
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -249,7 +249,7 @@ namespace Restaurants_REST_API.Controllers
 
                 reservationDetails.Status = confirmedStatus;
 
-                bool isConfirmed = await _clientApiService.UpdateReservationStatusByClientIdAsync(clientId, reservationDetails);
+                bool isConfirmed = await _clientApiService.UpdateReservationByClientIdAsync(clientId, reservationDetails);
                 if (!isConfirmed)
                 {
                     return BadRequest("Unable to confirm reservation");
@@ -308,7 +308,7 @@ namespace Restaurants_REST_API.Controllers
 
                 reservationDetails.Status = _config["ApplicationSettings:ReservationStatus:Canceled"];
 
-                bool isConfirmed = await _clientApiService.UpdateReservationStatusByClientIdAsync(clientId, reservationDetails);
+                bool isConfirmed = await _clientApiService.UpdateReservationByClientIdAsync(clientId, reservationDetails);
                 if (!isConfirmed)
                 {
                     return BadRequest("Unable to cancel reservation");
