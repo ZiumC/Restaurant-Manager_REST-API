@@ -108,7 +108,7 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
             return true;
         }
 
-        public async Task<bool> UpdateReservationByClientIdAsync(int clientId, GetReservationDTO reservation)
+        public async Task<bool> UpdateReservationStatusByClientIdAsync(int clientId, GetReservationDTO reservation)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -134,9 +134,40 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
         }
 
 
-        public async Task<bool> MakeComplaintByClientIdAsync(int clientId, PostComplaintDTO newComplaint)
+        public async Task<bool> MakeComplainByClientIdAsync(int clientId, GetReservationDTO reservationData, GetComplaintDTO complaint)
         {
-            throw new NotImplementedException();
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var restaurantId = await (_context.Reservation
+                        .Where(r => r.IdReservation == reservationData.IdReservation && r.IdClient == clientId))
+                        .Select(r => new { IdRestaurant = r.IdRestauration })
+                        .FirstAsync();
+
+                    var newComplaint = _context.Add
+                    (
+                        new Complaint
+                        {
+                            ComplaintMessage = complaint.Message,
+                            ComplainDate = complaint.ComplaintDate,
+                            ComplaintStatus = complaint.Status,
+                            IdReservation = reservationData.IdReservation,
+                            IdRestaurant = restaurantId.IdRestaurant
+                        }
+                    );
+
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    await transaction.RollbackAsync();
+                    return false;
+                }
+                await transaction.CommitAsync();
+                return true;
+            }
         }
 
 
