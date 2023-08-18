@@ -148,6 +148,14 @@ namespace Restaurants_REST_API.Controllers
             return Ok("Reservation has been made");
         }
 
+
+        /// <summary>
+        /// Adds new complaint to database for reservation based on reservation id and client id.
+        /// </summary>
+        /// <param name="clientId">Client id</param>
+        /// <param name="reservationId">Reservation id</param>
+        /// <param name="newComplaint">Complaint data</param>
+        /// <returns></returns>
         [HttpPost("{clientId}/reservation/{reservationId}/complain")]
         public async Task<IActionResult> MakeComplain(int clientId, int reservationId, PostComplaintDTO newComplaint)
         {
