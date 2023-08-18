@@ -214,7 +214,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Updates reservation data, this method confirms reservation.
+        /// Updates reservation data, this endpoint confirms reservation.
         /// </summary>
         /// <param name="clientId">Client id</param>
         /// <param name="reservationId">Reservation id</param>
@@ -268,7 +268,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Updates reservation data, this method cancels reservation.
+        /// Updates reservation data, this endpoint cancels reservation.
         /// </summary>
         /// <param name="clientId">Client id</param>
         /// <param name="reservationId">Reservation id</param>
@@ -325,6 +325,12 @@ namespace Restaurants_REST_API.Controllers
             }
         }
 
+        /// <summary>
+        /// Updates reservation data, this endpoint gives grade to reservation.
+        /// </summary>
+        /// <param name="clientId">Client id</param>
+        /// <param name="reservationId">Reservation id</param>
+        /// <param name="grade">Grade is query string</param>
         [HttpPut("{clientId}/reservation/{reservationId}/rate")]
         public async Task<IActionResult> RateReseration(int clientId, int reservationId, int grade)
         {
