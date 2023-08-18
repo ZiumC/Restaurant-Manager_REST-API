@@ -324,5 +324,60 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Reservation can't be canceled because is rated");
             }
         }
+
+        [HttpPut("{clientId}/reservation/{reservationId}/rate")]
+        public async Task<IActionResult> RateReseration(int clientId, int reservationId, int grade)
+        {
+            if (!GeneralValidator.isNumberGtZero(clientId))
+            {
+                return BadRequest($"Client id={clientId} is invalid");
+            }
+
+            if (!GeneralValidator.isNumberGtZero(reservationId))
+            {
+                return BadRequest($"Reservation id={reservationId} is invalid");
+            }
+
+            if (grade < 0 || grade > 10)
+            {
+                return BadRequest($"Reservation grade ({grade}) is invalid");
+            }
+
+
+            GetReservationDTO? reservationDetails = await _clientApiService.GetReservationDetailsByCliennIdReservationIdAsync(clientId, reservationId);
+            if (reservationDetails == null)
+            {
+                return NotFound("Reservation associated with client not found");
+            }
+
+            if (reservationDetails.ReservationDate > DateTime.Now)
+            {
+                return BadRequest("Unable to rate reservation because reservation doesn't started yet");
+            }
+
+            string currentReservationStatus = reservationDetails.Status;
+            string confirmedStatus = _config["ApplicationSettings:ReservationStatus:Confirmed"];
+            string ratedStatus = _config["ApplicationSettings:ReservationStatus:Rated"];
+            if (currentReservationStatus == confirmedStatus)
+            {
+                reservationDetails.ReservationGrade = grade;
+                reservationDetails.Status = ratedStatus;
+
+                bool isUpdated = await _clientApiService.UpdateReservationByClientIdAsync(clientId, reservationDetails);
+                if (!isUpdated) 
+                {
+                    return BadRequest("Unable to rate reservation");
+                }
+                return Ok("Reservation has been rated");
+            }
+            else if (currentReservationStatus == ratedStatus) 
+            {
+                return BadRequest("Reservation is rated already");
+            }
+            else
+            {
+                return BadRequest("Unable to rate reservation because is new or canceled");
+            }
+        }
     }
 }
