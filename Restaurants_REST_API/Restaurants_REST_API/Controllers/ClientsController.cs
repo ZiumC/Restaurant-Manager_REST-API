@@ -30,7 +30,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Return full client data with all reservations
+        /// Return full client data with all reservations.
         /// </summary>
         /// <param name="clientId">Client id</param>
         [HttpGet("{clientId}")]
@@ -149,11 +149,11 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Updates reservation data, this method confirms reservation
+        /// Updates reservation data, this method confirms reservation.
         /// </summary>
         /// <param name="clientId">Client id</param>
         /// <param name="reservationId">Reservation id</param>
-        [HttpPut("{clientId}/reservation/{reservationId}")]
+        [HttpPut("{clientId}/reservation/{reservationId}/confirm")]
         public async Task<IActionResult> ConfirmReservation(int clientId, int reservationId)
         {
             if (!GeneralValidator.isNumberGtZero(clientId))
@@ -173,24 +173,78 @@ namespace Restaurants_REST_API.Controllers
             }
 
             string currentReservationStatus = reservationDetails.Status;
-            if (currentReservationStatus == _config["ApplicationSettings:ReservationStatus:New"])
+            string newStatus = _config["ApplicationSettings:ReservationStatus:New"];
+            string confirmedStatus = _config["ApplicationSettings:ReservationStatus:Confirmed"];
+            if (currentReservationStatus == newStatus)
             {
-                reservationDetails.Status = _config["ApplicationSettings:ReservationStatus:Confirmed"];
+                reservationDetails.Status = confirmedStatus;
 
                 bool isConfirmed = await _clientApiService.UpdateReservationByClientIdAsync(clientId, reservationDetails);
-                if (!isConfirmed) 
+                if (!isConfirmed)
                 {
                     return BadRequest("Unable to confirm reservation");
                 }
                 return Ok("Reservation has been confirmed");
             }
-            else if (currentReservationStatus == _config["ApplicationSettings:ReservationStatus:Confirmed"])
+            else if (currentReservationStatus == confirmedStatus)
             {
                 return BadRequest("Reservation is already confirmed");
             }
+            else
+            {
+                return BadRequest("Reservation can't be confirmed because is canceled or finished");
+            }
 
-            return BadRequest("Reservation can't be confirmed because is canceled or finished");
         }
 
+        /// <summary>
+        /// Updates reservation data, this method cancels reservation. This is duplication of method ConfirmReservation, 
+        /// because in future could be different logic implemented
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <param name="reservationId"></param>
+        [HttpPut("{clientId}/reservation/{reservationId}/cancel")]
+        public async Task<IActionResult> CancelReseration(int clientId, int reservationId)
+        {
+            if (!GeneralValidator.isNumberGtZero(clientId))
+            {
+                return BadRequest($"Client id={clientId} is invalid");
+            }
+
+            if (!GeneralValidator.isNumberGtZero(reservationId))
+            {
+                return BadRequest($"Reservation id={reservationId} is invalid");
+            }
+
+            GetReservationDTO? reservationDetails = await _clientApiService.GetReservationDetailsByCliennIdReservationIdAsync(clientId, reservationId);
+            if (reservationDetails == null)
+            {
+                return NotFound("Reservation associated with client not found");
+            }
+
+            string currentReservationStatus = reservationDetails.Status;
+            string newStatus = _config["ApplicationSettings:ReservationStatus:New"];
+            string confirmedStatus = _config["ApplicationSettings:ReservationStatus:Confirmed"];
+            string canceledStatus = _config["ApplicationSettings:ReservationStatus:Canceled"];
+            if (currentReservationStatus == newStatus || currentReservationStatus == confirmedStatus)
+            {
+                reservationDetails.Status = _config["ApplicationSettings:ReservationStatus:Canceled"];
+
+                bool isConfirmed = await _clientApiService.UpdateReservationByClientIdAsync(clientId, reservationDetails);
+                if (!isConfirmed)
+                {
+                    return BadRequest("Unable to cancel reservation");
+                }
+                return Ok("Reservation has been canceled");
+            }
+            else if (currentReservationStatus == canceledStatus)
+            {
+                return BadRequest("Reservation is already canceled");
+            }
+            else
+            {
+                return BadRequest("Reservation can't be canceled because is finished");
+            }
+        }
     }
 }
