@@ -148,6 +148,63 @@ namespace Restaurants_REST_API.Controllers
             return Ok("Reservation has been made");
         }
 
+        [HttpPost("{clientId}/reservation/{reservationId}/complain")]
+        public async Task<IActionResult> MakeComplain(int clientId, int reservationId, PostComplaintDTO newComplaint)
+        {
+            if (!GeneralValidator.isNumberGtZero(clientId))
+            {
+                return BadRequest($"Client id={clientId} is invalid");
+            }
+
+            if (!GeneralValidator.isNumberGtZero(reservationId))
+            {
+                return BadRequest($"Reservation id={reservationId} is invalid");
+            }
+
+            if (newComplaint == null || newComplaint.Message.Replace("\\s", "") == "")
+            {
+                return BadRequest("Complaint message can't be empty");
+            }
+
+            GetReservationDTO? reservationDetails = await _clientApiService.GetReservationDetailsByCliennIdReservationIdAsync(clientId, reservationId);
+            if (reservationDetails == null)
+            {
+                return NotFound("Reservation associated with client not found");
+            }
+
+            if (reservationDetails.ReservationDate > DateTime.Now)
+            {
+                return BadRequest("Unable to make complain because reservation doesn't started yet");
+            }
+
+            string currentReservationStatus = reservationDetails.Status;
+            string newStatus = _config["ApplicationSettings:ReservationStatus:New"];
+            string canceledStatus = _config["ApplicationSettings:ReservationStatus:Canceled"];
+            if (currentReservationStatus == newStatus || currentReservationStatus == canceledStatus)
+            {
+                return BadRequest("Unable to make complain because reservation is new or canceled");
+            }
+
+            if (reservationDetails.ReservationComplaint != null)
+            {
+                return BadRequest("Complaint has been already made");
+            }
+
+            var complaint = new GetComplaintDTO
+            {
+                Message = newComplaint.Message,
+                Status = _config["ApplicationSettings:ComplaintStatus:New"],
+                ComplaintDate = DateTime.Now
+            };
+            bool isComplaintMade = await _clientApiService.MakeComplainByClientIdAsync(clientId, reservationDetails, complaint);
+            if (!isComplaintMade)
+            {
+                return BadRequest("Unable to make complaint");
+            }
+
+            return Ok("Complaint has been made");
+        }
+
         /// <summary>
         /// Updates reservation data, this method confirms reservation.
         /// </summary>
@@ -184,7 +241,7 @@ namespace Restaurants_REST_API.Controllers
 
                 reservationDetails.Status = confirmedStatus;
 
-                bool isConfirmed = await _clientApiService.UpdateReservationByClientIdAsync(clientId, reservationDetails);
+                bool isConfirmed = await _clientApiService.UpdateReservationStatusByClientIdAsync(clientId, reservationDetails);
                 if (!isConfirmed)
                 {
                     return BadRequest("Unable to confirm reservation");
@@ -243,7 +300,7 @@ namespace Restaurants_REST_API.Controllers
 
                 reservationDetails.Status = _config["ApplicationSettings:ReservationStatus:Canceled"];
 
-                bool isConfirmed = await _clientApiService.UpdateReservationByClientIdAsync(clientId, reservationDetails);
+                bool isConfirmed = await _clientApiService.UpdateReservationStatusByClientIdAsync(clientId, reservationDetails);
                 if (!isConfirmed)
                 {
                     return BadRequest("Unable to cancel reservation");
