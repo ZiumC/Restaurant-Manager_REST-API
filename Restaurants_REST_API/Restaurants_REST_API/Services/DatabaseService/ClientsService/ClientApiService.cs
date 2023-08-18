@@ -133,10 +133,6 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
             }
         }
 
-        public async Task<bool> CancelReservationByClientIdReservationIdAsync(int clientId, int reservationId)
-        {
-            throw new NotImplementedException();
-        }
 
         public async Task<bool> MakeComplaintByClientIdAsync(int clientId, PostComplaintDTO newComplaint)
         {
