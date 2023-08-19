@@ -4,7 +4,6 @@ using Restaurants_REST_API.DTOs.PostDTO;
 using Restaurants_REST_API.Services.Database_Service;
 using Restaurants_REST_API.Services.DatabaseService.CustomersService;
 using Restaurants_REST_API.Services.ValidatorService;
-using System.Diagnostics;
 
 namespace Restaurants_REST_API.Controllers
 {
@@ -67,6 +66,64 @@ namespace Restaurants_REST_API.Controllers
                     .Average(g => g.ReservationGrade)
                 })
                 .ToList();
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return BadRequest("Something went wrong, unable to get restaurants data");
+            }
+        }
+
+        /// <summary>
+        /// Returns restaurant details with grade and aviable menu.
+        /// </summary>
+        /// <param name="retaurantId">Restaurant id</param>
+        /*
+         * This endpoint for restaurant details has been added
+         * here because this is visible for everyone.
+         */
+        [HttpGet("restaurants/{retaurantId}")]
+        public async Task<IActionResult> GetRestaurantDetails(int retaurantId)
+        {
+            if (!GeneralValidator.isNumberGtZero(retaurantId))
+            {
+                return BadRequest($"Reestaurant id={retaurantId} is invalid");
+            }
+
+            var restaurantBasicInfo = await _restaurantApiService.GetBasicRestaurantDataByIdAsync(retaurantId);
+            if (restaurantBasicInfo == null)
+            {
+                return NotFound("Restaurant not found");
+            }
+
+            var restaurantDetails = await _restaurantApiService.GetDetailedRestaurantDataAsync(restaurantBasicInfo);
+
+            try
+            {
+                var result = new
+                {
+                    IdRestaurant = restaurantDetails.IdRestaurant,
+                    Name = restaurantDetails.Name,
+                    Address = new
+                    {
+                        City = restaurantDetails.Address.City,
+                        Street = restaurantDetails.Address.Street,
+                        BuildingNumber = restaurantDetails.Address.BuildingNumber,
+                        LocalNumber = restaurantDetails.Address.LocalNumber
+                    },
+                    Menu = restaurantDetails.RestaurantDishes?
+                    .Select(rd => new 
+                    { 
+                        Name = rd.Name,
+                        Price = rd.Price
+                    })
+                    .ToList(),
+                    Grade = restaurantDetails.RestaurantReservations?
+                    .Where(g => g != null)
+                    .Average(g => g.ReservationGrade)
+                };
 
                 return Ok(result);
             }
