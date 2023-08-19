@@ -130,7 +130,7 @@ namespace Restaurants_REST_API.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return BadRequest("Something went wrong, unable to get restaurants data");
+                return BadRequest("Something went wrong, unable to get restaurant data");
             }
         }
 
