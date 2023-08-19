@@ -4,6 +4,7 @@ using Restaurants_REST_API.DTOs.PostDTO;
 using Restaurants_REST_API.Services.Database_Service;
 using Restaurants_REST_API.Services.DatabaseService.CustomersService;
 using Restaurants_REST_API.Services.ValidatorService;
+using System.Diagnostics;
 
 namespace Restaurants_REST_API.Controllers
 {
@@ -27,6 +28,53 @@ namespace Restaurants_REST_API.Controllers
             _clientApiService = clientApiService;
             _restaurantApiService = restaurantApiService;
             _config = config;
+        }
+
+        /// <summary>
+        /// Returns restaurants data with grade.
+        /// </summary>
+        /*
+         * This endpoint for restaurant data has been added
+         * here because this is visible for everyone.
+         */
+        [HttpGet("restaurants")]
+        public async Task<IActionResult> GetRestaurantsData()
+        {
+            var allRestaurantsDetails = await _restaurantApiService.GetAllRestaurantsAsync();
+
+            if (allRestaurantsDetails == null || allRestaurantsDetails.Count() == 0)
+            {
+                return NotFound("Restaurants not found");
+            }
+
+            try
+            {
+                var result = allRestaurantsDetails
+                .Select(ard => new
+                {
+                    IdRestaurant = ard.IdRestaurant,
+                    Name = ard.Name,
+                    Address = new
+                    {
+                        City = ard.Address.City,
+                        Street = ard.Address.Street,
+                        BuildingNumber = ard.Address.BuildingNumber,
+                        LocalNumber = ard.Address.LocalNumber
+                    },
+                    MenuCount = ard.RestaurantDishes?.Count(),
+                    Grade = ard.RestaurantReservations?
+                    .Where(g => g != null)
+                    .Average(g => g.ReservationGrade)
+                })
+                .ToList();
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return BadRequest("Something went wrong, unable to get restaurants data");
+            }
         }
 
         /// <summary>
@@ -370,13 +418,13 @@ namespace Restaurants_REST_API.Controllers
                 reservationDetails.Status = ratedStatus;
 
                 bool isUpdated = await _clientApiService.UpdateReservationByClientIdAsync(clientId, reservationDetails);
-                if (!isUpdated) 
+                if (!isUpdated)
                 {
                     return BadRequest("Unable to rate reservation");
                 }
                 return Ok("Reservation has been rated");
             }
-            else if (currentReservationStatus == ratedStatus) 
+            else if (currentReservationStatus == ratedStatus)
             {
                 return BadRequest("Reservation is rated already");
             }
