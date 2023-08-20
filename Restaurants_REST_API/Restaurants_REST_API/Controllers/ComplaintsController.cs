@@ -22,6 +22,10 @@ namespace Restaurants_REST_API.Controllers
             _config = config;
         }
 
+        /// <summary>
+        /// Returns client, client reservations and complaint data based on complaint status from all restaurants.
+        /// </summary>
+        /// <param name="status">Status could be: NEW, PENDING, ACCEPTED, CANCELLED</param>
         [HttpGet]
         public async Task<IActionResult> GetComplainsByStatus(string status)
         {
