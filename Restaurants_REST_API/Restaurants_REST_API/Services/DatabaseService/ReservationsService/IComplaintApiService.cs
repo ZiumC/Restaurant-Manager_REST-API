@@ -4,9 +4,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 {
     public interface IComplaintApiService
     {
-        public Task<List<GetComplaintDTO>?> GetNewComplaintsAsync();
-        public Task<List<GetComplaintDTO>?> GetPendingComplaintsAsync();
-        public Task<GetComplaintDTO?> GetComplaintDetailsByComplaintIdAsync(int complaintId);
+        public Task<List<GetClientDataDTO>?> GetClientComplaintsByStatusAsync(string status);
         public Task<bool> UpdateComplaintStatusByComplaintId(int complaint, string status);
     }
 }

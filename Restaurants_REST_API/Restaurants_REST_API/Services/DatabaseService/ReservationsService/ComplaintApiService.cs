@@ -12,18 +12,36 @@ namespace Restaurants_REST_API.Services.Database_Service
         {
             _context = context;
         }
-        public Task<List<GetComplaintDTO>?> GetNewComplaintsAsync()
-        {
-            throw new NotImplementedException();
-        }
-        public Task<List<GetComplaintDTO>?> GetPendingComplaintsAsync()
-        {
-            throw new NotImplementedException();
-        }
 
-        public Task<GetComplaintDTO?> GetComplaintDetailsByComplaintIdAsync(int complaintId)
+        public async Task<List<GetClientDataDTO>?> GetClientComplaintsByStatusAsync(string status)
         {
-            throw new NotImplementedException();
+            return await (from c in _context.Client
+                          select new GetClientDataDTO
+                          {
+                              IdClient = c.IdClient,
+                              Name = c.Name,
+                              IsBusinessman = c.IsBusinessman,
+                              ClientReservations = (from r in _context.Reservation
+                                                    where r.IdClient == c.IdClient
+                                                    && r.Complaint.ComplaintStatus == status
+                                                    select new GetReservationDTO
+                                                    {
+                                                        IdReservation = r.IdReservation,
+                                                        ReservationDate = r.ReservationDate,
+                                                        Status = r.ReservationStatus,
+                                                        ReservationGrade = r.ReservationGrade,
+                                                        HowManyPeoples = r.HowManyPeoples,
+                                                        ReservationComplaint = new GetComplaintDTO
+                                                        {
+                                                            IdComplaint = r.Complaint.IdComplaint,
+                                                            ComplaintDate = r.Complaint.ComplainDate,
+                                                            Status = r.Complaint.ComplaintStatus,
+                                                            Message = r.Complaint.ComplaintMessage
+                                                        }
+
+                                                    }).ToList(),
+
+                          }).ToListAsync();
         }
 
         public Task<bool> UpdateComplaintStatusByComplaintId(int complaint, string status)
