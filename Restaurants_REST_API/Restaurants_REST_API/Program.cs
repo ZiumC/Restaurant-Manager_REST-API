@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddScoped<IEmployeeApiService, EmployeeApiService>();
 builder.Services.AddScoped<IRestaurantApiService, RestaurantApiService>();
-builder.Services.AddScoped<IReservationApiService, ReservationApiService>();
+builder.Services.AddScoped<IComplaintApiService, ComplaintApiService>();
 builder.Services.AddScoped<IClientApiService, ClientApiService>();
 builder.Services.AddDbContext<MainDbContext>(opt => opt.UseSqlServer("name=ConnectionStrings:Default"));
 builder.Services.AddControllers();
