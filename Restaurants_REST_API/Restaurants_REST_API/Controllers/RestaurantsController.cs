@@ -65,6 +65,13 @@ namespace Restaurants_REST_API.Controllers
             return Ok(restaurantDTO);
         }
 
+        [HttpGet("{restaurantId}/stats")]
+        public async Task<IActionResult> GetRestaurantStatisticsBy(int restaurantId) 
+        {
+            
+            return Ok();
+        }
+
         /// <summary>
         /// Returns dish details by dish id
         /// </summary>
