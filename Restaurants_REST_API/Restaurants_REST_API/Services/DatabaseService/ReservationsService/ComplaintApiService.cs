@@ -44,9 +44,43 @@ namespace Restaurants_REST_API.Services.Database_Service
                           }).ToListAsync();
         }
 
-        public Task<bool> UpdateComplaintStatusByComplaintId(int complaint, string status)
+        public async Task<bool> UpdateComplaintStatusByComplaintIdAsync(int complaintId, string status)
         {
-            throw new NotImplementedException();
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var getComplaintQuery = await (_context.Complaint
+                        .Where(c => c.IdComplaint == complaintId))
+                        .FirstAsync();
+
+                    getComplaintQuery.ComplaintStatus = status;
+
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    await transaction.RollbackAsync();
+                    return false;
+                }
+                await transaction.CommitAsync();
+                return true;
+            }
+        }
+
+        public async Task<GetComplaintDTO?> GetComplaintByComplaintIdAsync(int complaintId)
+        {
+            return await _context.Complaint
+                .Where(c => c.IdComplaint == complaintId)
+                .Select(c => new GetComplaintDTO 
+                {
+                    IdComplaint = c.IdComplaint,
+                    ComplaintDate = c.ComplainDate,
+                    Status = c.ComplaintStatus,
+                    Message = c.ComplaintMessage
+                })
+                .FirstOrDefaultAsync();
         }
     }
 }
