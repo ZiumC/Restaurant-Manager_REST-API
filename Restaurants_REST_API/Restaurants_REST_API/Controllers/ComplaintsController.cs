@@ -84,6 +84,15 @@ namespace Restaurants_REST_API.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Updates complaint status based on action.
+        /// </summary>
+        /// <param name="complaintId">Complaint id</param>
+        /// <param name="action">Action could be: consider, accept, reject</param>
+        /*
+         * This method is made like this because it is unnecessary to make 
+         * a lot of endpoints which business logic is very similar.
+         */
         [HttpPut("{complaintId}/update")]
         public async Task<IActionResult> UpdateComplaintStatus(int complaintId, string action)
         {
