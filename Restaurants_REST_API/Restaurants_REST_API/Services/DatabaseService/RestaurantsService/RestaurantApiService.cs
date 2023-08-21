@@ -19,7 +19,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             _configuration = configuration;
         }
 
-        public async Task<IEnumerable<GetRestaurantDTO?>> GetAllRestaurantsAsync()
+        public async Task<IEnumerable<GetRestaurantDTO>?> GetAllRestaurantsAsync()
         {
             return await (from rest in _context.Restaurant
                           join addr in _context.Address
@@ -242,7 +242,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<EmployeeRestaurant?>> GetHiredEmployeesInRestaurantsAsync()
+        public async Task<IEnumerable<EmployeeRestaurant>?> GetHiredEmployeesInRestaurantsAsync()
         {
             return await _context.EmployeeRestaurant
                 .Select(eir => new EmployeeRestaurant
@@ -254,7 +254,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                 }).ToListAsync();
         }
 
-        public async Task<IEnumerable<GetEmployeeTypeDTO?>> GetEmployeeTypesAsync()
+        public async Task<IEnumerable<GetEmployeeTypeDTO>?> GetEmployeeTypesAsync()
         {
             return await _context.EmployeeType
                 .Select(x => new GetEmployeeTypeDTO
@@ -278,7 +278,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                  }).FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<RestaurantDish?>> GetRestaurantDishesByRestaurantIdAsync(int restaurantId)
+        public async Task<IEnumerable<RestaurantDish>?> GetRestaurantDishesByRestaurantIdAsync(int restaurantId)
         {
             return await
                 (_context.RestaurantDish
