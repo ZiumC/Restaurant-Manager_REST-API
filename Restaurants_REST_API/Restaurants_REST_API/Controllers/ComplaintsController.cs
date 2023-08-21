@@ -83,13 +83,26 @@ namespace Restaurants_REST_API.Controllers
             return Ok(result);
         }
 
-        [HttpPut("{complaintId}/pending")]
-        public async Task<IActionResult> UpdateComplaintStatus(int complaintId)
+        [HttpPut("{complaintId}/update")]
+        public async Task<IActionResult> UpdateComplaintStatus(int complaintId, string action)
         {
 
             if (!GeneralValidator.isNumberGtZero(complaintId))
             {
                 return BadRequest($"Complaint id={complaintId} is invalid");
+            }
+
+            IEnumerable<string> availableActionsForEndpoint = new List<string>
+            {
+                "consider",
+                "accept",
+                "reject"
+            };
+
+            action = action.ToLower();
+            if (!availableActionsForEndpoint.Contains(action))
+            {
+                return BadRequest("Action for complaint is invalid");
             }
 
             var complaint = await _complaintsApiService.GetComplaintByComplaintIdAsync(complaintId);
@@ -101,19 +114,104 @@ namespace Restaurants_REST_API.Controllers
             string currentComplaintStatus = complaint.Status;
             string newStatus = _config["ApplicationSettings:ComplaintStatus:New"];
             string pendingStatus = _config["ApplicationSettings:ComplaintStatus:Pending"];
-            if (currentComplaintStatus == newStatus)
+            if (action == availableActionsForEndpoint.ElementAt(0))
             {
-                bool isComplaintUpdated = await _complaintsApiService.UpdateComplaintStatusByComplaintIdAsync(complaintId, pendingStatus);
-
-                if (!isComplaintUpdated)
+                if (currentComplaintStatus == newStatus)
                 {
-                    return BadRequest("Unable to update complaint status");
+                    bool isComplaintUpdated = await _complaintsApiService.UpdateComplaintStatusByComplaintIdAsync(complaintId, pendingStatus);
+
+                    if (!isComplaintUpdated)
+                    {
+                        return BadRequest("Unable to update complaint status");
+                    }
+
+                    return Ok($"Complaint status is {pendingStatus} now");
+                }
+                else if (currentComplaintStatus == pendingStatus)
+                {
+                    return BadRequest($"Complaint status is {pendingStatus} already");
                 }
 
-                return Ok($"Complaint status is {pendingStatus} now");
+                return BadRequest("Unable to update complaint status because is accepted or rejected");
+            }
+            else if (action == availableActionsForEndpoint.ElementAt(1))
+            {
+                string acceptedStatus = _config["ApplicationSettings:ComplaintStatus:Accepted"];
+                if (currentComplaintStatus == pendingStatus)
+                {
+                    bool isComplaintUpdated = await _complaintsApiService.UpdateComplaintStatusByComplaintIdAsync(complaintId, acceptedStatus);
+
+                    if (!isComplaintUpdated)
+                    {
+                        return BadRequest("Unable to update complaint status");
+                    }
+
+                    return Ok($"Complaint status is {acceptedStatus} now");
+                }
+                else if (currentComplaintStatus == acceptedStatus)
+                {
+                    return BadRequest($"Complaint status is {acceptedStatus} already");
+                }
+
+                return BadRequest("Unable to update complaint status because is new or rejected");
+            }
+            else
+            {
+                string rejectedStatus = _config["ApplicationSettings:ComplaintStatus:Rejected"];
+                if (currentComplaintStatus == pendingStatus)
+                {
+                    bool isComplaintUpdated = await _complaintsApiService.UpdateComplaintStatusByComplaintIdAsync(complaintId, rejectedStatus);
+
+                    if (!isComplaintUpdated)
+                    {
+                        return BadRequest("Unable to update complaint status");
+                    }
+
+                    return Ok($"Complaint status is {rejectedStatus} now");
+                }
+                else if (currentComplaintStatus == rejectedStatus)
+                {
+                    return BadRequest($"Complaint status is {rejectedStatus} already");
+                }
+
+                return BadRequest("Unable to update complaint status because is new or accepted");
             }
 
-            return BadRequest("Unable to update complaint status because is accepted or rejected");
+
         }
+
+        //[HttpPut("{complaintId}/accept")]
+        //public async Task<IActionResult> UpdateComplaintStatusToAccepted(int complaintId)
+        //{
+
+        //    if (!GeneralValidator.isNumberGtZero(complaintId))
+        //    {
+        //        return BadRequest($"Complaint id={complaintId} is invalid");
+        //    }
+
+        //    var complaint = await _complaintsApiService.GetComplaintByComplaintIdAsync(complaintId);
+        //    if (complaint == null)
+        //    {
+        //        return NotFound("Complaint not found");
+        //    }
+
+        //    string currentComplaintStatus = complaint.Status;
+        //    string pendingStatus = _config["ApplicationSettings:ComplaintStatus:Pending"];
+        //    string acceptedStatus = _config["ApplicationSettings:ComplaintStatus:Accepted"];
+        //    if (currentComplaintStatus == pendingStatus)
+        //    {
+        //        bool isComplaintUpdated = await _complaintsApiService.UpdateComplaintStatusByComplaintIdAsync(complaintId, acceptedStatus);
+
+        //        if (!isComplaintUpdated)
+        //        {
+        //            return BadRequest("Unable to update complaint status");
+        //        }
+
+        //        return Ok($"Complaint status is {acceptedStatus} now");
+        //    }
+
+        //    return BadRequest("Unable to update complaint status because is new or rejected");
+        //}
+
     }
 }
