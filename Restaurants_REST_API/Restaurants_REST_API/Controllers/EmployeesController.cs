@@ -27,7 +27,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Returns all employees details
+        /// Returns all employees details.
         /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetAllEmployees()
@@ -43,7 +43,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Returns employee details by employee id
+        /// Returns employee details.
         /// </summary>
         /// <param name="empId">Employee id</param>
         [HttpGet("{empId}")]
@@ -64,7 +64,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Returns all supervisors details from any restaurants
+        /// Returns all supervisors details from any restaurants.
         /// </summary>
         [HttpGet("supervisors")]
         public async Task<IActionResult> GetSupervisors()
@@ -88,7 +88,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Returns supervisor details by supervisor id from any restaurant
+        /// Returns supervisor details from any restaurant.
         /// </summary>
         /// <param name="supervisorId">Supervisor id</param>
         [HttpGet("supervisor/{supervisorId}")]
@@ -120,7 +120,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Returns owner details
+        /// Returns owner details.
         /// </summary>
         [HttpGet("owner")]
         public async Task<IActionResult> GetOwnerDetails()
@@ -146,7 +146,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Returns employees details by restaurant id
+        /// Returns employees details based on restaurant id.
         /// </summary>
         /// <param name="restaurantId">Restaurant id</param>
         [HttpGet("restaurant/{restaurantId}")]
@@ -174,7 +174,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Adds new employee
+        /// Adds new employee.
         /// </summary>
         /// <param name="newEmployee">Employee details data</param>
         [HttpPost]
@@ -268,7 +268,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Adds new certificate to employee by employee id
+        /// Adds new certificate to employee based on employee id.
         /// </summary>
         /// <param name="empId">Employee id</param>
         /// <param name="newCertificates">Certificates data</param>
@@ -307,7 +307,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Updates existing employee basic data by employee id
+        /// Updates existing employee basic data.
         /// </summary>
         /// <param name="empId">Employee id</param>
         /// <param name="putEmpData">Basic employee data</param>
@@ -379,7 +379,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Updates existing employee certificate by employee id and certificate id
+        /// Updates existing employee certificate.
         /// </summary>
         /// <param name="empId">Employee id</param>
         /// <param name="certificateId">Certificate id to update</param>
@@ -438,7 +438,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Removes employee data
+        /// Removes employee data.
         /// </summary>
         /// <param name="empId">Employee id</param>
         [HttpDelete("{empId}")]
@@ -466,7 +466,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Removes employee certificate data
+        /// Removes employee certificate data.
         /// </summary>
         /// <param name="empId">Employee id</param>
         /// <param name="certificateId">Employee certificate id</param>
