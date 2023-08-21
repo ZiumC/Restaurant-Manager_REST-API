@@ -104,9 +104,9 @@ namespace Restaurants_REST_API.Controllers
 
             IEnumerable<string> availableActionsForEndpoint = new List<string>
             {
-                "consider",
-                "accept",
-                "reject"
+                _config["ApplicationSettings:ComplaintActions:Consider"],
+                _config["ApplicationSettings:ComplaintActions:Accept"],
+                _config["ApplicationSettings:ComplaintActions:Reject"],
             };
 
             action = action.ToLower();
@@ -131,10 +131,13 @@ namespace Restaurants_REST_API.Controllers
             string acceptedStatus = _config["ApplicationSettings:ComplaintStatus:Accepted"];
             string rejectedStatus = _config["ApplicationSettings:ComplaintStatus:Rejected"];
 
+            string considerAction = _config["ApplicationSettings:ComplaintActions:Consider"];
+            string acceptAction = _config["ApplicationSettings:ComplaintActions:Accept"];
+
             string statusToUpdate = newStatus;
             string currentComplaintStatus = complaint.Status;
 
-            if (action == "consider")
+            if (action == considerAction)
             {
                 if (currentComplaintStatus == newStatus)
                 {
@@ -149,7 +152,7 @@ namespace Restaurants_REST_API.Controllers
                     return BadRequest($"Unable to update complaint status to {pendingStatus} because current status is {currentComplaintStatus}");
                 }
             }
-            else if (action == "accept")
+            else if (action == acceptAction)
             {
                 if (currentComplaintStatus == pendingStatus)
                 {
@@ -181,7 +184,6 @@ namespace Restaurants_REST_API.Controllers
             }
 
             bool isComplaintUpdated = await _complaintsApiService.UpdateComplaintStatusByComplaintIdAsync(complaint.IdComplaint, statusToUpdate);
-
             if (!isComplaintUpdated)
             {
                 return BadRequest("Unable to update complaint status");
