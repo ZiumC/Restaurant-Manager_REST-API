@@ -26,7 +26,7 @@ namespace Restaurants_REST_API.Controllers
         /// <summary>
         /// Returns client, client reservations and complaint data based on complaint status from all restaurants.
         /// </summary>
-        /// <param name="status">Status could be: NEW, PENDING, ACCEPTED, CANCELLED</param>
+        /// <param name="status">Status could be: NEW, PENDING, ACCEPTED, REJECTED</param>
         [HttpGet]
         public async Task<IActionResult> GetComplainsByStatus(string status)
         {
@@ -35,7 +35,7 @@ namespace Restaurants_REST_API.Controllers
                 _config["ApplicationSettings:ComplaintStatus:New"],
                 _config["ApplicationSettings:ComplaintStatus:Pending"],
                 _config["ApplicationSettings:ComplaintStatus:Accepted"],
-                _config["ApplicationSettings:ComplaintStatus:Cancelled"]
+                _config["ApplicationSettings:ComplaintStatus:Rejected"]
             };
 
             if (!availableStatuses.Contains(status))
@@ -113,7 +113,7 @@ namespace Restaurants_REST_API.Controllers
                 return Ok($"Complaint status is {pendingStatus} now");
             }
 
-            return BadRequest("Unable to update complaint status because is accepted or canelled");
+            return BadRequest("Unable to update complaint status because is accepted or rejected");
         }
     }
 }
