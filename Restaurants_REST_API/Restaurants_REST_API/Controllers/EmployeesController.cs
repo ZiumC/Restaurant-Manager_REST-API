@@ -273,7 +273,7 @@ namespace Restaurants_REST_API.Controllers
         /// <param name="empId">Employee id</param>
         /// <param name="newCertificates">Certificates data</param>
         [HttpPost("{empId}/certificate")]
-        public async Task<IActionResult> AddCertificateByEmployee(int empId, IEnumerable<PostCertificateDTO> newCertificates)
+        public async Task<IActionResult> AddCertificateBy(int empId, IEnumerable<PostCertificateDTO> newCertificates)
         {
             if (!GeneralValidator.isNumberGtZero(empId))
             {
@@ -312,7 +312,7 @@ namespace Restaurants_REST_API.Controllers
         /// <param name="empId">Employee id</param>
         /// <param name="putEmpData">Basic employee data</param>
         [HttpPut("{empId}")]
-        public async Task<IActionResult> UpdateEmployeeDataByEmployee(int empId, PutEmployeeDTO? putEmpData)
+        public async Task<IActionResult> UpdateEmployeeDataBy(int empId, PutEmployeeDTO? putEmpData)
         {
             if (!GeneralValidator.isNumberGtZero(empId))
             {
