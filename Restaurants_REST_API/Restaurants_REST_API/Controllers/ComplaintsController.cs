@@ -2,6 +2,7 @@
 using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.Services.Database_Service;
 using Restaurants_REST_API.Services.DatabaseService.CustomersService;
+using Restaurants_REST_API.Services.ValidatorService;
 
 namespace Restaurants_REST_API.Controllers
 {
@@ -29,7 +30,7 @@ namespace Restaurants_REST_API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetComplainsByStatus(string status)
         {
-            IEnumerable<string> aviableStatus = new List<string>
+            IEnumerable<string> availableStatuses = new List<string>
             {
                 _config["ApplicationSettings:ComplaintStatus:New"],
                 _config["ApplicationSettings:ComplaintStatus:Pending"],
@@ -37,7 +38,7 @@ namespace Restaurants_REST_API.Controllers
                 _config["ApplicationSettings:ComplaintStatus:Cancelled"]
             };
 
-            if (!aviableStatus.Contains(status))
+            if (!availableStatuses.Contains(status))
             {
                 return BadRequest("Complaint status is invalid");
             }
@@ -80,6 +81,39 @@ namespace Restaurants_REST_API.Controllers
             });
 
             return Ok(result);
+        }
+
+        [HttpPut("{complaintId}/pending")]
+        public async Task<IActionResult> UpdateComplaintStatus(int complaintId)
+        {
+
+            if (!GeneralValidator.isNumberGtZero(complaintId))
+            {
+                return BadRequest($"Complaint id={complaintId} is invalid");
+            }
+
+            var complaint = await _complaintsApiService.GetComplaintByComplaintIdAsync(complaintId);
+            if (complaint == null)
+            {
+                return NotFound("Complaint not found");
+            }
+
+            string currentComplaintStatus = complaint.Status;
+            string newStatus = _config["ApplicationSettings:ComplaintStatus:New"];
+            string pendingStatus = _config["ApplicationSettings:ComplaintStatus:Pending"];
+            if (currentComplaintStatus == newStatus)
+            {
+                bool isComplaintUpdated = await _complaintsApiService.UpdateComplaintStatusByComplaintIdAsync(complaintId, pendingStatus);
+
+                if (!isComplaintUpdated)
+                {
+                    return BadRequest("Unable to update complaint status");
+                }
+
+                return Ok($"Complaint status is {pendingStatus} now");
+            }
+
+            return BadRequest("Unable to update complaint status because is accepted or canelled");
         }
     }
 }
