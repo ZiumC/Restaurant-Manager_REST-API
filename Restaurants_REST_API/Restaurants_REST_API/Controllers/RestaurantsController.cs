@@ -65,6 +65,9 @@ namespace Restaurants_REST_API.Controllers
             return Ok(restaurantDTO);
         }
 
+        /// <summary>
+        /// Returns statistics from all restaurants.
+        /// </summary>
         [HttpGet("stats")]
         public async Task<IActionResult> GetRestaurantStatisticsBy()
         {
