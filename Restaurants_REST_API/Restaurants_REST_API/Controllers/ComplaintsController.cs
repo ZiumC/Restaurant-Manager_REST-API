@@ -29,7 +29,7 @@ namespace Restaurants_REST_API.Controllers
         /// </summary>
         /// <param name="status">Status could be: NEW, PENDING, ACCEPTED, REJECTED</param>
         [HttpGet]
-        public async Task<IActionResult> GetComplainsByStatus(string status)
+        public async Task<IActionResult> GetComplainsByStatusBy(string status)
         {
             IEnumerable<string> availableStatuses = new List<string>
             {
@@ -94,7 +94,7 @@ namespace Restaurants_REST_API.Controllers
          * a lot of endpoints which business logic is very similar.
          */
         [HttpPut("{complaintId}/update")]
-        public async Task<IActionResult> UpdateComplaintStatus(int complaintId, string action)
+        public async Task<IActionResult> UpdateComplaintStatusBy(int complaintId, string action)
         {
 
             if (!GeneralValidator.isNumberGtZero(complaintId))

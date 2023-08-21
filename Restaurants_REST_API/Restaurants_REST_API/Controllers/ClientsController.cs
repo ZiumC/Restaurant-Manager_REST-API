@@ -85,7 +85,7 @@ namespace Restaurants_REST_API.Controllers
          * here because this is visible for everyone.
          */
         [HttpGet("restaurants/{retaurantId}")]
-        public async Task<IActionResult> GetRestaurantDetails(int retaurantId)
+        public async Task<IActionResult> GetRestaurantDetailsBy(int retaurantId)
         {
             if (!GeneralValidator.isNumberGtZero(retaurantId))
             {
@@ -139,7 +139,7 @@ namespace Restaurants_REST_API.Controllers
         /// </summary>
         /// <param name="clientId">Client id</param>
         [HttpGet("{clientId}")]
-        public async Task<IActionResult> GetClientData(int clientId)
+        public async Task<IActionResult> GetClientDataBy(int clientId)
         {
             if (!GeneralValidator.isNumberGtZero(clientId))
             {
@@ -169,7 +169,7 @@ namespace Restaurants_REST_API.Controllers
         /// <param name="clientId">Client id</param>
         /// <param name="reservationId">Reservation id</param>
         [HttpGet("{clientId}/reservation/{reservationId}")]
-        public async Task<IActionResult> GetClientReservationData(int clientId, int reservationId)
+        public async Task<IActionResult> GetClientReservationDataBy(int clientId, int reservationId)
         {
             if (!GeneralValidator.isNumberGtZero(clientId))
             {
@@ -204,7 +204,7 @@ namespace Restaurants_REST_API.Controllers
         /// <param name="clientId">Client id</param>
         /// <param name="newReservation">Reservation data</param>
         [HttpPost("{clientId}/reservation")]
-        public async Task<IActionResult> MakeReservation(int clientId, PostReservationDTO newReservation)
+        public async Task<IActionResult> MakeReservationBy(int clientId, PostReservationDTO newReservation)
         {
             if (!GeneralValidator.isNumberGtZero(clientId))
             {
@@ -262,7 +262,7 @@ namespace Restaurants_REST_API.Controllers
         /// <param name="newComplaint">Complaint data</param>
         /// <returns></returns>
         [HttpPost("{clientId}/reservation/{reservationId}/complain")]
-        public async Task<IActionResult> MakeComplain(int clientId, int reservationId, PostComplaintDTO newComplaint)
+        public async Task<IActionResult> MakeComplainBy(int clientId, int reservationId, PostComplaintDTO newComplaint)
         {
             if (!GeneralValidator.isNumberGtZero(clientId))
             {
@@ -324,7 +324,7 @@ namespace Restaurants_REST_API.Controllers
         /// <param name="clientId">Client id</param>
         /// <param name="reservationId">Reservation id</param>
         [HttpPut("{clientId}/reservation/{reservationId}/confirm")]
-        public async Task<IActionResult> ConfirmReservation(int clientId, int reservationId)
+        public async Task<IActionResult> ConfirmReservationBy(int clientId, int reservationId)
         {
             if (!GeneralValidator.isNumberGtZero(clientId))
             {
@@ -382,7 +382,7 @@ namespace Restaurants_REST_API.Controllers
          * because in future could be different logic implemented
         */
         [HttpPut("{clientId}/reservation/{reservationId}/cancel")]
-        public async Task<IActionResult> CancelReseration(int clientId, int reservationId)
+        public async Task<IActionResult> CancelReserationBy(int clientId, int reservationId)
         {
             if (!GeneralValidator.isNumberGtZero(clientId))
             {
@@ -437,7 +437,7 @@ namespace Restaurants_REST_API.Controllers
         /// <param name="reservationId">Reservation id</param>
         /// <param name="grade">Grade is query string</param>
         [HttpPut("{clientId}/reservation/{reservationId}/rate")]
-        public async Task<IActionResult> RateReseration(int clientId, int reservationId, int grade)
+        public async Task<IActionResult> RateReserationBy(int clientId, int reservationId, int grade)
         {
             if (!GeneralValidator.isNumberGtZero(clientId))
             {
