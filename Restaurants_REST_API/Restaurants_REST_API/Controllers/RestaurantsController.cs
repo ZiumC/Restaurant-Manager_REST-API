@@ -26,7 +26,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Returns all restaurants details
+        /// Returns all restaurants details.
         /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetAllRestaurants()
@@ -42,7 +42,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Returns restaurant details by restaurant id
+        /// Returns restaurant details.
         /// </summary>
         /// <param name="restaurantId">Restaurant id</param>
         [HttpGet("{restaurantId}")]
@@ -111,7 +111,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Returns dish details by dish id
+        /// Returns dish details.
         /// </summary>
         /// <param name="dishId">Dish id</param>
         [HttpGet("dish/{dishId}")]
@@ -132,7 +132,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Returns all employee types
+        /// Returns all employee types.
         /// </summary>
         [HttpGet("employee/types")]
         public async Task<IActionResult> GetAllEmployeeTypes()
@@ -147,7 +147,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Adds new restaurant
+        /// Adds new restaurant.
         /// </summary>
         /// <param name="newRestaurant">New restaurant basic data</param>
         [HttpPost]
@@ -209,7 +209,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Adds new dish
+        /// Adds new dish.
         /// </summary>
         /// <param name="newDish">New dish basic data</param>
         [HttpPost("dish")]
@@ -270,7 +270,7 @@ namespace Restaurants_REST_API.Controllers
 
         /// <summary>
         /// Adds existing employee to restaurant with specified role. 
-        /// Employee can have only one role at a restaurant
+        /// Employee only can have a one role at a restaurant.
         /// </summary>
         /// <param name="empId">Employee id</param>
         /// <param name="typeId">Employee type id</param>
@@ -378,7 +378,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Adds new employee type
+        /// Adds new employee type.
         /// </summary>
         /// <param name="name">New employee type name</param>
         [HttpPost("employee/type")]
@@ -405,7 +405,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Updates employee type in restaurant
+        /// Updates employee type in restaurant.
         /// </summary>
         /// <param name="empId">Employee id</param>
         /// <param name="typeId">Employee type id</param>
@@ -518,7 +518,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Updates existing restaurant basic data by restaurant id
+        /// Updates restaurant data.
         /// </summary>
         /// <param name="restaurantId">Restaurant id</param>
         /// <param name="putRestaurantData">Restaurant basic data</param>
@@ -584,7 +584,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Updates existing dish basic data by dish id
+        /// Updates dish data.
         /// </summary>
         /// <param name="dishId">Dish id</param>
         /// <param name="putDishData">Dish basic data</param>
@@ -620,7 +620,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Removes dish data from all restaurants
+        /// Removes dish data from all restaurants.
         /// </summary>
         /// <param name="dishId">Dish id</param>
         [HttpDelete("dish/{dishId}")]
@@ -647,7 +647,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Removes dish only from specific restaurant
+        /// Removes dish only from specific restaurant.
         /// </summary>
         /// <param name="restaurantId">Restaurant id</param>
         /// <param name="dishId">Dish id</param>
@@ -698,7 +698,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Removes employee only from specific restaurant
+        /// Removes employee only from specific restaurant.
         /// </summary>
         /// <param name="empId">Employee id</param>
         /// <param name="restaurantId">Restaurant id</param>
