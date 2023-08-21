@@ -69,7 +69,7 @@ namespace Restaurants_REST_API.Controllers
         /// Returns statistics from all restaurants.
         /// </summary>
         [HttpGet("stats")]
-        public async Task<IActionResult> GetRestaurantStatisticsBy()
+        public async Task<IActionResult> GetRestaurantStatistics()
         {
             IEnumerable<GetRestaurantDTO>? restaurantsDetails = await _restaurantsApiService.GetAllRestaurantsAsync();
 
@@ -280,7 +280,7 @@ namespace Restaurants_REST_API.Controllers
          * Chef can be hired multiple times in restaurant
          */
         [HttpPost("{restaurantId}/employee/{empId}/type/{typeId}")]
-        public async Task<IActionResult> AddNewEmployeeToRestaurant(int restaurantId, int empId, int typeId)
+        public async Task<IActionResult> AddNewEmployeeToRestaurantBy(int restaurantId, int empId, int typeId)
         {
 
             if (!GeneralValidator.isNumberGtZero(empId))
@@ -411,7 +411,7 @@ namespace Restaurants_REST_API.Controllers
         /// <param name="typeId">Employee type id</param>
         /// <param name="restaurantId">Restaurant id</param>
         [HttpPut("{restaurantId}/employee/{empId}/type/{typeId}")]
-        public async Task<IActionResult> UpdateEmployeeType(int restaurantId, int empId, int typeId)
+        public async Task<IActionResult> UpdateEmployeeTypeBy(int restaurantId, int empId, int typeId)
         {
             //checking if ids are valid
             if (!GeneralValidator.isNumberGtZero(empId))
@@ -523,7 +523,7 @@ namespace Restaurants_REST_API.Controllers
         /// <param name="restaurantId">Restaurant id</param>
         /// <param name="putRestaurantData">Restaurant basic data</param>
         [HttpPut("{restaurantId}")]
-        public async Task<IActionResult> UpdateRestaurantData(int restaurantId, PutRestaurantDTO putRestaurantData)
+        public async Task<IActionResult> UpdateRestaurantDataBy(int restaurantId, PutRestaurantDTO putRestaurantData)
         {
             if (!GeneralValidator.isNumberGtZero(restaurantId))
             {
@@ -589,7 +589,7 @@ namespace Restaurants_REST_API.Controllers
         /// <param name="dishId">Dish id</param>
         /// <param name="putDishData">Dish basic data</param>
         [HttpPut("dish/{dishId}")]
-        public async Task<IActionResult> UpdateDishData(int dishId, PutDishDTO putDishData)
+        public async Task<IActionResult> UpdateDishDataBy(int dishId, PutDishDTO putDishData)
         {
             if (!GeneralValidator.isNumberGtZero(dishId))
             {
@@ -652,7 +652,7 @@ namespace Restaurants_REST_API.Controllers
         /// <param name="restaurantId">Restaurant id</param>
         /// <param name="dishId">Dish id</param>
         [HttpDelete("{restaurantId}/dish/{dishId}")]
-        public async Task<IActionResult> DeleteDishbyRestaurant(int restaurantId, int dishId)
+        public async Task<IActionResult> DeleteDishBy(int restaurantId, int dishId)
         {
             if (!GeneralValidator.isNumberGtZero(restaurantId))
             {
@@ -703,7 +703,7 @@ namespace Restaurants_REST_API.Controllers
         /// <param name="empId">Employee id</param>
         /// <param name="restaurantId">Restaurant id</param>
         [HttpDelete("{restaurantId}/employee/{empId}")]
-        public async Task<IActionResult> DeleteEmployeeFromRestaurant(int empId, int restaurantId)
+        public async Task<IActionResult> DeleteEmployeeFromRestaurantBy(int empId, int restaurantId)
         {
             if (!GeneralValidator.isNumberGtZero(empId))
             {
