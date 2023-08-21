@@ -65,11 +65,46 @@ namespace Restaurants_REST_API.Controllers
             return Ok(restaurantDTO);
         }
 
-        [HttpGet("{restaurantId}/stats")]
-        public async Task<IActionResult> GetRestaurantStatisticsBy(int restaurantId) 
+        [HttpGet("stats")]
+        public async Task<IActionResult> GetRestaurantStatisticsBy()
         {
-            
-            return Ok();
+            IEnumerable<GetRestaurantDTO>? restaurantsDetails = await _restaurantsApiService.GetAllRestaurantsAsync();
+
+            if (restaurantsDetails == null || restaurantsDetails.Count() == 0)
+            {
+                return NotFound("Restaurants not found");
+            }
+
+
+            var result = restaurantsDetails.Select(rd => new
+            {
+                RestaurantName = rd.Name,
+                RestaurantGrade = rd.RestaurantReservations?.Where(rr => rr.ReservationGrade != null).Average(rr => rr.ReservationGrade),
+                ReservationsCount = rd.RestaurantReservations?.Count(),
+                Complaints = new
+                {
+                    NewComplaintsCount = rd.RestaurantComplaints?
+                .Where(rc => rc.Status == _config["ApplicationSettings:ComplaintStatus:New"])
+                .Count(),
+                    PendingComplaintsCount = rd.RestaurantComplaints?
+                .Where(rc => rc.Status == _config["ApplicationSettings:ComplaintStatus:Pending"])
+                .Count(),
+                    AcceptedComplaintsCount = rd.RestaurantComplaints?
+                .Where(rc => rc.Status == _config["ApplicationSettings:ComplaintStatus:Accepted"])
+                .Count(),
+                    RejectedComplaintsCount = rd.RestaurantComplaints?
+                .Where(rc => rc.Status == _config["ApplicationSettings:ComplaintStatus:Rejected"])
+                .Count(),
+                },
+                Employees = new
+                {
+                    EmployeesCount = rd.RestaurantWorkers?.Count(),
+                    TotalSalary = _employeeApiService.GetDetailedEmployeeDataByRestaurantIdAsync(rd.IdRestaurant).Result.Sum(a => a.Salary),
+                    TotalBonus = _employeeApiService.GetDetailedEmployeeDataByRestaurantIdAsync(rd.IdRestaurant).Result.Sum(a => a.BonusSalary)
+                }
+            });
+
+            return Ok(result);
         }
 
         /// <summary>
