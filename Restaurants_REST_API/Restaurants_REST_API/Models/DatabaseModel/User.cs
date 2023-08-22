@@ -9,6 +9,7 @@ namespace Restaurants_REST_API.Models.DatabaseModel
         public string Login { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
+        public string PasswordSalt { get; set; }
         public int LoginAttemps { get; set; }
         public DateTime? DateBlockedTo { get; set; }
 
