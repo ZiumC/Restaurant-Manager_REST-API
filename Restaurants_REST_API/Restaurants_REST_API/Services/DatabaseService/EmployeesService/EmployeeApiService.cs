@@ -70,7 +70,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<GetEmployeeDTO> GetDetailedEmployeeDataAsync(Employee employee)
+        public async Task<GetEmployeeDTO> GetEmployeeDetailsAsync(Employee employee)
         {
 
             Address address = await _context.Address
@@ -253,7 +253,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             return ownerQuery;
         }
 
-        public async Task<IEnumerable<GetEmployeeDTO>> GetDetailedEmployeeDataByRestaurantIdAsync(int restaurantId)
+        public async Task<IEnumerable<GetEmployeeDTO>> GetEmployeeDetailsByRestaurantIdAsync(int restaurantId)
         {
             return await (from eir in _context.EmployeeRestaurant
                           join emp in _context.Employee

@@ -18,7 +18,7 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
             _configuration = configuration;
         }
 
-        public async Task<GetClientDataDTO?> GetClientDataByIdAsync(int clientId)
+        public async Task<GetClientDataDTO?> GetClientDetailsByIdAsync(int clientId)
         {
             return await _context.Client
                 .Where(c => c.IdClient == clientId)
@@ -32,7 +32,7 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<GetReservationDTO>?> GetAllReservationsDataByClientIdAsync(int clientId)
+        public async Task<IEnumerable<GetReservationDTO>?> GetAllReservationsDetailsByClientIdAsync(int clientId)
         {
             return await _context.Reservation
                 .Where(r => r.IdClient == clientId)
