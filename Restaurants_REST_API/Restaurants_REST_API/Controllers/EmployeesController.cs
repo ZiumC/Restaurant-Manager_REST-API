@@ -60,7 +60,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound($"Employee id={empId} not found");
             }
 
-            return Ok(await _employeeApiService.GetDetailedEmployeeDataAsync(employee));
+            return Ok(await _employeeApiService.GetEmployeeDetailsAsync(employee));
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound($"Supervisor id={supervisorId} not found");
             }
 
-            GetEmployeeDTO employeeDetailsDatabase = await _employeeApiService.GetDetailedEmployeeDataAsync(supervisorDatabase);
+            GetEmployeeDTO employeeDetailsDatabase = await _employeeApiService.GetEmployeeDetailsAsync(supervisorDatabase);
 
             return Ok(employeeDetailsDatabase);
         }
@@ -140,7 +140,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound("Owner not found");
             }
 
-            GetEmployeeDTO employeeDetailsDatabase = await _employeeApiService.GetDetailedEmployeeDataAsync(ownerDatabase);
+            GetEmployeeDTO employeeDetailsDatabase = await _employeeApiService.GetEmployeeDetailsAsync(ownerDatabase);
 
             return Ok(employeeDetailsDatabase);
         }
@@ -163,7 +163,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound($"Restaurant id={restaurantId} not found");
             }
 
-            IEnumerable<GetEmployeeDTO> employeesInRestaurant = await _employeeApiService.GetDetailedEmployeeDataByRestaurantIdAsync(restaurantId);
+            IEnumerable<GetEmployeeDTO> employeesInRestaurant = await _employeeApiService.GetEmployeeDetailsByRestaurantIdAsync(restaurantId);
 
             if (employeesInRestaurant.Count() == 0)
             {
@@ -366,7 +366,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound("Employee doesn't exist");
             }
 
-            GetEmployeeDTO employeeDetailsDatabase = await _employeeApiService.GetDetailedEmployeeDataAsync(employeeDatabase);
+            GetEmployeeDTO employeeDetailsDatabase = await _employeeApiService.GetEmployeeDetailsAsync(employeeDatabase);
             MapEmployeeDataService employeeDataMapper = new MapEmployeeDataService(employeeDetailsDatabase, putEmpData);
             Employee employeeUpdatedData = employeeDataMapper.GetEmployeeUpdatedData();
 
@@ -408,7 +408,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound("Employee doesn't exist");
             }
 
-            GetEmployeeDTO employeeDetailsDatabase = await _employeeApiService.GetDetailedEmployeeDataAsync(employeeDatabase);
+            GetEmployeeDTO employeeDetailsDatabase = await _employeeApiService.GetEmployeeDetailsAsync(employeeDatabase);
             if (employeeDetailsDatabase.Certificates != null && employeeDetailsDatabase.Certificates.Count() > 0)
             {
                 GetCertificateDTO? employeeCertificate = employeeDetailsDatabase.Certificates
@@ -455,7 +455,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound($"Employee not found");
             }
 
-            GetEmployeeDTO employeeDetailsDatabase = await _employeeApiService.GetDetailedEmployeeDataAsync(employeeDatabase);
+            GetEmployeeDTO employeeDetailsDatabase = await _employeeApiService.GetEmployeeDetailsAsync(employeeDatabase);
             bool isEmployeeHasBeenRemoved = await _employeeApiService.DeleteEmployeeDataByIdAsync(empId, employeeDetailsDatabase);
             if (!isEmployeeHasBeenRemoved)
             {
@@ -489,7 +489,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound("Employee not found");
             }
 
-            GetEmployeeDTO employeeDetailsDatabase = await _employeeApiService.GetDetailedEmployeeDataAsync(employeeDatabase);
+            GetEmployeeDTO employeeDetailsDatabase = await _employeeApiService.GetEmployeeDetailsAsync(employeeDatabase);
             if (employeeDetailsDatabase.Certificates == null || employeeDetailsDatabase.Certificates.Count() == 0)
             {
                 return NotFound("Employee certificates not found");

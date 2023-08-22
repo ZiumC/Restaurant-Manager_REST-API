@@ -146,14 +146,14 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest($"Client id={clientId} is invalid");
             }
 
-            GetClientDataDTO? clientData = await _clientApiService.GetClientDataByIdAsync(clientId);
+            GetClientDataDTO? clientData = await _clientApiService.GetClientDetailsByIdAsync(clientId);
 
             if (clientData == null)
             {
                 return NotFound("Client not found");
             }
 
-            IEnumerable<GetReservationDTO>? reservations = await _clientApiService.GetAllReservationsDataByClientIdAsync(clientId);
+            IEnumerable<GetReservationDTO>? reservations = await _clientApiService.GetAllReservationsDetailsByClientIdAsync(clientId);
 
             if (reservations != null && reservations.Count() > 0)
             {
@@ -181,7 +181,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest($"Reservation id={reservationId} is invalid");
             }
 
-            GetClientDataDTO? clientData = await _clientApiService.GetClientDataByIdAsync(clientId);
+            GetClientDataDTO? clientData = await _clientApiService.GetClientDetailsByIdAsync(clientId);
 
             if (clientData == null)
             {
@@ -226,7 +226,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Number of reservation peoples is invalid");
             }
 
-            var clientData = await _clientApiService.GetClientDataByIdAsync(clientId);
+            var clientData = await _clientApiService.GetClientDetailsByIdAsync(clientId);
             if (clientData == null)
             {
                 return NotFound("Client not found");
