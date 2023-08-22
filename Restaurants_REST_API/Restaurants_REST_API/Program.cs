@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Restaurants_REST_API.DbContexts;
 using Restaurants_REST_API.Services.Database_Service;
 using Restaurants_REST_API.Services.DatabaseService.CustomersService;
+using Restaurants_REST_API.Services.DatabaseService.UsersService;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,7 @@ builder.Services.AddScoped<IEmployeeApiService, EmployeeApiService>();
 builder.Services.AddScoped<IRestaurantApiService, RestaurantApiService>();
 builder.Services.AddScoped<IComplaintApiService, ComplaintApiService>();
 builder.Services.AddScoped<IClientApiService, ClientApiService>();
+builder.Services.AddScoped<IUserApiService, UserApiService>();
 builder.Services.AddDbContext<MainDbContext>(opt => opt.UseSqlServer("name=ConnectionStrings:Default"));
 builder.Services.AddControllers();
 //Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
