@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Restaurants_REST_API.Models.Database;
+using Restaurants_REST_API.Models.DatabaseModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Restaurants_REST_API.DbContexts
@@ -292,6 +293,14 @@ namespace Restaurants_REST_API.DbContexts
                 d.HasData(new RestaurantDish { IdRestaurantDish = 7, IdDish = 6, IdRestaurant = 2 });
             });
 
+            modelBuilder.Entity<User>(u =>
+            {
+                u.HasKey(e => e.IdUser);
+                u.Property(e => e.Login).IsRequired().HasMaxLength(50);
+                u.Property(e => e.Email).IsRequired().HasMaxLength(50);
+                u.Property(e => e.Password).IsRequired().HasMaxLength(50);
+            });
+
         }
 
         public DbSet<Address> Address { get; set; }
@@ -306,5 +315,6 @@ namespace Restaurants_REST_API.DbContexts
         public DbSet<EmployeeRestaurant> EmployeeRestaurant { get; set; }
         public DbSet<Dish> Dish { get; set; }
         public DbSet<RestaurantDish> RestaurantDish { get; set; }
+        public DbSet<User> User { get; set; }
     }
 }
