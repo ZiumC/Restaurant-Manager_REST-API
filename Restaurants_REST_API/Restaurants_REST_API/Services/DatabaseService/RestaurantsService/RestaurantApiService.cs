@@ -91,20 +91,6 @@ namespace Restaurants_REST_API.Services.Database_Service
                                                                                         Message = c.ComplaintMessage
                                                                                     }).FirstOrDefault()
                                                         }).ToList(),
-
-                              RestaurantComplaints = (from c in _context.Complaint
-                                                      where c.IdRestaurant == rest.IdRestaurant
-
-                                                      select new GetComplaintDTO
-                                                      {
-                                                          IdComplaint = c.IdComplaint,
-                                                          ComplaintDate = c.ComplainDate,
-                                                          Status = c.ComplaintStatus,
-                                                          Message = c.ComplaintMessage
-                                                      }).ToList()
-
-
-
                           }).ToListAsync();
         }
 
@@ -206,8 +192,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                 Address = getRestaurantAddressQuery,
                 RestaurantWorkers = getRestaurantWorkersQuery,
                 RestaurantDishes = getRestaurantDishesQuery,
-                RestaurantReservations = getRestaurantReservationsQuery,
-                RestaurantComplaints = getRestaurantComplainsQuery
+                RestaurantReservations = getRestaurantReservationsQuery
             };
         }
 

@@ -12,6 +12,5 @@ namespace Restaurants_REST_API.DTOs.GetDTOs
         public List<Dish>? RestaurantDishes { get; set; }
         public List<GetRestaurantWorkersDTO>? RestaurantWorkers { get; set; }
         public List<GetReservationDTO>? RestaurantReservations { get; set; }
-        public List<GetComplaintDTO>? RestaurantComplaints { get; set; }
     }
 }
