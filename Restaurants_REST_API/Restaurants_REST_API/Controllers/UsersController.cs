@@ -15,12 +15,20 @@ namespace Restaurants_REST_API.Controllers
     {
         private readonly IUserApiService _userApiService;
         private readonly IConfiguration _config;
-        private readonly int _saltLength = 10;
+        private readonly int _saltLength;
 
         public UsersController(IUserApiService userApiService, IConfiguration config)
         {
             _userApiService = userApiService;
             _config = config;
+            try
+            {
+                _saltLength = int.Parse(_config["ApplicationSettings:Security:SaltLength"]);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         [HttpPost("register")]
@@ -76,7 +84,7 @@ namespace Restaurants_REST_API.Controllers
                 }
                 return Ok("Registration completed success");
             }
-            else 
+            else
             {
                 bool isClientRegistrationCompletedSuccess = await _userApiService.RegisterNewClientAsync(userToSave);
                 if (!isClientRegistrationCompletedSuccess)
