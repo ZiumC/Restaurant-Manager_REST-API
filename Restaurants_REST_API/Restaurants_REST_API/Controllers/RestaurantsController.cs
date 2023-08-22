@@ -86,18 +86,19 @@ namespace Restaurants_REST_API.Controllers
                 ReservationsCount = rd.RestaurantReservations?.Count(),
                 Complaints = new
                 {
-                    NewComplaintsCount = rd.RestaurantComplaints?
-                .Where(rc => rc.Status == _config["ApplicationSettings:ComplaintStatus:New"])
-                .Count(),
-                    PendingComplaintsCount = rd.RestaurantComplaints?
-                .Where(rc => rc.Status == _config["ApplicationSettings:ComplaintStatus:Pending"])
-                .Count(),
-                    AcceptedComplaintsCount = rd.RestaurantComplaints?
-                .Where(rc => rc.Status == _config["ApplicationSettings:ComplaintStatus:Accepted"])
-                .Count(),
-                    RejectedComplaintsCount = rd.RestaurantComplaints?
-                .Where(rc => rc.Status == _config["ApplicationSettings:ComplaintStatus:Rejected"])
-                .Count(),
+                    ComplaintsCount = rd.RestaurantReservations?.Where(rc => rc.ReservationComplaint != null).Count(),
+                    NewComplaintsCount = rd.RestaurantReservations?
+                                        .Where(rc => rc.ReservationComplaint?.Status == _config["ApplicationSettings:ComplaintStatus:New"])
+                                        .Count(),
+                    PendingComplaintsCount = rd.RestaurantReservations?
+                                        .Where(rc => rc.ReservationComplaint?.Status == _config["ApplicationSettings:ComplaintStatus:Pending"])
+                                        .Count(),
+                    AcceptedComplaintsCount = rd.RestaurantReservations?
+                                        .Where(rc => rc.ReservationComplaint?.Status == _config["ApplicationSettings:ComplaintStatus:Accepted"])
+                                        .Count(),
+                    RejectedComplaintsCount = rd.RestaurantReservations?
+                                        .Where(rc => rc.ReservationComplaint?.Status == _config["ApplicationSettings:ComplaintStatus:Rejected"])
+                                        .Count(),
                 },
                 Employees = new
                 {
