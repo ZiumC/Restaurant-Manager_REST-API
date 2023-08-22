@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Restaurants_REST_API.DTOs.PostDTO;
 using Restaurants_REST_API.Services.Database_Service;
 using Restaurants_REST_API.Services.DatabaseService.CustomersService;
 
@@ -20,5 +21,10 @@ namespace Restaurants_REST_API.Controllers
             _config = config;
         }
 
+        [HttpPost("register")]
+        public async Task<IActionResult> RegisterNewUser(PostUserDTO newUser) 
+        {
+            return Ok();
+        }
     }
 }
