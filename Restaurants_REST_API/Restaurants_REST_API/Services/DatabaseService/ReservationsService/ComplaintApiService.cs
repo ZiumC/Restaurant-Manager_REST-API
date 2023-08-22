@@ -44,7 +44,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                           }).ToListAsync();
         }
 
-        public async Task<bool> UpdateComplaintStatusByComplaintIdAsync(int complaintId, string status)
+        public async Task<bool> UpdateComplaintStatusByIdAsync(int complaintId, string status)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -69,7 +69,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
         }
 
-        public async Task<GetComplaintDTO?> GetComplaintByComplaintIdAsync(int complaintId)
+        public async Task<GetComplaintDTO?> GetComplaintByIdAsync(int complaintId)
         {
             return await _context.Complaint
                 .Where(c => c.IdComplaint == complaintId)

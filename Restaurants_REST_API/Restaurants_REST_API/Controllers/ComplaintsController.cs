@@ -115,7 +115,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Action for complaint is invalid");
             }
 
-            var complaint = await _complaintsApiService.GetComplaintByComplaintIdAsync(complaintId);
+            var complaint = await _complaintsApiService.GetComplaintByIdAsync(complaintId);
             if (complaint == null)
             {
                 return NotFound("Complaint not found");
@@ -183,7 +183,7 @@ namespace Restaurants_REST_API.Controllers
                 }
             }
 
-            bool isComplaintUpdated = await _complaintsApiService.UpdateComplaintStatusByComplaintIdAsync(complaint.IdComplaint, statusToUpdate);
+            bool isComplaintUpdated = await _complaintsApiService.UpdateComplaintStatusByIdAsync(complaint.IdComplaint, statusToUpdate);
             if (!isComplaintUpdated)
             {
                 return BadRequest("Unable to update complaint status");
