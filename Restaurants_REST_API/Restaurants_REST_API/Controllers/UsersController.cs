@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Restaurants_REST_API.DTOs.PostDTO;
-using Restaurants_REST_API.Models.Database;
 using Restaurants_REST_API.Models.DatabaseModel;
 using Restaurants_REST_API.Services.DatabaseService.UsersService;
 using System.Security.Cryptography;
@@ -62,6 +61,12 @@ namespace Restaurants_REST_API.Controllers
                 }
             }
 
+            var existingUser = await _userApiService.GetUserDataBy(newUser.Email);
+            if (existingUser != null)
+            {
+                return BadRequest("Email already exist");
+            }
+
             string salt = GetSalt(_saltLength);
             string hashedPassword = GetHashedPasswordWithSalt(newUser.Password, salt);
 
@@ -77,10 +82,10 @@ namespace Restaurants_REST_API.Controllers
 
             if (!string.IsNullOrEmpty(pesel))
             {
-                bool isEmployeeRegistrationCompletedSuccess = await _userApiService.RegisterNewEmployeeAsync(userToSave);
+                bool isEmployeeRegistrationCompletedSuccess = await _userApiService.RegisterNewEmployeeAsync(userToSave, pesel);
                 if (!isEmployeeRegistrationCompletedSuccess)
                 {
-                    return BadRequest("Something went wrong, unable to register a new user");
+                    return BadRequest("Something went wrong, unable to register an employee");
                 }
                 return Ok("Registration completed success");
             }
@@ -89,7 +94,7 @@ namespace Restaurants_REST_API.Controllers
                 bool isClientRegistrationCompletedSuccess = await _userApiService.RegisterNewClientAsync(userToSave);
                 if (!isClientRegistrationCompletedSuccess)
                 {
-                    return BadRequest("Something went wrong, unable to register a new user");
+                    return BadRequest("Something went wrong, unable to register an client");
                 }
                 return Ok("Registration completed success");
             }
