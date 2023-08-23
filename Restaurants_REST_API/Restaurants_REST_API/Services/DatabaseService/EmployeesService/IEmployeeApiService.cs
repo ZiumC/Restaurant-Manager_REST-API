@@ -13,6 +13,7 @@ namespace Restaurants_REST_API.Services.Database_Service
         public Task<IEnumerable<GetEmployeeDTO>?> GetAllSupervisorsAsync();
         public Task<Employee?> GetBasicSupervisorDataByIdAsync(int supervisorId);
         public Task<Employee?> GetBasicOwnerDataAsync();
+        public Task<Employee?> GetEmployeeDataByPeselAsync(string pesel);
         public Task<IEnumerable<GetEmployeeDTO>> GetEmployeeDetailsByRestaurantIdAsync(int restaurantId);
         public Task<bool> AddNewEmployeeAsync(PostEmployeeDTO newEmployee, bool certificatesExist);
         public Task<bool> AddNewEmployeeCertificatesAsync(int empId, IEnumerable<PostCertificateDTO> certificatesData);

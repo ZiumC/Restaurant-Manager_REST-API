@@ -44,22 +44,15 @@ namespace Restaurants_REST_API.Services.DatabaseService.UsersService
             }
         }
 
-        public async Task<bool> RegisterNewEmployeeAsync(User registerEmployee, string pesel)
+        public async Task<User?> GetUserDataByEmpId(int empId) 
+        {
+            return await _context.User.Where(u => u.IdEmployee == empId).FirstOrDefaultAsync();
+        }
+
+        public async Task<bool> RegisterNewEmployeeAsync(User registerEmployee)
         {
             try
             {
-                Employee? getEmployeeQuery = await _context.Employee
-                    .Where(e => e.PESEL == pesel)
-                    .FirstOrDefaultAsync();
-
-                if (getEmployeeQuery == null)
-                {
-                    return false;
-                }
-
-                registerEmployee.IdEmployee = getEmployeeQuery.IdEmployee;
-                registerEmployee.Employee = getEmployeeQuery;
-
                 _context.Add(registerEmployee);
                 await _context.SaveChangesAsync();
                 return true;

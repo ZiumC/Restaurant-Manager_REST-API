@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Restaurants_REST_API.DTOs.PostDTO;
+using Restaurants_REST_API.Models.Database;
 using Restaurants_REST_API.Models.DatabaseModel;
+using Restaurants_REST_API.Services.Database_Service;
 using Restaurants_REST_API.Services.DatabaseService.UsersService;
+using Restaurants_REST_API.Services.ValidatorService;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -13,11 +16,13 @@ namespace Restaurants_REST_API.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserApiService _userApiService;
+        private readonly IEmployeeApiService _employeeApiService;
         private readonly IConfiguration _config;
         private readonly int _saltLength;
 
-        public UsersController(IUserApiService userApiService, IConfiguration config)
+        public UsersController(IUserApiService userApiService, IEmployeeApiService employeeApiService, IConfiguration config)
         {
+            _employeeApiService = employeeApiService;
             _userApiService = userApiService;
             _config = config;
             try
@@ -51,20 +56,49 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Email is invalid");
             }
 
-            string? pesel = newUser.PESEL;
-            if (!string.IsNullOrEmpty(pesel))
-            {
-                string peselRegex = _config["ApplicationSettings:DataValidation:PeselRegex"];
-                if (pesel.Count() != 11 || !Regex.Match(pesel, peselRegex, RegexOptions.IgnoreCase).Success)
-                {
-                    return BadRequest("PESEL is invalid");
-                }
-            }
-
             var existingUser = await _userApiService.GetUserDataBy(newUser.Email);
             if (existingUser != null)
             {
                 return BadRequest("Email already exist");
+            }
+
+            if (newUser.RegisterMeAsEmployee)
+            {
+                string? pesel = newUser.PESEL;
+                if (!string.IsNullOrEmpty(pesel))
+                {
+                    string peselRegex = _config["ApplicationSettings:DataValidation:PeselRegex"];
+                    if (pesel.Count() != 11 || !Regex.Match(pesel, peselRegex, RegexOptions.IgnoreCase).Success)
+                    {
+                        return BadRequest("PESEL is invalid");
+                    }
+                }
+
+                if (newUser?.HiredDate == null)
+                {
+                    return BadRequest("Hired date is required");
+                }
+
+                var basicExistingEmpData = await _employeeApiService.GetEmployeeDataByPeselAsync(pesel);
+                if (basicExistingEmpData == null)
+                {
+                    return BadRequest("Given employee data are invalid");
+                }
+
+                if (newUser.HiredDate.Date != basicExistingEmpData.HiredDate.Date)
+                {
+                    return BadRequest("Given employee data are invalid");
+                }
+
+                var userByEmpId = await _userApiService.GetUserDataByEmpId(basicExistingEmpData.IdEmployee);
+                if (userByEmpId != null)
+                {
+                    /*
+                     * this bad request message is same as well as above bad request messages due to not
+                     * give an someone to brute force and guess if pesel is correct or not
+                     */
+                    return BadRequest("Given employee data are invalid");
+                }
             }
 
             string salt = GetSalt(_saltLength);
@@ -80,9 +114,9 @@ namespace Restaurants_REST_API.Controllers
                 DateBlockedTo = null
             };
 
-            if (!string.IsNullOrEmpty(pesel))
+            if (newUser.RegisterMeAsEmployee)
             {
-                bool isEmployeeRegistrationCompletedSuccess = await _userApiService.RegisterNewEmployeeAsync(userToSave, pesel);
+                bool isEmployeeRegistrationCompletedSuccess = await _userApiService.RegisterNewEmployeeAsync(userToSave);
                 if (!isEmployeeRegistrationCompletedSuccess)
                 {
                     return BadRequest("Something went wrong, unable to register an employee");
