@@ -13,9 +13,35 @@ namespace Restaurants_REST_API.Services.DatabaseService.UsersService
             _context = context;
         }
 
-        public Task<bool> RegisterNewClientAsync(User newClient)
+        public async Task<bool> RegisterNewClientAsync(User registerClient)
         {
-            throw new NotImplementedException();
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var addQuery = _context.Client.Add(new Client
+                    {
+                        Name = registerClient.Login,
+                        IsBusinessman = "N"
+                    });
+                    await _context.SaveChangesAsync();
+
+                    registerClient.IdClient = addQuery.Entity.IdClient;
+                    registerClient.Client = addQuery.Entity;
+
+                    _context.User.Add(registerClient);
+                    await _context.SaveChangesAsync();
+
+                    await transaction.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    await transaction.RollbackAsync();
+                    return false;
+                }
+            }
         }
 
         public async Task<bool> RegisterNewEmployeeAsync(User registerEmployee, string pesel)
@@ -46,7 +72,7 @@ namespace Restaurants_REST_API.Services.DatabaseService.UsersService
         }
         public async Task<User?> GetUserDataBy(string email)
         {
-            return await _context.User.Where(u => u.Email == email).FirstOrDefaultAsync();
+            return await _context.User.Where(u => u.Email.ToLower() == email.ToLower()).FirstOrDefaultAsync();
         }
     }
 }
