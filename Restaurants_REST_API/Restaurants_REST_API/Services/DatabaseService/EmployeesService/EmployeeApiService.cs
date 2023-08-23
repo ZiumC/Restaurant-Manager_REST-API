@@ -253,6 +253,11 @@ namespace Restaurants_REST_API.Services.Database_Service
             return ownerQuery;
         }
 
+        public async Task<Employee?> GetEmployeeDataByPeselAsync(string pesel)
+        {
+            return await _context.Employee.Where(e => e.PESEL == pesel).FirstOrDefaultAsync();
+        }
+
         public async Task<IEnumerable<GetEmployeeDTO>> GetEmployeeDetailsByRestaurantIdAsync(int restaurantId)
         {
             return await (from eir in _context.EmployeeRestaurant

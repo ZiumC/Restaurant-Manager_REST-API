@@ -16,6 +16,8 @@ namespace Restaurants_REST_API.DTOs.PostDTO
         [MaxLength(30)]
         [MinLength(3)]
         public string Password { get; set; }
+        public bool RegisterMeAsEmployee { get; set; }
         public string PESEL { get; set; }
+        public DateTime HiredDate { get; set; }
     }
 }
