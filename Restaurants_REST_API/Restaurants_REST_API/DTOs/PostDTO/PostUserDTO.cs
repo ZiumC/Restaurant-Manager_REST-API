@@ -13,7 +13,7 @@ namespace Restaurants_REST_API.DTOs.PostDTO
         [MinLength(3)]
         public string Email { get; set; }
         [Required]
-        [MaxLength(50)]
+        [MaxLength(30)]
         [MinLength(3)]
         public string Password { get; set; }
         public string PESEL { get; set; }

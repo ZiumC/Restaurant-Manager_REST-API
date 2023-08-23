@@ -5,6 +5,7 @@ namespace Restaurants_REST_API.Services.DatabaseService.UsersService
     public interface IUserApiService
     {
         public Task<bool> RegisterNewClientAsync(User newClient);
-        public Task<bool> RegisterNewEmployeeAsync(User newEmployee);
+        public Task<bool> RegisterNewEmployeeAsync(User newEmployee, string pesel);
+        public Task<User?> GetUserDataBy(string email);
     }
 }
