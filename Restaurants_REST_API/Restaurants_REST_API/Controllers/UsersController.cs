@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Restaurants_REST_API.DTOs.PostDTO;
-using Restaurants_REST_API.Models.Database;
 using Restaurants_REST_API.Models.DatabaseModel;
 using Restaurants_REST_API.Services.Database_Service;
 using Restaurants_REST_API.Services.DatabaseService.UsersService;
-using Restaurants_REST_API.Services.ValidatorService;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -132,6 +130,13 @@ namespace Restaurants_REST_API.Controllers
                 }
                 return Ok("Registration completed success");
             }
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(PostLoginRequestDTO loginRequest) 
+        {
+
+            return Ok();   
         }
 
 
