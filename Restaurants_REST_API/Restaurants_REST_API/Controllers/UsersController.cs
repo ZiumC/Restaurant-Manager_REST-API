@@ -17,6 +17,7 @@ namespace Restaurants_REST_API.Controllers
         private readonly IEmployeeApiService _employeeApiService;
         private readonly IConfiguration _config;
         private readonly int _saltLength;
+        private readonly int _maxLoginAttempts;
 
         public UsersController(IUserApiService userApiService, IEmployeeApiService employeeApiService, IConfiguration config)
         {
@@ -26,6 +27,7 @@ namespace Restaurants_REST_API.Controllers
             try
             {
                 _saltLength = int.Parse(_config["ApplicationSettings:Security:SaltLength"]);
+                _maxLoginAttempts = int.Parse(_config["ApplicationSettings:MaxLoginAttempts"]);
             }
             catch (Exception ex)
             {
@@ -54,7 +56,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Email is invalid");
             }
 
-            var existingUser = await _userApiService.GetUserDataBy(newUser.Email);
+            var existingUser = await _userApiService.GetUserDataByEmail(newUser.Email);
             if (existingUser != null)
             {
                 return BadRequest("Email already exist");
@@ -135,6 +137,26 @@ namespace Restaurants_REST_API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(PostLoginRequestDTO loginRequest) 
         {
+            if (!ModelState.IsValid) 
+            {
+                return BadRequest("Invalid login request");
+            }
+
+            var user = await _userApiService.GetUserDataByLoginOrEmail(loginRequest.LoginOrEmail);
+            if (user == null)
+            {
+                /*
+                 * this response message is specially returned even password 
+                 * isn't checking here because to not allow brut force methods 
+                 * to check if login or email exist in db 
+                 */
+                return BadRequest("Login or password are incorrect");
+            }
+
+            if (user.LoginAttemps >= _maxLoginAttempts)
+            {
+                return BadRequest($"You can't login due to {user.DateBlockedTo}");
+            }
 
             return Ok();   
         }
