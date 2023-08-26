@@ -18,6 +18,7 @@ namespace Restaurants_REST_API.Controllers
         private readonly IConfiguration _config;
         private readonly int _saltLength;
         private readonly int _maxLoginAttempts;
+        private readonly int _amountBlockedDays;
 
         public UsersController(IUserApiService userApiService, IEmployeeApiService employeeApiService, IConfiguration config)
         {
@@ -28,6 +29,7 @@ namespace Restaurants_REST_API.Controllers
             {
                 _saltLength = int.Parse(_config["ApplicationSettings:Security:SaltLength"]);
                 _maxLoginAttempts = int.Parse(_config["ApplicationSettings:MaxLoginAttempts"]);
+                _amountBlockedDays = int.Parse(_config["ApplicationSettings:AmountBlockedDays"]);
             }
             catch (Exception ex)
             {
@@ -135,9 +137,9 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(PostLoginRequestDTO loginRequest) 
+        public async Task<IActionResult> Login(PostLoginRequestDTO loginRequest)
         {
-            if (!ModelState.IsValid) 
+            if (!ModelState.IsValid)
             {
                 return BadRequest("Invalid login request");
             }
@@ -150,15 +152,46 @@ namespace Restaurants_REST_API.Controllers
                  * isn't checking here because to not allow brut force methods 
                  * to check if login or email exist in db 
                  */
-                return BadRequest("Login or password are incorrect");
+                return Unauthorized("Login or password are incorrect");
             }
 
-            if (user.LoginAttemps >= _maxLoginAttempts)
+            var dateBlockedTo = user.DateBlockedTo;
+            if (dateBlockedTo != null && dateBlockedTo > DateTime.Now)
             {
-                return BadRequest($"You can't login due to {user.DateBlockedTo}");
+                return Unauthorized($"You can't login due to {dateBlockedTo}");
+            }
+            else if (dateBlockedTo != null && dateBlockedTo < DateTime.Now && user.LoginAttemps >= _maxLoginAttempts) 
+            {
+                user.LoginAttemps = 0;
+                await _userApiService.UpdateUserData(user);
             }
 
-            return Ok();   
+            string hashedPassedPassword = GetHashedPasswordWithSalt(loginRequest.Password, user.PasswordSalt);
+            if (hashedPassedPassword.Equals(user.Password))
+            {
+                user.LoginAttemps = 0;
+                user.DateBlockedTo = null;
+
+                bool isUpdated = await _userApiService.UpdateUserData(user);
+                if (!isUpdated)
+                {
+                    return StatusCode(500);
+                }
+
+                //need to implement jwt
+                return Ok();
+            }
+            else
+            {
+                if ((user.LoginAttemps + 1) >= _maxLoginAttempts)
+                {
+                    user.DateBlockedTo = DateTime.Now.AddDays(_amountBlockedDays);
+                }
+
+                user.LoginAttemps += 1;
+                await _userApiService.UpdateUserData(user);
+                return Unauthorized($"Login or password are incorrect, you have {_maxLoginAttempts - user.LoginAttemps} attempts left");
+            }
         }
 
 

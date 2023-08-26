@@ -76,5 +76,31 @@ namespace Restaurants_REST_API.Services.DatabaseService.UsersService
                 .Where(u => u.Email == loginOrEmil || u.Login == loginOrEmil)
                 .FirstOrDefaultAsync();
         }
+
+        public async Task<bool> UpdateUserData(User userData) 
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var updateUserData = await (_context.User
+                        .Where(u => u.IdUser == userData.IdUser)
+                        ).FirstAsync();
+
+                    updateUserData.LoginAttemps = userData.LoginAttemps;
+                    updateUserData.DateBlockedTo = userData.DateBlockedTo; 
+
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    await transaction.RollbackAsync();
+                    return false;
+                }
+                await transaction.CommitAsync();
+                return true;
+            }
+        }
     }
 }
