@@ -156,14 +156,17 @@ namespace Restaurants_REST_API.Controllers
             }
 
             var dateBlockedTo = user.DateBlockedTo;
-            if (dateBlockedTo != null && dateBlockedTo > DateTime.Now)
+            if (dateBlockedTo != null)
             {
-                return Unauthorized($"You can't login due to {dateBlockedTo}");
-            }
-            else if (dateBlockedTo != null && dateBlockedTo < DateTime.Now && user.LoginAttemps >= _maxLoginAttempts) 
-            {
-                user.LoginAttemps = 0;
-                await _userApiService.UpdateUserData(user);
+                if (dateBlockedTo > DateTime.Now)
+                {
+                    return Unauthorized($"You can't login due to {dateBlockedTo}");
+                }
+                else if (dateBlockedTo < DateTime.Now && user.LoginAttemps >= _maxLoginAttempts)
+                {
+                    user.LoginAttemps = 0;
+                    await _userApiService.UpdateUserData(user);
+                }
             }
 
             string hashedPassedPassword = GetHashedPasswordWithSalt(loginRequest.Password, user.PasswordSalt);
