@@ -184,8 +184,14 @@ namespace Restaurants_REST_API.Controllers
                     return StatusCode(500);
                 }
 
-                //need to implement jwt
-                return Ok();
+                var refreshToken = _jwtService.GenerateRefreshToken();
+                var accessToken = _jwtService.GenerateAccessTokenForUserLogin(user.Login,"User");
+                
+                return Ok(new 
+                {
+                    accessToken = accessToken,
+                    refreshToken = refreshToken
+                });
             }
             else
             {
