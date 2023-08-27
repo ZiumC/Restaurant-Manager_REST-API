@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Net;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Restaurants_REST_API.Models.Database
 {
@@ -19,9 +17,9 @@ namespace Restaurants_REST_API.Models.Database
         public virtual Client Clients { get; set; }
 
 
-        public int IdRestauration { get; set; }
+        public int IdRestaurant { get; set; }
 
-        [ForeignKey(nameof(IdRestauration))]
+        [ForeignKey(nameof(IdRestaurant))]
         public virtual Restaurant Restaurant { get; set; }
 
 

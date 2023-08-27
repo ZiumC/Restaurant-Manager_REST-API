@@ -71,7 +71,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                                                    }).ToList(),
 
                               RestaurantReservations = (from r in _context.Reservation
-                                                        where r.IdRestauration == rest.IdRestaurant
+                                                        where r.IdRestaurant == rest.IdRestaurant
 
                                                         select new GetReservationDTO
                                                         {
@@ -160,7 +160,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 
             var getRestaurantReservationsQuery = await
                 (from r in _context.Reservation
-                 where r.IdRestauration == restaurantId
+                 where r.IdRestaurant == restaurantId
 
                  select new GetReservationDTO
                  {

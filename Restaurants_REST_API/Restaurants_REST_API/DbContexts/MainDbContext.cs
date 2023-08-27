@@ -82,7 +82,7 @@ namespace Restaurants_REST_API.DbContexts
                     ReservationStatus = "New",
                     ReservationGrade = null,
                     IdClient = 1,
-                    IdRestauration = 1
+                    IdRestaurant = 1
                 });
                 r.HasData(new Reservation
                 {
@@ -92,7 +92,7 @@ namespace Restaurants_REST_API.DbContexts
                     ReservationStatus = "Canceled",
                     ReservationGrade = null,
                     IdClient = 3,
-                    IdRestauration = 1
+                    IdRestaurant = 1
                 });
                 r.HasData(new Reservation
                 {
@@ -102,7 +102,7 @@ namespace Restaurants_REST_API.DbContexts
                     ReservationStatus = "Finished",
                     ReservationGrade = 4,
                     IdClient = 2,
-                    IdRestauration = 1
+                    IdRestaurant = 1
                 });
             });
 
@@ -300,6 +300,8 @@ namespace Restaurants_REST_API.DbContexts
                 u.Property(e => e.Email).IsRequired().HasMaxLength(50);
                 u.Property(e => e.Password).IsRequired().HasMaxLength(75);
                 u.Property(e => e.PasswordSalt).IsRequired().HasMaxLength(10);
+                //1k is here for further expansions
+                u.Property(e => e.RefreshToken).HasMaxLength(1000);
             });
 
         }

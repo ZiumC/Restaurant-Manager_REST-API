@@ -3,6 +3,7 @@ using Restaurants_REST_API.DTOs.PostDTO;
 using Restaurants_REST_API.Models.DatabaseModel;
 using Restaurants_REST_API.Services.Database_Service;
 using Restaurants_REST_API.Services.DatabaseService.UsersService;
+using Restaurants_REST_API.Services.JwtService;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -16,15 +17,17 @@ namespace Restaurants_REST_API.Controllers
         private readonly IUserApiService _userApiService;
         private readonly IEmployeeApiService _employeeApiService;
         private readonly IConfiguration _config;
+        private readonly IJwtService _jwtService;
         private readonly int _saltLength;
         private readonly int _maxLoginAttempts;
         private readonly int _amountBlockedDays;
 
-        public UsersController(IUserApiService userApiService, IEmployeeApiService employeeApiService, IConfiguration config)
+        public UsersController(IUserApiService userApiService, IEmployeeApiService employeeApiService, IConfiguration config, IJwtService jwtService)
         {
             _employeeApiService = employeeApiService;
             _userApiService = userApiService;
             _config = config;
+            _jwtService = jwtService;
             try
             {
                 _saltLength = int.Parse(_config["ApplicationSettings:Security:SaltLength"]);
@@ -112,7 +115,7 @@ namespace Restaurants_REST_API.Controllers
                 Email = newUser.Email,
                 Password = hashedPassword,
                 PasswordSalt = salt,
-                LoginAttemps = 0,
+                LoginAttempts = 0,
                 DateBlockedTo = null
             };
 
@@ -162,9 +165,9 @@ namespace Restaurants_REST_API.Controllers
                 {
                     return Unauthorized($"You can't login due to {dateBlockedTo}");
                 }
-                else if (dateBlockedTo < DateTime.Now && user.LoginAttemps >= _maxLoginAttempts)
+                else if (dateBlockedTo < DateTime.Now && user.LoginAttempts >= _maxLoginAttempts)
                 {
-                    user.LoginAttemps = 0;
+                    user.LoginAttempts = 0;
                     await _userApiService.UpdateUserData(user);
                 }
             }
@@ -172,7 +175,7 @@ namespace Restaurants_REST_API.Controllers
             string hashedPassedPassword = GetHashedPasswordWithSalt(loginRequest.Password, user.PasswordSalt);
             if (hashedPassedPassword.Equals(user.Password))
             {
-                user.LoginAttemps = 0;
+                user.LoginAttempts = 0;
                 user.DateBlockedTo = null;
 
                 bool isUpdated = await _userApiService.UpdateUserData(user);
@@ -186,14 +189,14 @@ namespace Restaurants_REST_API.Controllers
             }
             else
             {
-                if ((user.LoginAttemps + 1) >= _maxLoginAttempts)
+                if ((user.LoginAttempts + 1) >= _maxLoginAttempts)
                 {
                     user.DateBlockedTo = DateTime.Now.AddDays(_amountBlockedDays);
                 }
 
-                user.LoginAttemps += 1;
+                user.LoginAttempts += 1;
                 await _userApiService.UpdateUserData(user);
-                return Unauthorized($"Login or password are incorrect, you have {_maxLoginAttempts - user.LoginAttemps} attempts left");
+                return Unauthorized($"Login or password are incorrect, you have {_maxLoginAttempts - user.LoginAttempts} attempts left");
             }
         }
 
