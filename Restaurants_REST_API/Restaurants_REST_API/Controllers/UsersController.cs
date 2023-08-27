@@ -178,23 +178,17 @@ namespace Restaurants_REST_API.Controllers
                 user.LoginAttempts = 0;
                 user.DateBlockedTo = null;
 
-                bool isAttemptsAreUpdated = await _userApiService.UpdateUserData(user);
-                if (!isAttemptsAreUpdated)
-                {
-                    return StatusCode(500);
-                }
-
                 var refreshToken = _jwtService.GenerateRefreshToken();
-                var accessToken = _jwtService.GenerateAccessTokenForUserLogin(user.Login,"User");
+                var accessToken = _jwtService.GenerateAccessTokenForUserLogin(user.Login, "User");
 
                 user.RefreshToken = refreshToken;
-                bool isRefreshTokenAdded = await _userApiService.UpdateUserData(user);
-                if (!isRefreshTokenAdded)
+                bool isUpdated = await _userApiService.UpdateUserData(user);
+                if (!isUpdated)
                 {
                     return StatusCode(500, "Server side error, unable to give you an access token");
                 }
 
-                return Ok(new 
+                return Ok(new
                 {
                     accessToken = accessToken,
                     refreshToken = refreshToken
@@ -202,13 +196,17 @@ namespace Restaurants_REST_API.Controllers
             }
             else
             {
-                if ((user.LoginAttempts + 1) >= _maxLoginAttempts)
-                {
-                    user.DateBlockedTo = DateTime.Now.AddDays(_amountBlockedDays);
-                }
-
                 user.LoginAttempts += 1;
                 await _userApiService.UpdateUserData(user);
+
+                if (user.LoginAttempts >= _maxLoginAttempts)
+                {
+                    user.DateBlockedTo = DateTime.Now.AddDays(_amountBlockedDays);
+                    user.RefreshToken = null;
+                    await _userApiService.UpdateUserData(user);
+                    return Unauthorized($"Login or password are incorrect, you have been blocked to {user.DateBlockedTo}");
+                }
+
                 return Unauthorized($"Login or password are incorrect, you have {_maxLoginAttempts - user.LoginAttempts} attempts left");
             }
         }
