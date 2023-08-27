@@ -87,7 +87,7 @@ namespace Restaurants_REST_API.Services.DatabaseService.UsersService
                         .Where(u => u.IdUser == userData.IdUser)
                         ).FirstAsync();
 
-                    updateUserData.LoginAttemps = userData.LoginAttemps;
+                    updateUserData.LoginAttempts = userData.LoginAttempts;
                     updateUserData.DateBlockedTo = userData.DateBlockedTo; 
 
                     await _context.SaveChangesAsync();

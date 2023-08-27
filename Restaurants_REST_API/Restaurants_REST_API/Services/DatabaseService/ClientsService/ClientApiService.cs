@@ -93,7 +93,7 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
                         IdClient = clientId,
                         ReservationGrade = null,
                         ReservationStatus = _configuration["ApplicationSettings:ReservationStatus:New"],
-                        IdRestauration = newReservation.IdRestaurant
+                        IdRestaurant = newReservation.IdRestaurant
                     }
                 );
 
@@ -149,7 +149,7 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
                 {
                     var restaurantId = await (_context.Reservation
                         .Where(r => r.IdReservation == reservationData.IdReservation && r.IdClient == clientId))
-                        .Select(r => new { IdRestaurant = r.IdRestauration })
+                        .Select(r => new { IdRestaurant = r.IdRestaurant })
                         .FirstAsync();
 
                     var newComplaint = _context.Add
