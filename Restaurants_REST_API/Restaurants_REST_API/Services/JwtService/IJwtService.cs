@@ -3,6 +3,6 @@
     public interface IJwtService
     {
         public string GenerateRefreshToken();
-        public string GenerateAccessTokenForUserLogin(string userLogin);
+        public string GenerateAccessTokenForUserLogin(string userLogin, string userRole);
     }
 }

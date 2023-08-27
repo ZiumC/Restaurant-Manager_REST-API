@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.DTOs.PostDTO;
 using Restaurants_REST_API.Services.Database_Service;
@@ -37,6 +38,7 @@ namespace Restaurants_REST_API.Controllers
          * here because this is visible for everyone.
          */
         [HttpGet("restaurants")]
+        [Authorize]
         public async Task<IActionResult> GetRestaurantsData()
         {
             var allRestaurantsDetails = await _restaurantApiService.GetAllRestaurantsAsync();
