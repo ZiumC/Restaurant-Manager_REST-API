@@ -14,6 +14,7 @@ namespace Restaurants_REST_API.Services.JwtService
         private readonly int _accessTokenValidityInDays;
         private readonly string _secretSignature;
         private readonly string _issuer;
+        private readonly string _audience;
 
         public JwtService(IConfiguration config)
         {
@@ -30,6 +31,7 @@ namespace Restaurants_REST_API.Services.JwtService
             }
             _secretSignature = _config["ApplicationSettings:JwtSettings:SecretSignatureKey"];
             _issuer = _config["ApplicationSettings:JwtSettings:Issuer"];
+            _audience = _config["ApplicationSettings:JwtSettings:Audience"];
         }
 
         public string GenerateRefreshToken()
@@ -59,7 +61,7 @@ namespace Restaurants_REST_API.Services.JwtService
             JwtSecurityToken token = new JwtSecurityToken
                 (
                     _issuer,
-                    _issuer,
+                    _audience,
                     userClaims,
                     expires: DateTime.UtcNow.AddDays(_accessTokenValidityInDays),
                     signingCredentials: serverCreditionals
