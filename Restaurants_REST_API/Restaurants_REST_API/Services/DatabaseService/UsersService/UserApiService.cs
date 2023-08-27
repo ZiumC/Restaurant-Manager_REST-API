@@ -107,5 +107,12 @@ namespace Restaurants_REST_API.Services.DatabaseService.UsersService
                 return true;
             }
         }
+
+        public async Task<User?> GetUserDataByRefreshToken(string refreshToken)
+        {
+            return await _context.User
+                .Where(u => u.RefreshToken == refreshToken
+                ).FirstOrDefaultAsync();
+        }
     }
 }
