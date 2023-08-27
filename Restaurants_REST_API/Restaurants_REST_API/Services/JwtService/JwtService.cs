@@ -1,4 +1,5 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using Restaurants_REST_API.DTOs.PostDTO;
 using Restaurants_REST_API.Models.DatabaseModel;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -70,5 +71,31 @@ namespace Restaurants_REST_API.Services.JwtService
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
+        public bool ValidateJwt(PostJwtDTO jwt)
+        {
+            SecurityToken validatedToken;
+
+            var parameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = false,
+                ClockSkew = TimeSpan.FromMinutes(1),
+                ValidIssuer = _issuer,
+                ValidAudience = _audience,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretSignature))
+            };
+
+            try
+            {
+                var claim = new JwtSecurityTokenHandler().ValidateToken(jwt.AccessToken, parameters, out validatedToken);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+            return true;
+        }
     }
 }

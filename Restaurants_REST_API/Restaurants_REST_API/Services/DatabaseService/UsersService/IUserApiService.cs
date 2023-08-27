@@ -9,6 +9,7 @@ namespace Restaurants_REST_API.Services.DatabaseService.UsersService
         public Task<User?> GetUserDataByEmpId(int empId);
         public Task<User?> GetUserDataByEmail(string email);
         public Task<User?> GetUserDataByLoginOrEmail(string loginOrEmil);
+        public Task<User?> GetUserDataByRefreshToken(string refreshToken);
         public Task<bool> UpdateUserData(User userData);
     }
 }

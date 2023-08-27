@@ -188,11 +188,7 @@ namespace Restaurants_REST_API.Controllers
                     return StatusCode(500, "Server side error, unable to give you an access token");
                 }
 
-                return Ok(new
-                {
-                    accessToken = accessToken,
-                    refreshToken = refreshToken
-                });
+                return Ok(new { accessToken = accessToken, refreshToken = refreshToken });
             }
             else
             {
@@ -209,6 +205,56 @@ namespace Restaurants_REST_API.Controllers
 
                 return Unauthorized($"Login or password are incorrect, you have {_maxLoginAttempts - user.LoginAttempts} attempts left");
             }
+        }
+
+        [HttpPost("refresh")]
+        public async Task<IActionResult> RefreshToken(PostJwtDTO jwt) 
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Invalid refresh request");
+            }
+
+            bool areTokensValid = _jwtService.ValidateJwt(jwt);
+            if (!areTokensValid)
+            {
+                return Unauthorized("Tokens aren't valid to this server");
+            }
+
+            var userByRefreshToken = await _userApiService.GetUserDataByRefreshToken(jwt.RefreshToken);
+            if (userByRefreshToken == null || string.IsNullOrEmpty(userByRefreshToken.RefreshToken))
+            {
+                /*
+                 * this response message is specially returned to not 
+                 * allow brute force methods to check if refresh token 
+                 * exist in db
+                 */
+                return Unauthorized("Refresh token is invalid");
+            }
+
+            var dateBlockedTo = userByRefreshToken.DateBlockedTo;
+            if (dateBlockedTo != null)
+            {
+                if (dateBlockedTo > DateTime.Now)
+                {
+                    return Unauthorized($"You can't login due to {dateBlockedTo}");
+                }
+            }
+
+            string refreshToken = _jwtService.GenerateRefreshToken();
+            string accessToken = _jwtService.GenerateAccessTokenForUserLogin(userByRefreshToken.Login, "User");
+
+            userByRefreshToken.RefreshToken = refreshToken;
+            userByRefreshToken.LoginAttempts = 0;
+            userByRefreshToken.DateBlockedTo = null;
+
+            bool isUpdated = await _userApiService.UpdateUserData(userByRefreshToken);
+            if (!isUpdated)
+            {
+                return StatusCode(500, "Server side error, unable to give you an access token");
+            }
+
+            return Ok(new { accessToken = accessToken, refreshToken = refreshToken });
         }
 
 
