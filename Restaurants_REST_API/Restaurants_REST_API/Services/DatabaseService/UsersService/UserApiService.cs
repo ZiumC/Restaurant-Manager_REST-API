@@ -44,7 +44,7 @@ namespace Restaurants_REST_API.Services.DatabaseService.UsersService
             }
         }
 
-        public async Task<User?> GetUserDataByEmpId(int empId) 
+        public async Task<User?> GetUserDataByEmpId(int empId)
         {
             return await _context.User.Where(u => u.IdEmployee == empId).FirstOrDefaultAsync();
         }
@@ -77,7 +77,7 @@ namespace Restaurants_REST_API.Services.DatabaseService.UsersService
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<bool> UpdateUserData(User userData) 
+        public async Task<bool> UpdateUserData(User userData)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -88,7 +88,12 @@ namespace Restaurants_REST_API.Services.DatabaseService.UsersService
                         ).FirstAsync();
 
                     updateUserData.LoginAttempts = userData.LoginAttempts;
-                    updateUserData.DateBlockedTo = userData.DateBlockedTo; 
+                    updateUserData.DateBlockedTo = userData.DateBlockedTo;
+
+                    if (!string.IsNullOrEmpty(userData.RefreshToken))
+                    {
+                        updateUserData.RefreshToken = userData.RefreshToken;
+                    }
 
                     await _context.SaveChangesAsync();
                 }

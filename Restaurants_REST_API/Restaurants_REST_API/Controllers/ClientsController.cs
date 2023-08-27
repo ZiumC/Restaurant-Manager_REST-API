@@ -38,7 +38,6 @@ namespace Restaurants_REST_API.Controllers
          * here because this is visible for everyone.
          */
         [HttpGet("restaurants")]
-        [Authorize]
         public async Task<IActionResult> GetRestaurantsData()
         {
             var allRestaurantsDetails = await _restaurantApiService.GetAllRestaurantsAsync();
