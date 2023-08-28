@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Restaurants_REST_API.DTOs.PostDTO;
+using Restaurants_REST_API.Models.Database;
 using Restaurants_REST_API.Models.DatabaseModel;
 using Restaurants_REST_API.Services.Database_Service;
 using Restaurants_REST_API.Services.DatabaseService.UsersService;
 using Restaurants_REST_API.Services.JwtService;
+using Restaurants_REST_API.Services.MapperService;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -21,6 +23,9 @@ namespace Restaurants_REST_API.Controllers
         private readonly int _saltLength;
         private readonly int _maxLoginAttempts;
         private readonly int _amountBlockedDays;
+        private readonly string _loginRegex;
+        private readonly string _emailRegex;
+        private readonly string _peselRegex;
 
         public UsersController(IUserApiService userApiService, IEmployeeApiService employeeApiService, IConfiguration config, IJwtService jwtService)
         {
@@ -28,6 +33,11 @@ namespace Restaurants_REST_API.Controllers
             _userApiService = userApiService;
             _config = config;
             _jwtService = jwtService;
+
+            _loginRegex = _config["ApplicationSettings:DataValidation:LoginRegex"];
+            _emailRegex = _config["ApplicationSettings:DataValidation:EmailRegex"];
+            _peselRegex = _config["ApplicationSettings:DataValidation:PeselRegex"];
+
             try
             {
                 _saltLength = int.Parse(_config["ApplicationSettings:Security:SaltLength"]);
@@ -48,32 +58,29 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Data can't be null");
             }
 
-            string loginRegex = _config["ApplicationSettings:DataValidation:LoginRegex"];
-            string emailRegex = _config["ApplicationSettings:DataValidation:EmailRegex"];
-
-            if (!Regex.Match(newUser.Login, loginRegex, RegexOptions.IgnoreCase).Success)
+            if (!Regex.Match(newUser.Login, _loginRegex, RegexOptions.IgnoreCase).Success)
             {
                 return BadRequest("Login is invalid");
             }
 
-            if (!Regex.Match(newUser.Email, emailRegex, RegexOptions.IgnoreCase).Success)
+            if (!Regex.Match(newUser.Email, _emailRegex, RegexOptions.IgnoreCase).Success)
             {
                 return BadRequest("Email is invalid");
             }
 
-            var existingUser = await _userApiService.GetUserDataByEmail(newUser.Email);
+            User? existingUser = await _userApiService.GetUserDataByEmail(newUser.Email);
             if (existingUser != null)
             {
                 return BadRequest("Email already exist");
             }
 
+            Employee? emp = null;
             if (newUser.RegisterMeAsEmployee)
             {
                 string? pesel = newUser.PESEL;
                 if (!string.IsNullOrEmpty(pesel))
                 {
-                    string peselRegex = _config["ApplicationSettings:DataValidation:PeselRegex"];
-                    if (pesel.Count() != 11 || !Regex.Match(pesel, peselRegex, RegexOptions.IgnoreCase).Success)
+                    if (pesel.Count() != 11 || !Regex.Match(pesel, _peselRegex, RegexOptions.IgnoreCase).Success)
                     {
                         return BadRequest("PESEL is invalid");
                     }
@@ -84,7 +91,7 @@ namespace Restaurants_REST_API.Controllers
                     return BadRequest("Hired date is required");
                 }
 
-                var basicExistingEmpData = await _employeeApiService.GetEmployeeDataByPeselAsync(pesel);
+                Employee? basicExistingEmpData = await _employeeApiService.GetEmployeeDataByPeselAsync(pesel);
                 if (basicExistingEmpData == null)
                 {
                     return BadRequest("Given employee data are invalid");
@@ -95,7 +102,8 @@ namespace Restaurants_REST_API.Controllers
                     return BadRequest("Given employee data are invalid");
                 }
 
-                var userByEmpId = await _userApiService.GetUserDataByEmpId(basicExistingEmpData.IdEmployee);
+                //checking if employee is already registered
+                User? userByEmpId = await _userApiService.GetUserDataByEmpId(basicExistingEmpData.IdEmployee);
                 if (userByEmpId != null)
                 {
                     /*
@@ -104,11 +112,11 @@ namespace Restaurants_REST_API.Controllers
                      */
                     return BadRequest("Given employee data are invalid");
                 }
+                emp = basicExistingEmpData;
             }
 
             string salt = GetSalt(_saltLength);
             string hashedPassword = GetHashedPasswordWithSalt(newUser.Password, salt);
-
             User userToSave = new User
             {
                 Login = newUser.Login,
@@ -121,15 +129,22 @@ namespace Restaurants_REST_API.Controllers
 
             if (newUser.RegisterMeAsEmployee)
             {
+                userToSave.IdEmployee = emp?.IdEmployee;
+                userToSave.UserRole = new MapUserRoleService(_config)
+                    .GetUserRoleBasesOnEmpployeeTypesId(emp?.EmployeeInRestaurant.Select(eir => eir.IdType));
+
                 bool isEmployeeRegistrationCompletedSuccess = await _userApiService.RegisterNewEmployeeAsync(userToSave);
                 if (!isEmployeeRegistrationCompletedSuccess)
                 {
-                    return BadRequest("Something went wrong, unable to register an employee");
+                    return BadRequest("Something went wrong, unable to register as employee");
                 }
                 return Ok("Registration completed success");
             }
             else
             {
+                userToSave.UserRole = new MapUserRoleService(_config)
+                    .GetUserRoleBasesOnEmpployeeTypesId(emp?.EmployeeInRestaurant.Select(eir => eir.IdType));
+
                 bool isClientRegistrationCompletedSuccess = await _userApiService.RegisterNewClientAsync(userToSave);
                 if (!isClientRegistrationCompletedSuccess)
                 {
@@ -208,7 +223,7 @@ namespace Restaurants_REST_API.Controllers
         }
 
         [HttpPost("refresh")]
-        public async Task<IActionResult> RefreshToken(PostJwtDTO jwt) 
+        public async Task<IActionResult> RefreshToken(PostJwtDTO jwt)
         {
             if (!ModelState.IsValid)
             {
@@ -237,7 +252,7 @@ namespace Restaurants_REST_API.Controllers
             {
                 if (dateBlockedTo > DateTime.Now)
                 {
-                    return Unauthorized($"You can't login due to {dateBlockedTo}");
+                    return Unauthorized($"You can't refresh token due to {dateBlockedTo}");
                 }
             }
 
