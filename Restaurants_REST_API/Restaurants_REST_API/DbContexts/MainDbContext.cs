@@ -302,6 +302,7 @@ namespace Restaurants_REST_API.DbContexts
                 u.Property(e => e.PasswordSalt).IsRequired().HasMaxLength(10);
                 //1k is here for further expansions
                 u.Property(e => e.RefreshToken).HasMaxLength(1000);
+                u.Property(e => e.UserRole).IsRequired().HasMaxLength(50);
             });
 
         }

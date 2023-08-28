@@ -11,6 +11,7 @@ namespace Restaurants_REST_API.Models.DatabaseModel
         public string Password { get; set; }
         public string PasswordSalt { get; set; }
         public int LoginAttempts { get; set; }
+        public string UserRole { get; set; }
         public string? RefreshToken { get; set; }
         public DateTime? DateBlockedTo { get; set; }
 

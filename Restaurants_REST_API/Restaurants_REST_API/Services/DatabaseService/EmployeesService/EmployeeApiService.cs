@@ -255,7 +255,28 @@ namespace Restaurants_REST_API.Services.Database_Service
 
         public async Task<Employee?> GetEmployeeDataByPeselAsync(string pesel)
         {
-            return await _context.Employee.Where(e => e.PESEL == pesel).FirstOrDefaultAsync();
+            return await (from emp in _context.Employee
+
+                          where emp.PESEL == pesel
+
+                          select new Employee
+                          {
+                              IdEmployee = emp.IdEmployee,
+                              FirstName = emp.FirstName,
+                              LastName = emp.LastName,
+                              PESEL = emp.PESEL,
+                              HiredDate = emp.HiredDate,
+                              FirstPromotionChefDate = emp.FirstPromotionChefDate,
+                              Salary = emp.Salary,
+                              BonusSalary = emp.BonusSalary,
+                              IsOwner = emp.IsOwner,
+                              EmployeeInRestaurant = (from eir in _context.EmployeeRestaurant
+                                                      where eir.IdEmployee == emp.IdEmployee
+                                                      select new EmployeeRestaurant
+                                                      {
+                                                          IdType = eir.IdType
+                                                      }).ToList()
+                          }).FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<GetEmployeeDTO>> GetEmployeeDetailsByRestaurantIdAsync(int restaurantId)
