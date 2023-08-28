@@ -131,7 +131,7 @@ namespace Restaurants_REST_API.Controllers
             {
                 userToSave.IdEmployee = emp?.IdEmployee;
                 userToSave.UserRole = new MapUserRoleService(_config)
-                    .GetUserRoleBasesOnEmpployeeTypesId(emp?.EmployeeInRestaurant.Select(eir => eir.IdType));
+                    .GetUserRoleBasedOnEmployeeTypesId(emp?.EmployeeInRestaurant.Select(eir => eir.IdType));
 
                 bool isEmployeeRegistrationCompletedSuccess = await _userApiService.RegisterNewEmployeeAsync(userToSave);
                 if (!isEmployeeRegistrationCompletedSuccess)
@@ -142,8 +142,7 @@ namespace Restaurants_REST_API.Controllers
             }
             else
             {
-                userToSave.UserRole = new MapUserRoleService(_config)
-                    .GetUserRoleBasesOnEmpployeeTypesId(emp?.EmployeeInRestaurant.Select(eir => eir.IdType));
+                userToSave.UserRole = new MapUserRoleService(_config).GetClientUserRole();
 
                 bool isClientRegistrationCompletedSuccess = await _userApiService.RegisterNewClientAsync(userToSave);
                 if (!isClientRegistrationCompletedSuccess)

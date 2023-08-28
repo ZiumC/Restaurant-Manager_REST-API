@@ -371,33 +371,35 @@ namespace Restaurants_REST_API.Controllers
                     return BadRequest($"Employee {employeeDatabase.FirstName} already works in restaurant {restaurantDatabase.Name}");
                 }
 
-                //parsing owner type id from app settings
-                int? ownerTypeId = null;
-                int? chefTypeId = null;
-                try
+                IEnumerable<GetEmployeeTypeDTO>? types = await _restaurantsApiService.GetEmployeeTypesAsync();
+                if (types == null)
                 {
-                    ownerTypeId = int.Parse(_config["ApplicationSettings:OwnerTypeId"]);
-                    chefTypeId = int.Parse(_config["ApplicationSettings:ChefTypeId"]);
+                    return NotFound("Employee types not found");
                 }
-                catch (Exception ex)
+
+                int ownerTypeId = types
+                    .Where(t => t.Name == _ownerTypeName)
+                    .Select(t => t.IdType)
+                    .FirstOrDefault();
+
+                if (ownerTypeId == 0)
                 {
-                    Console.WriteLine(ex.Message);
-                    return BadRequest("Something went wrong, bad value to parse");
+                    return NotFound("Owner type not found");
+
                 }
 
                 //checking if owner already exist 
                 if (typeId == ownerTypeId)
                 {
                     int ownersCount = restaurantWorkers
-                        .Where(t => t?.IdType == ownerTypeId)
+                        .Where(t => t?.IdType == ownerTypeId && t.IdRestaurant == restaurantId)
                         .ToList().Count();
 
-                    if (ownersCount >= 1)
+                    if (ownersCount == 1)
                     {
-                        return BadRequest($"Unable to add type Owner because owner already exists");
+                        return BadRequest($"Unable to add type Owner because owner already exists in restaurant");
                     }
                 }
-
             }
 
             bool isEmployeeHired = await _restaurantsApiService.AddNewEmployeeToRestaurantAsync(empId, typeId, restaurantId);

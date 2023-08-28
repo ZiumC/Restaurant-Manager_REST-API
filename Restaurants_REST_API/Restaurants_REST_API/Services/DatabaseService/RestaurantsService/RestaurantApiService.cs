@@ -4,6 +4,7 @@ using Restaurants_REST_API.DTOs.GetDTO;
 using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.DTOs.PostOrPutDTO;
 using Restaurants_REST_API.Models.Database;
+using Restaurants_REST_API.Services.MapperService;
 
 namespace Restaurants_REST_API.Services.Database_Service
 {
@@ -328,7 +329,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                         .Where(e => e.IsOwner.ToLower() == "y" || e.IsOwner.ToLower() == "t")
                         .FirstAsync();
 
-                    await AddNewEmployeeToRestaurantAsync(queryForChef.IdEmployee, ownerTypeId , newDatabaseRestaurant.Entity.IdRestaurant);
+                    await AddNewEmployeeToRestaurantAsync(queryForChef.IdEmployee, ownerTypeId, newDatabaseRestaurant.Entity.IdRestaurant);
                 }
                 catch (Exception ex)
                 {
@@ -386,25 +387,37 @@ namespace Restaurants_REST_API.Services.Database_Service
 
         public async Task<bool> AddNewEmployeeToRestaurantAsync(int empId, int typeId, int restaurantId)
         {
-            try
+            using (var transaction = await _context.Database.BeginTransactionAsync())
             {
-                var newDatabaseEmployeeHired = _context.EmployeeRestaurant.Add
-                    (
-                        new EmployeeRestaurant
-                        {
-                            IdEmployee = empId,
-                            IdRestaurant = restaurantId,
-                            IdType = typeId
-                        }
-                    );
-                await _context.SaveChangesAsync();
+                try
+                {
+                    var newDatabaseEmployeeHired = _context.EmployeeRestaurant.Add
+                        (
+                            new EmployeeRestaurant
+                            {
+                                IdEmployee = empId,
+                                IdRestaurant = restaurantId,
+                                IdType = typeId
+                            }
+                        );
+                    await _context.SaveChangesAsync();
+
+                    var userQuery = await _context.User.Where(u => u.IdEmployee == empId).FirstOrDefaultAsync();
+                    if (userQuery != null)
+                    {
+                        userQuery.UserRole = new MapUserRoleService(_configuration).GetUserRoleBasedOnEmployeeTypesId(new List<int> { typeId });
+                    }
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    Console.WriteLine(ex.ToString());
+                    return false;
+                }
+                await transaction.CommitAsync();
+                return true;
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-                return false;
-            }
-            return true;
         }
 
         public async Task<bool> UpdateRestaurantDataAsync(int restaurantId, Restaurant newRestaurantData)
