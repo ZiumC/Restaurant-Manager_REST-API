@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Restaurants_REST_API.DbContexts;
 using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.DTOs.PostOrPutDTO;
 using Restaurants_REST_API.DTOs.PutDTO;
 using Restaurants_REST_API.Models.Database;
+using Restaurants_REST_API.Services.MapperService;
 
 namespace Restaurants_REST_API.Services.Database_Service
 {
@@ -486,6 +488,14 @@ namespace Restaurants_REST_API.Services.Database_Service
             {
                 try
                 {
+                    //removing user if employee has registered in db
+                    var userQuery = await _context.User.Where(u => u.IdEmployee == empId).FirstOrDefaultAsync();
+                    if (userQuery != null)
+                    {
+                        _context.Remove(userQuery);
+                    }
+                    await _context.SaveChangesAsync();
+
                     var employeeAddressQuery = await
                        (_context.Address.Where(a => a.IdAddress == employeeData.Address.IdAddress)).FirstAsync();
 
