@@ -51,20 +51,20 @@
         /// </summary>
         /// <param name="typesId">List of employee types id</param>
         /// <returns>String - user role</returns>
-        public string GetUserRoleBasesOnEmpployeeTypesId(IEnumerable<int>? typesId)
+        public string GetUserRoleBasedOnEmployeeTypesId(IEnumerable<int>? typesId)
         {
-            if (typesId == null)
+            if (typesId == null || typesId.Count() == 0)
             {
-                return _clientRole;
+                return _employeeRole;
             }
 
-            int maxRole = typesId.Min();
+            int minRole = typesId.Min();
 
-            if (maxRole == 1)
+            if (minRole == 1)
             {
                 return _ownerRole;
             }
-            else if (maxRole == 2)
+            else if (minRole == 2)
             {
                 return _supervisorRole;
             }
@@ -72,6 +72,11 @@
             {
                 return _employeeRole;
             }
+        }
+
+        public string GetClientUserRole() 
+        {
+            return _clientRole;
         }
     }
 }
