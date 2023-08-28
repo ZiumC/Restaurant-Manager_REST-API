@@ -405,7 +405,10 @@ namespace Restaurants_REST_API.Services.Database_Service
                     var userQuery = await _context.User.Where(u => u.IdEmployee == empId).FirstOrDefaultAsync();
                     if (userQuery != null)
                     {
-                        userQuery.UserRole = new MapUserRoleService(_configuration).GetUserRoleBasedOnEmployeeTypesId(new List<int> { typeId });
+                        IEnumerable<int> employeeRoles = _context.EmployeeRestaurant
+                            .Where(eir => eir.IdEmployee == empId)
+                            .Select(eir => eir.IdType);
+                        userQuery.UserRole = new MapUserRoleService(_configuration).GetUserRoleBasedOnEmployeeTypesId(employeeRoles);
                     }
                     await _context.SaveChangesAsync();
                 }
@@ -486,13 +489,23 @@ namespace Restaurants_REST_API.Services.Database_Service
             {
                 try
                 {
-                    var updateEmpTypeQuery = await
+                    var updateEmpTypeInRestaurantQuery = await
                         (_context.EmployeeRestaurant
                         .Where(eir => eir.IdEmployee == empId && eir.IdRestaurant == restaurantId)
                         .FirstAsync());
 
-                    updateEmpTypeQuery.IdType = typeId;
+                    updateEmpTypeInRestaurantQuery.IdType = typeId;
 
+                    await _context.SaveChangesAsync();
+
+                    var userQuery = await _context.User.Where(u => u.IdEmployee == empId).FirstOrDefaultAsync();
+                    if (userQuery != null)
+                    {
+                        IEnumerable<int> employeeRoles = _context.EmployeeRestaurant
+                            .Where(eir => eir.IdEmployee == empId)
+                            .Select(eir => eir.IdType);
+                        userQuery.UserRole = new MapUserRoleService(_configuration).GetUserRoleBasedOnEmployeeTypesId(employeeRoles);
+                    }
                     await _context.SaveChangesAsync();
                 }
                 catch (Exception ex)
