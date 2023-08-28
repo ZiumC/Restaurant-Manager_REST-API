@@ -17,12 +17,27 @@ namespace Restaurants_REST_API.Controllers
         private readonly IRestaurantApiService _restaurantsApiService;
         private readonly IEmployeeApiService _employeeApiService;
         private readonly IConfiguration _config;
+        private readonly string _ownerTypeName;
 
         public RestaurantsController(IRestaurantApiService restaurantsApiService, IEmployeeApiService employeeApiService, IConfiguration config)
         {
             _restaurantsApiService = restaurantsApiService;
             _employeeApiService = employeeApiService;
             _config = config;
+
+            _ownerTypeName = _config["ApplicationSettings:AdministrativeRoles:Owner"];
+
+            try 
+            {
+                if (string.IsNullOrEmpty(_ownerTypeName))
+                {
+                    throw new Exception("Owner type name can't be empty");
+                }
+            }
+            catch (Exception ex) 
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
         /// <summary>
@@ -195,13 +210,29 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Restaurant already exist");
             }
 
-            //Employee? ownerData = await _employeeApiService.GetEmployeeDasicDataByTypeIdAsync();
-            //if (ownerData == null)
-            //{
-            //    return NotFound("Owner not found, unable to add new restaurant");
-            //}
+            IEnumerable<GetEmployeeTypeDTO>? types = await _restaurantsApiService.GetEmployeeTypesAsync();
+            if (types == null)
+            {
+                return NotFound("Employee types not found");
+            }
 
-            bool isRestaurantAdded = await _restaurantsApiService.AddNewRestaurantAsync(newRestaurant);
+            int ownerTypeId = types
+                .Where(t => t.Name == _ownerTypeName)
+                .Select(t => t.IdType)
+                .FirstOrDefault();
+
+            if (ownerTypeId == 0)
+            {
+                return NotFound("Owner type not found, unable to add new restaurant");
+            }
+
+            GetEmployeeDTO? ownerData = await _employeeApiService.GetEmployeeDetailsByTypeIdAsync(ownerTypeId);
+            if (ownerData == null)
+            {
+                return NotFound("Owner not found, unable to add new restaurant");
+            }
+
+            bool isRestaurantAdded = await _restaurantsApiService.AddNewRestaurantAsync(newRestaurant, ownerTypeId);
             if (!isRestaurantAdded)
             {
                 return BadRequest("Something went wrong unable to add new restaruant");
