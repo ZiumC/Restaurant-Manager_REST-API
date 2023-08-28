@@ -8,6 +8,7 @@ using Restaurants_REST_API.DTOs.PostOrPutDTO;
 using Restaurants_REST_API.Services.UpdateDataService;
 using Restaurants_REST_API.DTOs.PutDTO;
 using Restaurants_REST_API.Services.MapperService;
+using Restaurants_REST_API.DTOs.GetDTO;
 
 namespace Restaurants_REST_API.Controllers
 {
@@ -18,12 +19,35 @@ namespace Restaurants_REST_API.Controllers
         private readonly IEmployeeApiService _employeeApiService;
         private readonly IRestaurantApiService _restaurantsApiService;
         private readonly IConfiguration _config;
+        private readonly string _ownerTypeName;
+        private readonly string _supervisorTypeName;
 
         public EmployeesController(IEmployeeApiService employeeApiService, IRestaurantApiService restaurantsApiService, IConfiguration config)
         {
             _employeeApiService = employeeApiService;
             _restaurantsApiService = restaurantsApiService;
             _config = config;
+
+            _ownerTypeName = _config["ApplicationSettings:AdministrativeRoles:Owner"];
+            _supervisorTypeName = _config["ApplicationSettings:AdministrativeRoles:Supervisor"];
+
+            try
+            {
+                if (string.IsNullOrEmpty(_ownerTypeName))
+                {
+                    throw new Exception("Owner type name can't be empty");
+                }
+
+                if (string.IsNullOrEmpty(_supervisorTypeName))
+                {
+                    throw new Exception("Supervisor type name can't be empty");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
         }
 
         /// <summary>
@@ -69,16 +93,24 @@ namespace Restaurants_REST_API.Controllers
         [HttpGet("supervisors")]
         public async Task<IActionResult> GetSupervisors()
         {
-            IEnumerable<GetEmployeeDTO>? getAllSupervisors = null;
-            try
+            IEnumerable<GetEmployeeTypeDTO>? types = await _restaurantsApiService.GetEmployeeTypesAsync();
+            if (types == null) 
             {
-                getAllSupervisors = await _employeeApiService.GetAllSupervisorsAsync();
-            }
-            catch (Exception ex)
-            {
-                return Problem($"Something went wrong: {ex.Message}");
+                return NotFound("Employee types not found");
             }
 
+            int supervisorTypeId = types
+                .Where(t => t.Name == _supervisorTypeName)
+                .Select(t => t.IdType)
+                .FirstOrDefault();
+
+            if (supervisorTypeId == 0)
+            {
+                return NotFound("Supervisor type not found");
+
+            }
+
+            IEnumerable<GetEmployeeDTO>? getAllSupervisors = await _employeeApiService.GetAllEmployeesDetailsByTypeIdAsync(supervisorTypeId);
             if (getAllSupervisors == null || getAllSupervisors.Count() == 0)
             {
                 return NotFound("Supervisors not found");
@@ -99,24 +131,34 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest($"Supervisor id={supervisorId} is invalid");
             }
 
-            Employee? supervisorDatabase = null;
-            try
+            IEnumerable<GetEmployeeTypeDTO>? types = await _restaurantsApiService.GetEmployeeTypesAsync();
+            if (types == null)
             {
-                supervisorDatabase = await _employeeApiService.GetBasicSupervisorDataByIdAsync(supervisorId);
-            }
-            catch (Exception ex)
-            {
-                return Problem($"Something went wrong: {ex.Message}");
+                return NotFound("Employee types not found");
             }
 
-            if (supervisorDatabase == null)
+            int supervisorTypeId = types
+                .Where(t => t.Name == _supervisorTypeName)
+                .Select(t => t.IdType)
+                .FirstOrDefault();
+
+            if (supervisorTypeId == 0)
             {
-                return NotFound($"Supervisor id={supervisorId} not found");
+                return NotFound("Supervisor type not found");
             }
 
-            GetEmployeeDTO employeeDetailsDatabase = await _employeeApiService.GetEmployeeDetailsAsync(supervisorDatabase);
+            IEnumerable<GetEmployeeDTO>? getAllSupervisors = await _employeeApiService.GetAllEmployeesDetailsByTypeIdAsync(supervisorTypeId);
+            if (getAllSupervisors == null || getAllSupervisors.Count() == 0)
+            {
+                return NotFound("Supervisors not found");
+            }
 
-            return Ok(employeeDetailsDatabase);
+            GetEmployeeDTO? supervisorData = getAllSupervisors.Where(s => s.IdEmployee == supervisorId).FirstOrDefault();
+            if (supervisorData == null)
+            {
+                return NotFound("Supervisor not found");
+            }
+            return Ok(supervisorData);
         }
 
         /// <summary>
@@ -125,24 +167,29 @@ namespace Restaurants_REST_API.Controllers
         [HttpGet("owner")]
         public async Task<IActionResult> GetOwnerDetails()
         {
-            Employee? ownerDatabase = null;
-            try
+            IEnumerable<GetEmployeeTypeDTO>? types = await _restaurantsApiService.GetEmployeeTypesAsync();
+            if (types == null)
             {
-                ownerDatabase = await _employeeApiService.GetBasicOwnerDataAsync();
-            }
-            catch (Exception ex)
-            {
-                return Problem($"Something went wrong: {ex.Message}");
+                return NotFound("Employee types not found");
             }
 
-            if (ownerDatabase == null)
+            int ownerTypeId = types
+                .Where(t => t.Name == _ownerTypeName)
+                .Select(t => t.IdType)
+                .FirstOrDefault();
+
+            if (ownerTypeId == 0)
+            {
+                return NotFound("Owner type not found");
+            }
+
+            GetEmployeeDTO? getAllOwners = await _employeeApiService.GetEmployeeDetailsByTypeIdAsync(ownerTypeId);
+            if (getAllOwners == null)
             {
                 return NotFound("Owner not found");
             }
 
-            GetEmployeeDTO employeeDetailsDatabase = await _employeeApiService.GetEmployeeDetailsAsync(ownerDatabase);
-
-            return Ok(employeeDetailsDatabase);
+            return Ok(getAllOwners);
         }
 
         /// <summary>
@@ -355,7 +402,7 @@ namespace Restaurants_REST_API.Controllers
             }
 
             decimal minimumBonus = decimal.Parse(_config["ApplicationSettings:BasicBonus"]);
-            if (!GeneralValidator.isCorrectBonus(putEmpData.BonusSalary, minimumBonus)) 
+            if (!GeneralValidator.isCorrectBonus(putEmpData.BonusSalary, minimumBonus))
             {
                 return BadRequest("Bonus salary is invalid");
             }
@@ -428,7 +475,7 @@ namespace Restaurants_REST_API.Controllers
             MapEmployeeCertificatesService employeeCertificateMapper = new MapEmployeeCertificatesService(employeeDetailsDatabase, putEmpCertificates, certificateId);
             PutCertificateDTO updatedCertificateData = employeeCertificateMapper.GetUpdatedCertificateNames();
 
-            bool isCertificatesHasBeenUpdated = await _employeeApiService.UpdateEmployeeCertificatesByIdAsync(certificateId ,updatedCertificateData);
+            bool isCertificatesHasBeenUpdated = await _employeeApiService.UpdateEmployeeCertificatesByIdAsync(certificateId, updatedCertificateData);
             if (!isCertificatesHasBeenUpdated)
             {
                 return Problem("Unable to update certificate");

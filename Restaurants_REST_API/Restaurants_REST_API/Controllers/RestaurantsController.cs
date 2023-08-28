@@ -195,11 +195,11 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Restaurant already exist");
             }
 
-            Employee? ownerData = await _employeeApiService.GetBasicOwnerDataAsync();
-            if (ownerData == null)
-            {
-                return NotFound("Owner not found, unable to add new restaurant");
-            }
+            //Employee? ownerData = await _employeeApiService.GetEmployeeDasicDataByTypeIdAsync();
+            //if (ownerData == null)
+            //{
+            //    return NotFound("Owner not found, unable to add new restaurant");
+            //}
 
             bool isRestaurantAdded = await _restaurantsApiService.AddNewRestaurantAsync(newRestaurant);
             if (!isRestaurantAdded)
