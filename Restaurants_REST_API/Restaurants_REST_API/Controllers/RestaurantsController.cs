@@ -411,33 +411,6 @@ namespace Restaurants_REST_API.Controllers
             return Ok($"Employee {employeeDatabase.FirstName} has been hired in restaurant {restaurantDatabase.Name}");
         }
 
-        ///// <summary>
-        ///// Adds new employee type.
-        ///// </summary>
-        ///// <param name="name">New employee type name</param>
-        //[HttpPost("employee/type")]
-        //public async Task<IActionResult> AddNewTypeOfEmployee(string name)
-        //{
-        //    if (GeneralValidator.isEmptyNameOf(name))
-        //    {
-        //        return BadRequest("Employee type can't be empty");
-        //    }
-
-        //    IEnumerable<GetEmployeeTypeDTO>? allTypes = await _restaurantsApiService.GetEmployeeTypesAsync();
-        //    if (EmployeeTypeValidator.isTypeExistInByName(allTypes, name))
-        //    {
-        //        return BadRequest($"Employee type {name} already exist");
-        //    }
-
-        //    bool isTypeHasBeenAdded = await _restaurantsApiService.AddNewEmployeeTypeAsync(name);
-        //    if (!isTypeHasBeenAdded)
-        //    {
-        //        return BadRequest("Unable to add new type");
-        //    }
-
-        //    return Ok("New employee type has been added");
-        //}
-
         /// <summary>
         /// Updates employee type in restaurant.
         /// </summary>
