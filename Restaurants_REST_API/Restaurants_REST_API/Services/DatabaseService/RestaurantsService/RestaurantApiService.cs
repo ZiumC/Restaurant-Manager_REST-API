@@ -294,7 +294,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             return true;
         }
 
-        public async Task<bool> AddNewRestaurantAsync(PostRestaurantDTO newRestaurant)
+        public async Task<bool> AddNewRestaurantAsync(PostRestaurantDTO newRestaurant, int ownerTypeId)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -327,8 +327,6 @@ namespace Restaurants_REST_API.Services.Database_Service
                     var queryForChef = await _context.Employee
                         .Where(e => e.IsOwner.ToLower() == "y" || e.IsOwner.ToLower() == "t")
                         .FirstAsync();
-
-                    int ownerTypeId = int.Parse(_configuration["ApplicationSettings:OwnerTypeId"]);
 
                     await AddNewEmployeeToRestaurantAsync(queryForChef.IdEmployee, ownerTypeId , newDatabaseRestaurant.Entity.IdRestaurant);
                 }

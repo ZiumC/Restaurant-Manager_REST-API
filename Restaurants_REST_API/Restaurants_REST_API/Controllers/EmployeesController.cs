@@ -183,13 +183,13 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound("Owner type not found");
             }
 
-            GetEmployeeDTO? getAllOwners = await _employeeApiService.GetEmployeeDetailsByTypeIdAsync(ownerTypeId);
-            if (getAllOwners == null)
+            GetEmployeeDTO? getOwner = await _employeeApiService.GetEmployeeDetailsByTypeIdAsync(ownerTypeId);
+            if (getOwner == null)
             {
                 return NotFound("Owner not found");
             }
 
-            return Ok(getAllOwners);
+            return Ok(getOwner);
         }
 
         /// <summary>
