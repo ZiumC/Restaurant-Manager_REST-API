@@ -559,23 +559,38 @@ namespace Restaurants_REST_API.Services.Database_Service
 
         public async Task<bool> DeleteEmployeeFromRestaurantAsync(int empId, int restaurantId)
         {
-            try
+            using (var transaction = await _context.Database.BeginTransactionAsync())
             {
-                var deleteEmployeeFromRestaurantQuery = await
-                    (_context.EmployeeRestaurant
-                    .Where(eir => eir.IdRestaurant == restaurantId && eir.IdEmployee == empId)
-                    .FirstAsync());
+                try
+                {
+                    var deleteEmployeeFromRestaurantQuery = await
+                        (_context.EmployeeRestaurant
+                        .Where(eir => eir.IdRestaurant == restaurantId && eir.IdEmployee == empId)
+                        .FirstAsync());
 
-                _context.Remove(deleteEmployeeFromRestaurantQuery);
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-                return false;
-            }
+                    _context.Remove(deleteEmployeeFromRestaurantQuery);
+                    await _context.SaveChangesAsync();
 
-            return true;
+                    var userQuery = await _context.User.Where(u => u.IdEmployee == empId).FirstOrDefaultAsync();
+                    if (userQuery != null)
+                    {
+                        IEnumerable<int> employeeRoles = _context.EmployeeRestaurant
+                            .Where(eir => eir.IdEmployee == empId)
+                            .Select(eir => eir.IdType);
+                        userQuery.UserRole = new MapUserRoleService(_configuration).GetUserRoleBasedOnEmployeeTypesId(employeeRoles);
+                    }
+                    await _context.SaveChangesAsync();
+
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    await transaction.RollbackAsync();
+                    return false;
+                }
+                await transaction.CommitAsync();
+                return true;
+            }
         }
     }
 
