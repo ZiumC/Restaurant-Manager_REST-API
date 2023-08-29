@@ -1,11 +1,9 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Restaurants_REST_API.DTOs.PostDTO;
 using Restaurants_REST_API.Models.DatabaseModel;
-using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
-using System.Security.Principal;
 using System.Text;
 
 namespace Restaurants_REST_API.Services.JwtService
@@ -22,21 +20,41 @@ namespace Restaurants_REST_API.Services.JwtService
         public JwtService(IConfiguration config)
         {
             _config = config;
+            
+            _secretSignature = _config["ApplicationSettings:JwtSettings:SecretSignatureKey"];
+            _issuer = _config["ApplicationSettings:JwtSettings:Issuer"];
+            _audience = _config["ApplicationSettings:JwtSettings:Audience"];
+
             try
             {
                 _refreshTokenLength = int.Parse(_config["ApplicationSettings:JwtSettings:RefreshTokenLength"]);
                 _accessTokenValidityInDays = int.Parse(_config["ApplicationSettings:JwtSettings:AccessTokenValidity"]);
+
+                if (string.IsNullOrEmpty(_secretSignature))
+                {
+                    throw new Exception("Secret signature key of server can't be empty.");
+                }
+
+                if (string.IsNullOrEmpty(_issuer))
+                {
+                    throw new Exception("Issuer of jwt can't be empty.");
+                }
+
+                if (string.IsNullOrEmpty(_audience))
+                {
+                    throw new Exception("Audience for jwt can't be empty.");
+                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                throw new Exception(ex.Message);
             }
-            _secretSignature = _config["ApplicationSettings:JwtSettings:SecretSignatureKey"];
-            _issuer = _config["ApplicationSettings:JwtSettings:Issuer"];
-            _audience = _config["ApplicationSettings:JwtSettings:Audience"];
         }
 
+        /// <summary>
+        /// Method generate refresh token. Length of token depends on given length in appsettings.json 
+        /// </summary>
+        /// <returns>Refresh token.</returns>
         public string GenerateRefreshToken()
         {
             var refreshToken = "";
@@ -49,6 +67,11 @@ namespace Restaurants_REST_API.Services.JwtService
             return refreshToken;
         }
 
+        /// <summary>
+        /// Method generate access token for user. Token contains user claims and token is signed by server.
+        /// </summary>
+        /// <param name="user">User data</param>
+        /// <returns>Signed access token.</returns>
         public string GenerateAccessTokenForUser(User user)
         {
             JwtSecurityTokenHandler jwtHandler = new JwtSecurityTokenHandler();
@@ -87,6 +110,11 @@ namespace Restaurants_REST_API.Services.JwtService
             return jwtHandler.WriteToken(token);
         }
 
+        /// <summary>
+        /// Method valids passed pair of access and refresh token.
+        /// </summary>
+        /// <param name="jwt">Pair of access token and refresh token.</param>
+        /// <returns>True if token is valid or false  when token isn't valid.</returns>
         public bool ValidateJwt(PostJwtDTO jwt)
         {
             SecurityToken validatedToken;
@@ -113,18 +141,5 @@ namespace Restaurants_REST_API.Services.JwtService
             }
             return true;
         }
-
-        //private Claim[] AddNewClaimToCurrentClaims(Claim[] currentClaims, Claim claimToAdd) 
-        //{
-        //    int newClaimLength = currentClaims.Length + 1;
-        //    Claim[] result = new Claim[newClaimLength];
-
-        //    foreach (Claim c in currentClaims) 
-        //    {
-        //        result.Append(c);
-        //    }
-
-        //    return currentClaims;
-        //}
     }
 }
