@@ -193,7 +193,7 @@ namespace Restaurants_REST_API.Controllers
                 user.DateBlockedTo = null;
 
                 var refreshToken = _jwtService.GenerateRefreshToken();
-                var accessToken = _jwtService.GenerateAccessTokenForUserLogin(user.Login, "User");
+                var accessToken = _jwtService.GenerateAccessTokenForUser(user);
 
                 user.RefreshToken = refreshToken;
                 bool isUpdated = await _userApiService.UpdateUserData(user);
@@ -256,7 +256,7 @@ namespace Restaurants_REST_API.Controllers
             }
 
             string refreshToken = _jwtService.GenerateRefreshToken();
-            string accessToken = _jwtService.GenerateAccessTokenForUserLogin(userByRefreshToken.Login, "User");
+            string accessToken = _jwtService.GenerateAccessTokenForUser(userByRefreshToken);
 
             userByRefreshToken.RefreshToken = refreshToken;
             userByRefreshToken.LoginAttempts = 0;

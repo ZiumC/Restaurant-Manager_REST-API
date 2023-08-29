@@ -1,9 +1,11 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Restaurants_REST_API.DTOs.PostDTO;
 using Restaurants_REST_API.Models.DatabaseModel;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Security.Principal;
 using System.Text;
 
 namespace Restaurants_REST_API.Services.JwtService
@@ -47,28 +49,42 @@ namespace Restaurants_REST_API.Services.JwtService
             return refreshToken;
         }
 
-        public string GenerateAccessTokenForUserLogin(string userLogin, string userRole)
+        public string GenerateAccessTokenForUser(User user)
         {
-            var userClaims = new Claim[] 
-            {
-                    new Claim(ClaimTypes.Name, userLogin),
-                    new Claim(ClaimTypes.Role, userRole)
-            };
+            JwtSecurityTokenHandler jwtHandler = new JwtSecurityTokenHandler();
 
             SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretSignature));
 
             SigningCredentials serverCreditionals = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            JwtSecurityToken token = new JwtSecurityToken
-                (
-                    _issuer,
-                    _audience,
-                    userClaims,
-                    expires: DateTime.UtcNow.AddDays(_accessTokenValidityInDays),
-                    signingCredentials: serverCreditionals
-                );
+            var identity = new ClaimsIdentity(new[] 
+            { 
+                new Claim(ClaimTypes.Name, user.Login),
+                new Claim(ClaimTypes.Role, user.UserRole),
+            });
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            string? empId = user.IdEmployee.ToString();
+            string? clientId = user.IdClient.ToString();
+
+            if (!string.IsNullOrEmpty(empId))
+            {
+                identity.AddClaim(new Claim("EmpId", empId));
+            }
+
+            if (!string.IsNullOrEmpty(clientId))
+            {
+                identity.AddClaim(new Claim("ClientId", clientId));
+            }
+
+            var token = jwtHandler.CreateJwtSecurityToken
+                (
+                    subject: identity,
+                    signingCredentials: serverCreditionals,
+                    audience: _audience,
+                    issuer: _issuer,
+                    expires: DateTime.UtcNow.AddDays(_accessTokenValidityInDays)
+                );
+            return jwtHandler.WriteToken(token);
         }
 
         public bool ValidateJwt(PostJwtDTO jwt)
@@ -97,5 +113,18 @@ namespace Restaurants_REST_API.Services.JwtService
             }
             return true;
         }
+
+        //private Claim[] AddNewClaimToCurrentClaims(Claim[] currentClaims, Claim claimToAdd) 
+        //{
+        //    int newClaimLength = currentClaims.Length + 1;
+        //    Claim[] result = new Claim[newClaimLength];
+
+        //    foreach (Claim c in currentClaims) 
+        //    {
+        //        result.Append(c);
+        //    }
+
+        //    return currentClaims;
+        //}
     }
 }
