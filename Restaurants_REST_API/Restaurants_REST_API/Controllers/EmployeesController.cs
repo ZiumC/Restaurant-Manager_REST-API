@@ -9,6 +9,8 @@ using Restaurants_REST_API.Services.UpdateDataService;
 using Restaurants_REST_API.DTOs.PutDTO;
 using Restaurants_REST_API.Services.MapperService;
 using Restaurants_REST_API.DTOs.GetDTO;
+using System.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Restaurants_REST_API.Controllers
 {
