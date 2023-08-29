@@ -11,6 +11,7 @@ using Restaurants_REST_API.Services.MapperService;
 using Restaurants_REST_API.DTOs.GetDTO;
 using System.Data;
 using Microsoft.AspNetCore.Authorization;
+using Restaurants_REST_API.Services;
 
 namespace Restaurants_REST_API.Controllers
 {
@@ -53,9 +54,15 @@ namespace Restaurants_REST_API.Controllers
         }
 
         /// <summary>
-        /// Returns all employees details.
+        /// Returns all employees details. 
         /// </summary>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Owner.
+        /// - Supervisor.
+        /// </remarks>
         [HttpGet]
+        [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
         public async Task<IActionResult> GetAllEmployees()
         {
             var employees = await _employeeApiService.GetAllEmployeesAsync();
@@ -72,7 +79,13 @@ namespace Restaurants_REST_API.Controllers
         /// Returns employee details.
         /// </summary>
         /// <param name="empId">Employee id</param>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Owner.
+        /// - Supervisor.
+        /// </remarks>
         [HttpGet("{empId}")]
+        [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
         public async Task<IActionResult> GetEmployeeBy(int empId)
         {
             if (!GeneralValidator.isNumberGtZero(empId))
@@ -92,7 +105,12 @@ namespace Restaurants_REST_API.Controllers
         /// <summary>
         /// Returns all supervisors details from any restaurants.
         /// </summary>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Owner.
+        /// </remarks>
         [HttpGet("supervisors")]
+        [Authorize(Roles = UserRolesService.Owner)]
         public async Task<IActionResult> GetSupervisors()
         {
             IEnumerable<GetEmployeeTypeDTO>? types = await _restaurantsApiService.GetEmployeeTypesAsync();
@@ -125,7 +143,12 @@ namespace Restaurants_REST_API.Controllers
         /// Returns supervisor details from any restaurant.
         /// </summary>
         /// <param name="supervisorId">Supervisor id</param>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Owner.
+        /// </remarks>
         [HttpGet("supervisor/{supervisorId}")]
+        [Authorize(Roles = UserRolesService.Owner)]
         public async Task<IActionResult> GetSupervisorBy(int supervisorId)
         {
             if (!GeneralValidator.isNumberGtZero(supervisorId))
@@ -166,7 +189,12 @@ namespace Restaurants_REST_API.Controllers
         /// <summary>
         /// Returns owner details.
         /// </summary>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Owner.
+        /// </remarks>
         [HttpGet("owner")]
+        [Authorize(Roles = UserRolesService.Owner)]
         public async Task<IActionResult> GetOwnerDetails()
         {
             IEnumerable<GetEmployeeTypeDTO>? types = await _restaurantsApiService.GetEmployeeTypesAsync();
@@ -198,7 +226,13 @@ namespace Restaurants_REST_API.Controllers
         /// Returns employees details based on restaurant id.
         /// </summary>
         /// <param name="restaurantId">Restaurant id</param>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Owner.
+        /// - Supervisor.
+        /// </remarks>
         [HttpGet("restaurant/{restaurantId}")]
+        [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
         public async Task<IActionResult> GetEmployeeByRestaurant(int restaurantId)
         {
             if (!GeneralValidator.isNumberGtZero(restaurantId))
@@ -226,7 +260,13 @@ namespace Restaurants_REST_API.Controllers
         /// Adds new employee.
         /// </summary>
         /// <param name="newEmployee">Employee details data</param>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Owner.
+        /// - Supervisor.
+        /// </remarks>
         [HttpPost]
+        [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
         public async Task<IActionResult> AddNewEmployee(PostEmployeeDTO? newEmployee)
         {
             //validating new employee
@@ -321,7 +361,13 @@ namespace Restaurants_REST_API.Controllers
         /// </summary>
         /// <param name="empId">Employee id</param>
         /// <param name="newCertificates">Certificates data</param>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Owner.
+        /// - Supervisor.
+        /// </remarks>
         [HttpPost("{empId}/certificate")]
+        [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
         public async Task<IActionResult> AddCertificateBy(int empId, IEnumerable<PostCertificateDTO> newCertificates)
         {
             if (!GeneralValidator.isNumberGtZero(empId))
@@ -360,7 +406,13 @@ namespace Restaurants_REST_API.Controllers
         /// </summary>
         /// <param name="empId">Employee id</param>
         /// <param name="putEmpData">Basic employee data</param>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Owner.
+        /// - Supervisor.
+        /// </remarks>
         [HttpPut("{empId}")]
+        [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
         public async Task<IActionResult> UpdateEmployeeDataBy(int empId, PutEmployeeDTO? putEmpData)
         {
             if (!GeneralValidator.isNumberGtZero(empId))
@@ -433,7 +485,13 @@ namespace Restaurants_REST_API.Controllers
         /// <param name="empId">Employee id</param>
         /// <param name="certificateId">Certificate id to update</param>
         /// <param name="putEmpCertificates">Certificate data to update</param>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Owner.
+        /// - Supervisor.
+        /// </remarks>
         [HttpPut("{empId}/certificate/{certificateId}")]
+        [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
         public async Task<IActionResult> UpdateEmployeeCertificatesBy(int empId, int certificateId, PutCertificateDTO putEmpCertificates)
         {
             if (!GeneralValidator.isNumberGtZero(empId))
@@ -490,7 +548,12 @@ namespace Restaurants_REST_API.Controllers
         /// Removes employee data.
         /// </summary>
         /// <param name="empId">Employee id</param>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Owner.
+        /// </remarks>
         [HttpDelete("{empId}")]
+        [Authorize(Roles = UserRolesService.Owner)]
         public async Task<IActionResult> DeleteEmployeeBy(int empId)
         {
             if (!GeneralValidator.isNumberGtZero(empId))
@@ -519,7 +582,13 @@ namespace Restaurants_REST_API.Controllers
         /// </summary>
         /// <param name="empId">Employee id</param>
         /// <param name="certificateId">Employee certificate id</param>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Owner.
+        /// - Supervisor.
+        /// </remarks>
         [HttpDelete("{empId}/certificate/{certificateId}")]
+        [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
         public async Task<IActionResult> DeleteEmployeeCertificateBy(int empId, int certificateId)
         {
             if (!GeneralValidator.isNumberGtZero(empId))

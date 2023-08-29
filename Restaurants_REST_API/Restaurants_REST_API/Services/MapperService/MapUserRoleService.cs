@@ -47,10 +47,10 @@
         }
 
         /// <summary>
-        /// This method selects min employee type id and maps to user role.
+        /// Method maps min employee type id to user role.
         /// </summary>
-        /// <param name="typesId">List of employee types id</param>
-        /// <returns>String - user role</returns>
+        /// <param name="typesId">List of employee types id.</param>
+        /// <returns>String of user role.</returns>
         public string GetUserRoleBasedOnEmployeeTypesId(IEnumerable<int>? typesId)
         {
             if (typesId == null || typesId.Count() == 0)
@@ -74,6 +74,10 @@
             }
         }
 
+        /// <summary>
+        /// Returns name of client role.
+        /// </summary>
+        /// <returns>String of user role.</returns>
         public string GetClientUserRole() 
         {
             return _clientRole;

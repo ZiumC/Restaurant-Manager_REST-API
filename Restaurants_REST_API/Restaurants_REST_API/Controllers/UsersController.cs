@@ -43,13 +43,37 @@ namespace Restaurants_REST_API.Controllers
                 _saltLength = int.Parse(_config["ApplicationSettings:Security:SaltLength"]);
                 _maxLoginAttempts = int.Parse(_config["ApplicationSettings:MaxLoginAttempts"]);
                 _amountBlockedDays = int.Parse(_config["ApplicationSettings:AmountBlockedDays"]);
+
+                if (string.IsNullOrEmpty(_loginRegex))
+                {
+                    throw new Exception("Login regex can't be empty.");
+                }
+
+                if (string.IsNullOrEmpty(_emailRegex))
+                {
+                    throw new Exception("Email regex can't be empty.");
+                }
+
+                if (string.IsNullOrEmpty(_peselRegex))
+                {
+                    throw new Exception("Pesel regex can't be empty.");
+                }
+
+                if (_saltLength < 0 || _saltLength > 10 )
+                {
+                    throw new Exception("Length of password salt is invalid. Length should be between 1 and 10 characters.");
+                }
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                Console.WriteLine(ex.Message);
             }
         }
 
+        /// <summary>
+        /// Registers new user.
+        /// </summary>
+        /// <param name="newUser">Register data.</param>
         [HttpPost("register")]
         public async Task<IActionResult> RegisterNewUser(PostUserDTO newUser)
         {
@@ -107,8 +131,8 @@ namespace Restaurants_REST_API.Controllers
                 if (userByEmpId != null)
                 {
                     /*
-                     * this bad request message is same as well as above bad request messages due to not
-                     * give an someone to brute force and guess if pesel is correct or not
+                     * this bad request message is same as well as above bad request messages 
+                     * due to not allow brute force methods does pesel exist or not
                      */
                     return BadRequest("Given employee data are invalid");
                 }
@@ -153,6 +177,11 @@ namespace Restaurants_REST_API.Controllers
             }
         }
 
+        /// <summary>
+        /// Allows to login user.
+        /// </summary>
+        /// <param name="loginRequest">Login data.</param>
+        /// <returns>Pair of access and refresh token.</returns>
         [HttpPost("login")]
         public async Task<IActionResult> Login(PostLoginRequestDTO loginRequest)
         {
@@ -165,9 +194,9 @@ namespace Restaurants_REST_API.Controllers
             if (user == null)
             {
                 /*
-                 * this response message is specially returned even password 
-                 * isn't checking here because to not allow brut force methods 
-                 * to check if login or email exist in db 
+                 * this response message is specially returned even password isn't checked.
+                 * This is because to prevent brute force attacks targeted to checking does
+                 * login or password exist
                  */
                 return Unauthorized("Login or password are incorrect");
             }
@@ -221,6 +250,11 @@ namespace Restaurants_REST_API.Controllers
             }
         }
 
+        /// <summary>
+        /// Renevs access token based on refresh token.
+        /// </summary>
+        /// <param name="jwt">Pair of refresh token and expired access token.</param>
+        /// <returns>Pair of access and refresh token.</returns>
         [HttpPost("refresh")]
         public async Task<IActionResult> RefreshToken(PostJwtDTO jwt)
         {
@@ -239,9 +273,9 @@ namespace Restaurants_REST_API.Controllers
             if (userByRefreshToken == null || string.IsNullOrEmpty(userByRefreshToken.RefreshToken))
             {
                 /*
-                 * this response message is specially returned to not 
-                 * allow brute force methods to check if refresh token 
-                 * exist in db
+                 * this response message is specially returned. This is because 
+                 * to prevent brute force attacks targeted to checking does
+                 * refresh token exist.
                  */
                 return Unauthorized("Refresh token is invalid");
             }
