@@ -350,9 +350,9 @@ namespace Restaurants_REST_API.Controllers
         /// To use that endpoint, access token should contain following roles:
         /// - Client.
         /// </remarks>
-        [HttpPost("{clientId}/reservation/{reservationId}/complain")]
+        [HttpPost("{clientId}/reservation/{reservationId}/complaint")]
         [Authorize(Roles = UserRolesService.Client)]
-        public async Task<IActionResult> MakeComplainBy(int clientId, int reservationId, PostComplaintDTO newComplaint)
+        public async Task<IActionResult> MakeComplaintBy(int clientId, int reservationId, PostComplaintDTO newComplaint)
         {
             if (!GeneralValidator.isNumberGtZero(clientId))
             {
