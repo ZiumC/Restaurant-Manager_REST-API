@@ -5,6 +5,7 @@ using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.DTOs.PostOrPutDTO;
 using Restaurants_REST_API.Models.Database;
 using Restaurants_REST_API.Services.MapperService;
+using System;
 
 namespace Restaurants_REST_API.Services.Database_Service
 {
@@ -329,7 +330,27 @@ namespace Restaurants_REST_API.Services.Database_Service
                         .Where(e => e.IsOwner.ToLower() == "y" || e.IsOwner.ToLower() == "t")
                         .FirstAsync();
 
-                    await AddNewEmployeeToRestaurantAsync(queryForChef.IdEmployee, ownerTypeId, newDatabaseRestaurant.Entity.IdRestaurant);
+                    //adding owner to restaurant
+                    var newDatabaseEmployeeHired = _context.EmployeeRestaurant.Add
+                        (
+                            new EmployeeRestaurant
+                            {
+                                IdEmployee = queryForChef.IdEmployee,
+                                IdRestaurant = newDatabaseRestaurant.Entity.IdRestaurant,
+                                IdType = ownerTypeId
+                            }
+                        );
+                    await _context.SaveChangesAsync();
+
+                    var userQuery = await _context.User.Where(u => u.IdEmployee == queryForChef.IdEmployee).FirstOrDefaultAsync();
+                    if (userQuery != null)
+                    {
+                        IEnumerable<int> employeeRoles = _context.EmployeeRestaurant
+                            .Where(eir => eir.IdEmployee == queryForChef.IdEmployee)
+                            .Select(eir => eir.IdType);
+                        userQuery.UserRole = new MapUserRoleService(_configuration).GetUserRoleBasedOnEmployeeTypesId(employeeRoles);
+                    }
+                    await _context.SaveChangesAsync();
                 }
                 catch (Exception ex)
                 {
