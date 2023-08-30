@@ -1,12 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Restaurants_REST_API.DTOs.GetDTO;
 using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.DTOs.PostOrPutDTO;
 using Restaurants_REST_API.DTOs.PutDTO;
 using Restaurants_REST_API.Models.Database;
+using Restaurants_REST_API.Services;
 using Restaurants_REST_API.Services.Database_Service;
 using Restaurants_REST_API.Services.MapperService;
 using Restaurants_REST_API.Services.ValidatorService;
+using System.Data;
 
 namespace Restaurants_REST_API.Controllers
 {
@@ -43,7 +46,13 @@ namespace Restaurants_REST_API.Controllers
         /// <summary>
         /// Returns all restaurants details.
         /// </summary>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Owner.
+        /// - Supervisor.
+        /// </remarks>
         [HttpGet]
+        [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
         public async Task<IActionResult> GetAllRestaurants()
         {
             IEnumerable<GetRestaurantDTO>? restaurants = await _restaurantsApiService.GetAllRestaurantsAsync();
@@ -60,7 +69,13 @@ namespace Restaurants_REST_API.Controllers
         /// Returns restaurant details.
         /// </summary>
         /// <param name="restaurantId">Restaurant id</param>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Owner.
+        /// - Supervisor.
+        /// </remarks>
         [HttpGet("{restaurantId}")]
+        [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
         public async Task<IActionResult> GetRestaurantBy(int restaurantId)
         {
             if (!GeneralValidator.isNumberGtZero(restaurantId))
@@ -83,7 +98,12 @@ namespace Restaurants_REST_API.Controllers
         /// <summary>
         /// Returns statistics from all restaurants.
         /// </summary>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Owner.
+        /// </remarks>
         [HttpGet("stats")]
+        [Authorize(Roles = UserRolesService.Owner)]
         public async Task<IActionResult> GetRestaurantStatistics()
         {
             IEnumerable<GetRestaurantDTO>? restaurantsDetails = await _restaurantsApiService.GetAllRestaurantsAsync();
@@ -130,7 +150,13 @@ namespace Restaurants_REST_API.Controllers
         /// Returns dish details.
         /// </summary>
         /// <param name="dishId">Dish id</param>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Owner.
+        /// - Supervisor.
+        /// </remarks>
         [HttpGet("dish/{dishId}")]
+        [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
         public async Task<IActionResult> GetDishBy(int dishId)
         {
             if (!GeneralValidator.isNumberGtZero(dishId))
@@ -150,7 +176,12 @@ namespace Restaurants_REST_API.Controllers
         /// <summary>
         /// Returns all employee types.
         /// </summary>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Owner.
+        /// </remarks>
         [HttpGet("employee/types")]
+        [Authorize(Roles = UserRolesService.Owner)]
         public async Task<IActionResult> GetAllEmployeeTypes()
         {
             var types = await _restaurantsApiService.GetEmployeeTypesAsync();
@@ -166,7 +197,12 @@ namespace Restaurants_REST_API.Controllers
         /// Adds new restaurant.
         /// </summary>
         /// <param name="newRestaurant">New restaurant basic data</param>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Owner.
+        /// </remarks>
         [HttpPost]
+        [Authorize(Roles = UserRolesService.Owner)]
         public async Task<IActionResult> AddNewRestaurant(PostRestaurantDTO newRestaurant)
         {
             if (newRestaurant == null)
@@ -244,7 +280,13 @@ namespace Restaurants_REST_API.Controllers
         /// Adds new dish.
         /// </summary>
         /// <param name="newDish">New dish basic data</param>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Owner.
+        /// - Supervisor.
+        /// </remarks>
         [HttpPost("dish")]
+        [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
         public async Task<IActionResult> AddNewDish(PostDishDTO newDish)
         {
             if (newDish == null)
@@ -307,11 +349,16 @@ namespace Restaurants_REST_API.Controllers
         /// <param name="empId">Employee id</param>
         /// <param name="typeId">Employee type id</param>
         /// <param name="restaurantId">Restaurant id</param>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Owner.
+        /// </remarks>
         /*
          * Only one owner can be hired at once in restaurant
          * Chef can be hired multiple times in restaurant
          */
         [HttpPost("{restaurantId}/employee/{empId}/type/{typeId}")]
+        [Authorize(Roles = UserRolesService.Owner)]
         public async Task<IActionResult> AddNewEmployeeToRestaurantBy(int restaurantId, int empId, int typeId)
         {
 
@@ -417,7 +464,12 @@ namespace Restaurants_REST_API.Controllers
         /// <param name="empId">Employee id</param>
         /// <param name="typeId">Employee type id</param>
         /// <param name="restaurantId">Restaurant id</param>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Owner.
+        /// </remarks>
         [HttpPut("{restaurantId}/employee/{empId}/type/{typeId}")]
+        [Authorize(Roles = UserRolesService.Owner)]
         public async Task<IActionResult> UpdateEmployeeTypeBy(int restaurantId, int empId, int typeId)
         {
             //checking if ids are valid
@@ -532,7 +584,12 @@ namespace Restaurants_REST_API.Controllers
         /// </summary>
         /// <param name="restaurantId">Restaurant id</param>
         /// <param name="putRestaurantData">Restaurant basic data</param>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Owner.
+        /// </remarks>
         [HttpPut("{restaurantId}")]
+        [Authorize(Roles = UserRolesService.Owner)]
         public async Task<IActionResult> UpdateRestaurantDataBy(int restaurantId, PutRestaurantDTO putRestaurantData)
         {
             if (!GeneralValidator.isNumberGtZero(restaurantId))
@@ -598,7 +655,13 @@ namespace Restaurants_REST_API.Controllers
         /// </summary>
         /// <param name="dishId">Dish id</param>
         /// <param name="putDishData">Dish basic data</param>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Owner.
+        /// - Supervisor.
+        /// </remarks>
         [HttpPut("dish/{dishId}")]
+        [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
         public async Task<IActionResult> UpdateDishDataBy(int dishId, PutDishDTO putDishData)
         {
             if (!GeneralValidator.isNumberGtZero(dishId))
@@ -633,7 +696,12 @@ namespace Restaurants_REST_API.Controllers
         /// Removes dish data from all restaurants.
         /// </summary>
         /// <param name="dishId">Dish id</param>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Owner.
+        /// </remarks>
         [HttpDelete("dish/{dishId}")]
+        [Authorize(Roles = UserRolesService.Owner)]
         public async Task<IActionResult> DeleteDishBy(int dishId)
         {
             if (!GeneralValidator.isNumberGtZero(dishId))
@@ -661,7 +729,13 @@ namespace Restaurants_REST_API.Controllers
         /// </summary>
         /// <param name="restaurantId">Restaurant id</param>
         /// <param name="dishId">Dish id</param>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Owner.
+        /// - Supervisor.
+        /// </remarks>
         [HttpDelete("{restaurantId}/dish/{dishId}")]
+        [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
         public async Task<IActionResult> DeleteDishBy(int restaurantId, int dishId)
         {
             if (!GeneralValidator.isNumberGtZero(restaurantId))
@@ -712,7 +786,13 @@ namespace Restaurants_REST_API.Controllers
         /// </summary>
         /// <param name="empId">Employee id</param>
         /// <param name="restaurantId">Restaurant id</param>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Owner.
+        /// - Supervisor.
+        /// </remarks>
         [HttpDelete("{restaurantId}/employee/{empId}")]
+        [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
         public async Task<IActionResult> DeleteEmployeeFromRestaurantBy(int empId, int restaurantId)
         {
             if (!GeneralValidator.isNumberGtZero(empId))
