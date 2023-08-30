@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.DTOs.PostDTO;
+using Restaurants_REST_API.Services;
 using Restaurants_REST_API.Services.Database_Service;
 using Restaurants_REST_API.Services.DatabaseService.CustomersService;
 using Restaurants_REST_API.Services.ValidatorService;
@@ -139,7 +140,12 @@ namespace Restaurants_REST_API.Controllers
         /// Return full client data with all reservations.
         /// </summary>
         /// <param name="clientId">Client id</param>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Client.
+        /// </remarks>
         [HttpGet("{clientId}")]
+        [Authorize(Roles = UserRolesService.Client)]
         public async Task<IActionResult> GetClientDataBy(int clientId)
         {
             if (!GeneralValidator.isNumberGtZero(clientId))
@@ -169,7 +175,12 @@ namespace Restaurants_REST_API.Controllers
         /// </summary>
         /// <param name="clientId">Client id</param>
         /// <param name="reservationId">Reservation id</param>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Client.
+        /// </remarks>
         [HttpGet("{clientId}/reservation/{reservationId}")]
+        [Authorize(Roles = UserRolesService.Client)]
         public async Task<IActionResult> GetClientReservationDataBy(int clientId, int reservationId)
         {
             if (!GeneralValidator.isNumberGtZero(clientId))
@@ -204,7 +215,12 @@ namespace Restaurants_REST_API.Controllers
         /// </summary>
         /// <param name="clientId">Client id</param>
         /// <param name="newReservation">Reservation data</param>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Client.
+        /// </remarks>
         [HttpPost("{clientId}/reservation")]
+        [Authorize(Roles = UserRolesService.Client)]
         public async Task<IActionResult> MakeReservationBy(int clientId, PostReservationDTO newReservation)
         {
             if (!GeneralValidator.isNumberGtZero(clientId))
@@ -261,8 +277,12 @@ namespace Restaurants_REST_API.Controllers
         /// <param name="clientId">Client id</param>
         /// <param name="reservationId">Reservation id</param>
         /// <param name="newComplaint">Complaint data</param>
-        /// <returns></returns>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Client.
+        /// </remarks>
         [HttpPost("{clientId}/reservation/{reservationId}/complain")]
+        [Authorize(Roles = UserRolesService.Client)]
         public async Task<IActionResult> MakeComplainBy(int clientId, int reservationId, PostComplaintDTO newComplaint)
         {
             if (!GeneralValidator.isNumberGtZero(clientId))
@@ -324,7 +344,12 @@ namespace Restaurants_REST_API.Controllers
         /// </summary>
         /// <param name="clientId">Client id</param>
         /// <param name="reservationId">Reservation id</param>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Client.
+        /// </remarks>
         [HttpPut("{clientId}/reservation/{reservationId}/confirm")]
+        [Authorize(Roles = UserRolesService.Client)]
         public async Task<IActionResult> ConfirmReservationBy(int clientId, int reservationId)
         {
             if (!GeneralValidator.isNumberGtZero(clientId))
@@ -378,11 +403,16 @@ namespace Restaurants_REST_API.Controllers
         /// </summary>
         /// <param name="clientId">Client id</param>
         /// <param name="reservationId">Reservation id</param>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Client.
+        /// </remarks>
         /*
          * This is duplication of method ConfirmReservation, 
          * because in future could be different logic implemented
         */
         [HttpPut("{clientId}/reservation/{reservationId}/cancel")]
+        [Authorize(Roles = UserRolesService.Client)]
         public async Task<IActionResult> CancelReserationBy(int clientId, int reservationId)
         {
             if (!GeneralValidator.isNumberGtZero(clientId))
@@ -437,7 +467,12 @@ namespace Restaurants_REST_API.Controllers
         /// <param name="clientId">Client id</param>
         /// <param name="reservationId">Reservation id</param>
         /// <param name="grade">Grade is query string</param>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Client.
+        /// </remarks>
         [HttpPut("{clientId}/reservation/{reservationId}/rate")]
+        [Authorize(Roles = UserRolesService.Client)]
         public async Task<IActionResult> RateReserationBy(int clientId, int reservationId, int grade)
         {
             if (!GeneralValidator.isNumberGtZero(clientId))
