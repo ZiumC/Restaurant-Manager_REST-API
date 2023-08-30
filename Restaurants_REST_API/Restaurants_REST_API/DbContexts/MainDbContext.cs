@@ -77,9 +77,9 @@ namespace Restaurants_REST_API.DbContexts
                 r.HasData(new Reservation
                 {
                     IdReservation = 1,
-                    ReservationDate = DateTime.Parse("2023-01-01"),
+                    ReservationDate = DateTime.Parse("2023-12-12"),
                     HowManyPeoples = 1,
-                    ReservationStatus = "New",
+                    ReservationStatus = "NEW",
                     ReservationGrade = null,
                     IdClient = 1,
                     IdRestaurant = 1
@@ -89,7 +89,7 @@ namespace Restaurants_REST_API.DbContexts
                     IdReservation = 2,
                     ReservationDate = DateTime.Parse("2023-11-01"),
                     HowManyPeoples = 4,
-                    ReservationStatus = "Canceled",
+                    ReservationStatus = "CANCELED",
                     ReservationGrade = null,
                     IdClient = 3,
                     IdRestaurant = 1
@@ -99,7 +99,7 @@ namespace Restaurants_REST_API.DbContexts
                     IdReservation = 3,
                     ReservationDate = DateTime.Parse("2023-02-09"),
                     HowManyPeoples = 6,
-                    ReservationStatus = "Finished",
+                    ReservationStatus = "RATED",
                     ReservationGrade = 4,
                     IdClient = 2,
                     IdRestaurant = 1
@@ -117,7 +117,7 @@ namespace Restaurants_REST_API.DbContexts
                 {
                     IdComplaint = 1,
                     ComplainDate = DateTime.Parse("2023-01-01"),
-                    ComplaintStatus = "Canceled",
+                    ComplaintStatus = "REJECTED",
                     ComplaintMessage = "Zupa była za słona, obsługa była niemiła",
                     IdReservation = 1,
                     IdRestaurant = 1
@@ -127,7 +127,7 @@ namespace Restaurants_REST_API.DbContexts
                 {
                     IdComplaint = 2,
                     ComplainDate = DateTime.Parse("2023-11-08"),
-                    ComplaintStatus = "New",
+                    ComplaintStatus = "NEW",
                     ComplaintMessage = "Na kotlecie była mucha",
                     IdReservation = 3,
                     IdRestaurant = 1
