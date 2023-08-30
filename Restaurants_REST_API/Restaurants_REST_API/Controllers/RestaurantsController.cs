@@ -379,9 +379,9 @@ namespace Restaurants_REST_API.Controllers
 
             //checking if types exist in db
             IEnumerable<GetEmployeeTypeDTO>? allTypes = await _restaurantsApiService.GetEmployeeTypesAsync();
-            if (!EmployeeTypeValidator.isTypesExist(allTypes))
+            if (allTypes == null)
             {
-                return NotFound("Employee types not found in database");
+                return NotFound("Employee types not found");
             }
 
             //checking if type exist
@@ -418,13 +418,7 @@ namespace Restaurants_REST_API.Controllers
                     return BadRequest($"Employee {employeeDatabase.FirstName} already works in restaurant {restaurantDatabase.Name}");
                 }
 
-                IEnumerable<GetEmployeeTypeDTO>? types = await _restaurantsApiService.GetEmployeeTypesAsync();
-                if (types == null)
-                {
-                    return NotFound("Employee types not found");
-                }
-
-                int ownerTypeId = types
+                int ownerTypeId = allTypes
                     .Where(t => t.Name == _ownerTypeName)
                     .Select(t => t.IdType)
                     .FirstOrDefault();
@@ -445,6 +439,11 @@ namespace Restaurants_REST_API.Controllers
                     if (ownersCount == 1)
                     {
                         return BadRequest($"Unable to add type Owner because owner already exists in restaurant");
+                    }
+
+                    if (!employeeDatabase.IsOwner.ToLower().Equals("y"))
+                    {
+                        return BadRequest($"Employee {employeeDatabase.FirstName} isn't an owner");
                     }
                 }
             }
@@ -566,6 +565,11 @@ namespace Restaurants_REST_API.Controllers
                     if (ownerExistInRestaurant)
                     {
                         return BadRequest("Unable to update employee type to owner because owner already exists in restaurant");
+                    }
+
+                    if (!employeeDatabase.IsOwner.ToLower().Equals("y"))
+                    {
+                        return BadRequest($"Employee {employeeDatabase.FirstName} isn't an owner");
                     }
                 }
             }
@@ -789,10 +793,9 @@ namespace Restaurants_REST_API.Controllers
         /// <remarks>
         /// To use that endpoint, access token should contain following roles:
         /// - Owner.
-        /// - Supervisor.
         /// </remarks>
         [HttpDelete("{restaurantId}/employee/{empId}")]
-        [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
+        [Authorize(Roles = UserRolesService.Owner)]
         public async Task<IActionResult> DeleteEmployeeFromRestaurantBy(int empId, int restaurantId)
         {
             if (!GeneralValidator.isNumberGtZero(empId))
@@ -827,6 +830,11 @@ namespace Restaurants_REST_API.Controllers
             if (worker == null)
             {
                 return NotFound($"Employee {employeeDatabase.FirstName} not found in restaurant {restaurantDatabase.Name}");
+            }
+
+            if (employeeDatabase.IsOwner.ToLower().Equals("y"))
+            {
+                return BadRequest("Owner can't be deleted from restaurant");
             }
 
             bool isEmployeeHasBeenRemoved = await _restaurantsApiService.DeleteEmployeeFromRestaurantAsync(empId, restaurantId);
