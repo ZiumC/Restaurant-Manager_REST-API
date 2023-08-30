@@ -1,5 +1,7 @@
-﻿using Restaurants_REST_API.DTOs.PostDTO;
+﻿using Microsoft.AspNetCore.Mvc;
+using Restaurants_REST_API.DTOs.PostDTO;
 using Restaurants_REST_API.Models.DatabaseModel;
+using System.Security.Claims;
 
 namespace Restaurants_REST_API.Services.JwtService
 {
@@ -24,5 +26,7 @@ namespace Restaurants_REST_API.Services.JwtService
         /// <param name="jwt">Pair of access token and refresh token.</param>
         /// <returns>True if token is valid or false  when token isn't valid.</returns>
         public bool ValidateJwt(PostJwtDTO jwt);
+
+        public bool ValidateClientClaims(ClaimsIdentity? clientIdentity, int clientId);
     }
 }

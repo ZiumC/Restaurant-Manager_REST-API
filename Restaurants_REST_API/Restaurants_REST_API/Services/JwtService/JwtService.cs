@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Restaurants_REST_API.DTOs.PostDTO;
 using Restaurants_REST_API.Models.DatabaseModel;
 using System.IdentityModel.Tokens.Jwt;
@@ -16,6 +17,8 @@ namespace Restaurants_REST_API.Services.JwtService
         private readonly string _secretSignature;
         private readonly string _issuer;
         private readonly string _audience;
+        private readonly string _clientClaimName;
+        private readonly string _employeeClaimName;
 
         public JwtService(IConfiguration config)
         {
@@ -24,6 +27,9 @@ namespace Restaurants_REST_API.Services.JwtService
             _secretSignature = _config["ApplicationSettings:JwtSettings:SecretSignatureKey"];
             _issuer = _config["ApplicationSettings:JwtSettings:Issuer"];
             _audience = _config["ApplicationSettings:JwtSettings:Audience"];
+
+            _clientClaimName = "ClientId";
+            _employeeClaimName = "EmpId";
 
             try
             {
@@ -91,12 +97,12 @@ namespace Restaurants_REST_API.Services.JwtService
 
             if (!string.IsNullOrEmpty(empId))
             {
-                identity.AddClaim(new Claim("EmpId", empId));
+                identity.AddClaim(new Claim(_employeeClaimName, empId));
             }
 
             if (!string.IsNullOrEmpty(clientId))
             {
-                identity.AddClaim(new Claim("ClientId", clientId));
+                identity.AddClaim(new Claim(_clientClaimName, clientId));
             }
 
             var token = jwtHandler.CreateJwtSecurityToken
@@ -139,6 +145,27 @@ namespace Restaurants_REST_API.Services.JwtService
                 Console.WriteLine(ex.Message);
                 return false;
             }
+            return true;
+        }
+
+        public bool ValidateClientClaims(ClaimsIdentity? clientIdentity, int clientId)
+        {
+            if (clientIdentity == null)
+            {
+                return false;
+            }
+
+            string? jwtClientId = clientIdentity?.FindFirst(_clientClaimName)?.Value;
+            if (jwtClientId == null)
+            {
+                return false;
+            }
+
+            if (clientId != int.Parse(jwtClientId))
+            {
+                return false;
+            }
+
             return true;
         }
     }

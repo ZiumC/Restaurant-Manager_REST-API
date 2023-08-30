@@ -5,7 +5,9 @@ using Restaurants_REST_API.DTOs.PostDTO;
 using Restaurants_REST_API.Services;
 using Restaurants_REST_API.Services.Database_Service;
 using Restaurants_REST_API.Services.DatabaseService.CustomersService;
+using Restaurants_REST_API.Services.JwtService;
 using Restaurants_REST_API.Services.ValidatorService;
+using System.Security.Claims;
 
 namespace Restaurants_REST_API.Controllers
 {
@@ -21,14 +23,60 @@ namespace Restaurants_REST_API.Controllers
     {
         private readonly IClientApiService _clientApiService;
         private readonly IRestaurantApiService _restaurantApiService;
+        private readonly IJwtService _jwtService;
         private readonly IConfiguration _config;
+        private readonly string _newReservationStatus;
+        private readonly string _canceledReservationStatus;
+        private readonly string _confirmedReservationStatus;
+        private readonly string _ratedReservationStatus;
+        private readonly string _newComplaintStatus;
 
 
-        public ClientsController(IClientApiService clientApiService, IRestaurantApiService restaurantApiService, IConfiguration config)
+        public ClientsController(IClientApiService clientApiService, IRestaurantApiService restaurantApiService, IJwtService jwtService, IConfiguration config)
         {
             _clientApiService = clientApiService;
             _restaurantApiService = restaurantApiService;
+            _jwtService = jwtService;   
             _config = config;
+
+            _newReservationStatus = _config["ApplicationSettings:ReservationStatus:New"];
+            _canceledReservationStatus = _config["ApplicationSettings:ReservationStatus:Canceled"];
+            _confirmedReservationStatus = _config["ApplicationSettings:ReservationStatus:Confirmed"];
+            _ratedReservationStatus = _config["ApplicationSettings:ReservationStatus:Rated"];
+
+            _newComplaintStatus = _config["ApplicationSettings:ComplaintStatus:New"];
+
+            try 
+            {
+                if (string.IsNullOrEmpty(_newReservationStatus))
+                {
+                    throw new Exception("Reservation status (NEW) can't be empty");
+                }
+
+                if (string.IsNullOrEmpty(_canceledReservationStatus))
+                {
+                    throw new Exception("Reservation status (CANCELED) can't be empty");
+                }
+
+                if (string.IsNullOrEmpty(_confirmedReservationStatus))
+                {
+                    throw new Exception("Reservation status (CONFIRMED) can't be empty");
+                }
+
+                if (string.IsNullOrEmpty(_ratedReservationStatus))
+                {
+                    throw new Exception("Reservation status (RATED) can't be empty");
+                }
+
+                if (string.IsNullOrEmpty(_newComplaintStatus))
+                {
+                    throw new Exception("Complaint status (NEW) can't be empty");
+                }
+            }
+            catch (Exception ex) 
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
         /// <summary>
@@ -116,8 +164,8 @@ namespace Restaurants_REST_API.Controllers
                         LocalNumber = restaurantDetails.Address.LocalNumber
                     },
                     Menu = restaurantDetails.RestaurantDishes?
-                    .Select(rd => new 
-                    { 
+                    .Select(rd => new
+                    {
                         Name = rd.Name,
                         Price = rd.Price
                     })
@@ -151,6 +199,13 @@ namespace Restaurants_REST_API.Controllers
             if (!GeneralValidator.isNumberGtZero(clientId))
             {
                 return BadRequest($"Client id={clientId} is invalid");
+            }
+
+            var clientIdentity = HttpContext.User.Identity as ClaimsIdentity;
+            bool isClientClaimsValid = _jwtService.ValidateClientClaims(clientIdentity, clientId);
+            if (!isClientClaimsValid)
+            {
+                return StatusCode(403, "Unauthorized access or jwt doesn't contains required claims");
             }
 
             GetClientDataDTO? clientData = await _clientApiService.GetClientDetailsByIdAsync(clientId);
@@ -191,6 +246,13 @@ namespace Restaurants_REST_API.Controllers
             if (!GeneralValidator.isNumberGtZero(reservationId))
             {
                 return BadRequest($"Reservation id={reservationId} is invalid");
+            }
+
+            var clientIdentity = HttpContext.User.Identity as ClaimsIdentity;
+            bool isClientClaimsValid = _jwtService.ValidateClientClaims(clientIdentity, clientId);
+            if (!isClientClaimsValid)
+            {
+                return StatusCode(403, "Unauthorized access or jwt doesn't contains required claims");
             }
 
             GetClientDataDTO? clientData = await _clientApiService.GetClientDetailsByIdAsync(clientId);
@@ -243,7 +305,14 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Number of reservation peoples is invalid");
             }
 
-            var clientData = await _clientApiService.GetClientDetailsByIdAsync(clientId);
+            var clientIdentity = HttpContext.User.Identity as ClaimsIdentity;
+            bool isClientClaimsValid = _jwtService.ValidateClientClaims(clientIdentity, clientId);
+            if (!isClientClaimsValid)
+            {
+                return StatusCode(403, "Unauthorized access or jwt doesn't contains required claims");
+            }
+
+            GetClientDataDTO? clientData = await _clientApiService.GetClientDetailsByIdAsync(clientId);
             if (clientData == null)
             {
                 return NotFound("Client not found");
@@ -300,6 +369,13 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Complaint message can't be empty");
             }
 
+            var clientIdentity = HttpContext.User.Identity as ClaimsIdentity;
+            bool isClientClaimsValid = _jwtService.ValidateClientClaims(clientIdentity, clientId);
+            if (!isClientClaimsValid)
+            {
+                return StatusCode(403, "Unauthorized access or jwt doesn't contains required claims");
+            }
+
             GetReservationDTO? reservationDetails = await _clientApiService.GetReservationDetailsByCliennIdReservationIdAsync(clientId, reservationId);
             if (reservationDetails == null)
             {
@@ -312,9 +388,7 @@ namespace Restaurants_REST_API.Controllers
             }
 
             string currentReservationStatus = reservationDetails.Status;
-            string newStatus = _config["ApplicationSettings:ReservationStatus:New"];
-            string canceledStatus = _config["ApplicationSettings:ReservationStatus:Canceled"];
-            if (currentReservationStatus == newStatus || currentReservationStatus == canceledStatus)
+            if (currentReservationStatus == _newReservationStatus || currentReservationStatus == _canceledReservationStatus)
             {
                 return BadRequest("Unable to make complain because reservation is new or canceled");
             }
@@ -327,7 +401,7 @@ namespace Restaurants_REST_API.Controllers
             var complaint = new GetComplaintDTO
             {
                 Message = newComplaint.Message,
-                Status = _config["ApplicationSettings:ComplaintStatus:New"],
+                Status = _newComplaintStatus,
                 ComplaintDate = DateTime.Now
             };
             bool isComplaintMade = await _clientApiService.MakeComplainByClientIdAsync(clientId, reservationDetails, complaint);
@@ -362,6 +436,13 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest($"Reservation id={reservationId} is invalid");
             }
 
+            var clientIdentity = HttpContext.User.Identity as ClaimsIdentity;
+            bool isClientClaimsValid = _jwtService.ValidateClientClaims(clientIdentity, clientId);
+            if (!isClientClaimsValid)
+            {
+                return StatusCode(403, "Unauthorized access or jwt doesn't contains required claims");
+            }
+
             GetReservationDTO? reservationDetails = await _clientApiService.GetReservationDetailsByCliennIdReservationIdAsync(clientId, reservationId);
             if (reservationDetails == null)
             {
@@ -369,16 +450,14 @@ namespace Restaurants_REST_API.Controllers
             }
 
             string currentReservationStatus = reservationDetails.Status;
-            string newStatus = _config["ApplicationSettings:ReservationStatus:New"];
-            string confirmedStatus = _config["ApplicationSettings:ReservationStatus:Confirmed"];
-            if (currentReservationStatus == newStatus)
+            if (currentReservationStatus == _newReservationStatus)
             {
                 if (reservationDetails.ReservationDate <= DateTime.Now)
                 {
                     return BadRequest("Unable to confirm reservation because date of reservation is passed away");
                 }
 
-                reservationDetails.Status = confirmedStatus;
+                reservationDetails.Status = _confirmedReservationStatus;
 
                 bool isConfirmed = await _clientApiService.UpdateReservationByClientIdAsync(clientId, reservationDetails);
                 if (!isConfirmed)
@@ -387,7 +466,7 @@ namespace Restaurants_REST_API.Controllers
                 }
                 return Ok("Reservation has been confirmed");
             }
-            else if (currentReservationStatus == confirmedStatus)
+            else if (currentReservationStatus == _confirmedReservationStatus)
             {
                 return BadRequest("Reservation is already confirmed");
             }
@@ -425,6 +504,13 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest($"Reservation id={reservationId} is invalid");
             }
 
+            var clientIdentity = HttpContext.User.Identity as ClaimsIdentity;
+            bool isClientClaimsValid = _jwtService.ValidateClientClaims(clientIdentity, clientId);
+            if (!isClientClaimsValid)
+            {
+                return StatusCode(403, "Unauthorized access or jwt doesn't contains required claims");
+            }
+
             GetReservationDTO? reservationDetails = await _clientApiService.GetReservationDetailsByCliennIdReservationIdAsync(clientId, reservationId);
             if (reservationDetails == null)
             {
@@ -432,17 +518,14 @@ namespace Restaurants_REST_API.Controllers
             }
 
             string currentReservationStatus = reservationDetails.Status;
-            string newStatus = _config["ApplicationSettings:ReservationStatus:New"];
-            string confirmedStatus = _config["ApplicationSettings:ReservationStatus:Confirmed"];
-            string canceledStatus = _config["ApplicationSettings:ReservationStatus:Canceled"];
-            if (currentReservationStatus == newStatus || currentReservationStatus == confirmedStatus)
+            if (currentReservationStatus == _newReservationStatus || currentReservationStatus == _confirmedReservationStatus)
             {
                 if (reservationDetails.ReservationDate <= DateTime.Now)
                 {
                     return BadRequest("Unable to cancel reservation because date of reservation is passed away");
                 }
 
-                reservationDetails.Status = _config["ApplicationSettings:ReservationStatus:Canceled"];
+                reservationDetails.Status = _canceledReservationStatus;
 
                 bool isConfirmed = await _clientApiService.UpdateReservationByClientIdAsync(clientId, reservationDetails);
                 if (!isConfirmed)
@@ -451,7 +534,7 @@ namespace Restaurants_REST_API.Controllers
                 }
                 return Ok("Reservation has been canceled");
             }
-            else if (currentReservationStatus == canceledStatus)
+            else if (currentReservationStatus == _canceledReservationStatus)
             {
                 return BadRequest("Reservation is already canceled");
             }
@@ -490,6 +573,12 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest($"Reservation grade ({grade}) is invalid");
             }
 
+            var clientIdentity = HttpContext.User.Identity as ClaimsIdentity;
+            bool isClientClaimsValid = _jwtService.ValidateClientClaims(clientIdentity, clientId);
+            if (!isClientClaimsValid)
+            {
+                return StatusCode(403, "Unauthorized access or jwt doesn't contains required claims");
+            }
 
             GetReservationDTO? reservationDetails = await _clientApiService.GetReservationDetailsByCliennIdReservationIdAsync(clientId, reservationId);
             if (reservationDetails == null)
@@ -503,12 +592,10 @@ namespace Restaurants_REST_API.Controllers
             }
 
             string currentReservationStatus = reservationDetails.Status;
-            string confirmedStatus = _config["ApplicationSettings:ReservationStatus:Confirmed"];
-            string ratedStatus = _config["ApplicationSettings:ReservationStatus:Rated"];
-            if (currentReservationStatus == confirmedStatus)
+            if (currentReservationStatus == _confirmedReservationStatus)
             {
                 reservationDetails.ReservationGrade = grade;
-                reservationDetails.Status = ratedStatus;
+                reservationDetails.Status = _ratedReservationStatus;
 
                 bool isUpdated = await _clientApiService.UpdateReservationByClientIdAsync(clientId, reservationDetails);
                 if (!isUpdated)
@@ -517,7 +604,7 @@ namespace Restaurants_REST_API.Controllers
                 }
                 return Ok("Reservation has been rated");
             }
-            else if (currentReservationStatus == ratedStatus)
+            else if (currentReservationStatus == _ratedReservationStatus)
             {
                 return BadRequest("Reservation is rated already");
             }
