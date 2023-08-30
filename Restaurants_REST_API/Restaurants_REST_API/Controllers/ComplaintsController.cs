@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Restaurants_REST_API.DTOs.GetDTOs;
-using Restaurants_REST_API.Models.Database;
+using Restaurants_REST_API.Services;
 using Restaurants_REST_API.Services.Database_Service;
 using Restaurants_REST_API.Services.DatabaseService.CustomersService;
 using Restaurants_REST_API.Services.ValidatorService;
@@ -27,8 +28,13 @@ namespace Restaurants_REST_API.Controllers
         /// <summary>
         /// Returns client, client reservations and complaint data based on complaint status from all restaurants.
         /// </summary>
-        /// <param name="status">Status could be: NEW, PENDING, ACCEPTED, REJECTED</param>
+        /// <param name="status">Complaint status could be: NEW, PENDING, ACCEPTED, REJECTED</param>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Owner.
+        /// </remarks>
         [HttpGet]
+        [Authorize(Roles = UserRolesService.Owner)]
         public async Task<IActionResult> GetComplainsByStatusBy(string status)
         {
             IEnumerable<string> availableStatuses = new List<string>
@@ -89,11 +95,16 @@ namespace Restaurants_REST_API.Controllers
         /// </summary>
         /// <param name="complaintId">Complaint id</param>
         /// <param name="action">Action could be: consider, accept, reject</param>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Owner.
+        /// </remarks>
         /*
          * This method is made like this because it is unnecessary to make 
          * a lot of endpoints which business logic is very similar.
          */
         [HttpPut("{complaintId}/update")]
+        [Authorize(Roles = UserRolesService.Owner)]
         public async Task<IActionResult> UpdateComplaintStatusBy(int complaintId, string action)
         {
 
