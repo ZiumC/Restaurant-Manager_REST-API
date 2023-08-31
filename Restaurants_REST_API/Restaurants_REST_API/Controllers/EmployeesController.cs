@@ -2,16 +2,14 @@
 using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.Models.Database;
 using Restaurants_REST_API.Services.Database_Service;
-using Restaurants_REST_API.Services.ValidationService;
-using Restaurants_REST_API.Services.ValidatorService;
+using Restaurants_REST_API.Utils.ValidatorService;
 using Restaurants_REST_API.DTOs.PostOrPutDTO;
-using Restaurants_REST_API.Services.UpdateDataService;
 using Restaurants_REST_API.DTOs.PutDTO;
 using Restaurants_REST_API.DTOs.GetDTO;
 using System.Data;
 using Microsoft.AspNetCore.Authorization;
-using Restaurants_REST_API.Services;
 using System.Text.RegularExpressions;
+using Restaurants_REST_API.Utils;
 
 namespace Restaurants_REST_API.Controllers
 {
@@ -79,7 +77,7 @@ namespace Restaurants_REST_API.Controllers
         /// - Supervisor.
         /// </remarks>
         [HttpGet]
-        [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
+        [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
         public async Task<IActionResult> GetAllEmployees()
         {
             var employees = await _employeeApiService.GetAllEmployeesAsync();
@@ -102,10 +100,10 @@ namespace Restaurants_REST_API.Controllers
         /// - Supervisor.
         /// </remarks>
         [HttpGet("{empId}")]
-        [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
+        [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
         public async Task<IActionResult> GetEmployeeBy(int empId)
         {
-            if (!GeneralValidator.isIntNumberGtZero(empId))
+            if (!GeneralValidatorUtility.isIntNumberGtZero(empId))
             {
                 return BadRequest($"Employee id={empId} is invalid");
             }
@@ -127,7 +125,7 @@ namespace Restaurants_REST_API.Controllers
         /// - Owner.
         /// </remarks>
         [HttpGet("supervisors")]
-        [Authorize(Roles = UserRolesService.Owner)]
+        [Authorize(Roles = UserRolesUtility.Owner)]
         public async Task<IActionResult> GetSupervisors()
         {
             IEnumerable<GetEmployeeTypeDTO>? allTypes = await _restaurantsApiService.GetEmployeeTypesAsync();
@@ -164,10 +162,10 @@ namespace Restaurants_REST_API.Controllers
         /// - Owner.
         /// </remarks>
         [HttpGet("supervisor/{supervisorId}")]
-        [Authorize(Roles = UserRolesService.Owner)]
+        [Authorize(Roles = UserRolesUtility.Owner)]
         public async Task<IActionResult> GetSupervisorBy(int supervisorId)
         {
-            if (!GeneralValidator.isIntNumberGtZero(supervisorId))
+            if (!GeneralValidatorUtility.isIntNumberGtZero(supervisorId))
             {
                 return BadRequest($"Supervisor id={supervisorId} is invalid");
             }
@@ -212,7 +210,7 @@ namespace Restaurants_REST_API.Controllers
         /// - Owner.
         /// </remarks>
         [HttpGet("owner")]
-        [Authorize(Roles = UserRolesService.Owner)]
+        [Authorize(Roles = UserRolesUtility.Owner)]
         public async Task<IActionResult> GetOwnerDetails()
         {
             IEnumerable<GetEmployeeTypeDTO>? allTypes = await _restaurantsApiService.GetEmployeeTypesAsync();
@@ -249,10 +247,10 @@ namespace Restaurants_REST_API.Controllers
         /// - Supervisor.
         /// </remarks>
         [HttpGet("restaurant/{restaurantId}")]
-        [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
+        [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
         public async Task<IActionResult> GetEmployeeByRestaurant(int restaurantId)
         {
-            if (!GeneralValidator.isIntNumberGtZero(restaurantId))
+            if (!GeneralValidatorUtility.isIntNumberGtZero(restaurantId))
             {
                 return BadRequest($"Restaurant id={restaurantId} is invalid");
             }
@@ -282,7 +280,7 @@ namespace Restaurants_REST_API.Controllers
         /// - Supervisor.
         /// </remarks>
         [HttpPost]
-        [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
+        [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
         public async Task<IActionResult> AddNewEmployee(PostEmployeeDTO newEmployee)
         {
             if (!ModelState.IsValid)
@@ -300,7 +298,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("PESEL is invalid");
             }
 
-            if (!GeneralValidator.isDecimalNumberGtZero(newEmployee.Salary))
+            if (!GeneralValidatorUtility.isDecimalNumberGtZero(newEmployee.Salary))
             {
                 return BadRequest("Salary can't be less or equal 0");
             }
@@ -384,7 +382,7 @@ namespace Restaurants_REST_API.Controllers
         /// - Supervisor.
         /// </remarks>
         [HttpPost("{empId}/certificate")]
-        [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
+        [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
         public async Task<IActionResult> AddCertificateBy(int empId, IEnumerable<PostCertificateDTO> newCertificates)
         {
             if (!ModelState.IsValid)
@@ -392,7 +390,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Certificates data are invalid");
             }
 
-            if (!GeneralValidator.isIntNumberGtZero(empId))
+            if (!GeneralValidatorUtility.isIntNumberGtZero(empId))
             {
                 return BadRequest($"Employee id={empId} is invalid");
             }
@@ -436,7 +434,7 @@ namespace Restaurants_REST_API.Controllers
         /// - Supervisor.
         /// </remarks>
         [HttpPut("{empId}")]
-        [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
+        [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
         public async Task<IActionResult> UpdateEmployeeData(int empId, PutEmployeeDTO putEmpData)
         {
             if (!ModelState.IsValid)
@@ -444,7 +442,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Employee data is invalid");
             }
 
-            if (!GeneralValidator.isIntNumberGtZero(empId))
+            if (!GeneralValidatorUtility.isIntNumberGtZero(empId))
             {
                 return BadRequest($"Id={empId} isn't correct");
             }
@@ -459,7 +457,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("PESEL isn't correct");
             }
 
-            if (!GeneralValidator.isDecimalNumberGtZero(putEmpData.Salary))
+            if (!GeneralValidatorUtility.isDecimalNumberGtZero(putEmpData.Salary))
             {
                 return BadRequest("Salary can't be less or equal 0");
             }
@@ -516,15 +514,15 @@ namespace Restaurants_REST_API.Controllers
         /// - Supervisor.
         /// </remarks>
         [HttpPut("{empId}/certificate/{certificateId}")]
-        [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
+        [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
         public async Task<IActionResult> UpdateEmployeeCertificatesBy(int empId, int certificateId, PutCertificateDTO putEmpCertificates)
         {
-            if (!GeneralValidator.isIntNumberGtZero(empId))
+            if (!GeneralValidatorUtility.isIntNumberGtZero(empId))
             {
                 return BadRequest($"Employee id={empId} is invalid");
             }
 
-            if (!GeneralValidator.isIntNumberGtZero(certificateId))
+            if (!GeneralValidatorUtility.isIntNumberGtZero(certificateId))
             {
                 return BadRequest($"Certificate id={certificateId} is invalid");
             }
@@ -571,10 +569,10 @@ namespace Restaurants_REST_API.Controllers
         /// - Owner.
         /// </remarks>
         [HttpDelete("{empId}")]
-        [Authorize(Roles = UserRolesService.Owner)]
+        [Authorize(Roles = UserRolesUtility.Owner)]
         public async Task<IActionResult> DeleteEmployeeFromEverywhere(int empId)
         {
-            if (!GeneralValidator.isIntNumberGtZero(empId))
+            if (!GeneralValidatorUtility.isIntNumberGtZero(empId))
             {
                 return BadRequest($"Employee id={empId} is invalid");
             }
@@ -605,15 +603,15 @@ namespace Restaurants_REST_API.Controllers
         /// - Supervisor.
         /// </remarks>
         [HttpDelete("{empId}/certificate/{certificateId}")]
-        [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
+        [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
         public async Task<IActionResult> DeleteEmployeeCertificate(int empId, int certificateId)
         {
-            if (!GeneralValidator.isIntNumberGtZero(empId))
+            if (!GeneralValidatorUtility.isIntNumberGtZero(empId))
             {
                 return BadRequest($"Employee id={empId} is invalid");
             }
 
-            if (!GeneralValidator.isIntNumberGtZero(certificateId))
+            if (!GeneralValidatorUtility.isIntNumberGtZero(certificateId))
             {
                 return BadRequest($"Certificate id={certificateId} is invalid");
             }
