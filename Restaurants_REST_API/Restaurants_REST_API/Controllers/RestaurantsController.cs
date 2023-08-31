@@ -637,39 +637,39 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpPut("{restaurantId}")]
         [Authorize(Roles = UserRolesService.Owner)]
-        public async Task<IActionResult> UpdateRestaurantDataBy(int restaurantId, PutRestaurantDTO putRestaurantData)
+        public async Task<IActionResult> UpdateRestaurantData(int restaurantId, PutRestaurantDTO putRestaurantData)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Restaurant data is invalid");
+            }
+
             if (!GeneralValidator.isNumberGtZero(restaurantId))
             {
                 return BadRequest($"Restaurant id={restaurantId} is invalid");
             }
 
-            if (putRestaurantData == null)
-            {
-                return BadRequest("Restaurant data can't be empty");
-            }
-
-            if (GeneralValidator.isEmptyNameOf(putRestaurantData.Name))
+            if (string.IsNullOrEmpty(putRestaurantData.Name))
             {
                 return BadRequest("Restaurant name can't be empty");
             }
 
-            if (GeneralValidator.isEmptyNameOf(putRestaurantData.Status))
+            if (string.IsNullOrEmpty(putRestaurantData.Status))
             {
                 return BadRequest("Restaurant status can't be empty");
             }
 
-            if (GeneralValidator.isEmptyNameOf(putRestaurantData.Address.City))
+            if (string.IsNullOrEmpty(putRestaurantData.Address.City))
             {
                 return BadRequest("City can't be empty");
             }
 
-            if (GeneralValidator.isEmptyNameOf(putRestaurantData.Address.Street))
+            if (string.IsNullOrEmpty(putRestaurantData.Address.Street))
             {
                 return BadRequest("Street can't be empty");
             }
 
-            if (GeneralValidator.isEmptyNameOf(putRestaurantData.Address.BuildingNumber))
+            if (string.IsNullOrEmpty(putRestaurantData.Address.BuildingNumber))
             {
                 return BadRequest("Building number can't be empty");
             }
@@ -684,11 +684,8 @@ namespace Restaurants_REST_API.Controllers
             {
                 return NotFound($"Restaurant id={restaurantId} not found");
             }
-            GetRestaurantDTO restaurantDetailsDatabase = await _restaurantsApiService.GetDetailedRestaurantDataAsync(restaurantDatabase);
-            MapRestaurantDataService restaurantDataMapper = new MapRestaurantDataService(restaurantDetailsDatabase, putRestaurantData);
-            Restaurant restaurantUpdatedData = restaurantDataMapper.GetRestaurantUpdatedData();
 
-            bool isRestaurantUpdated = await _restaurantsApiService.UpdateRestaurantDataAsync(restaurantId, restaurantUpdatedData);
+            bool isRestaurantUpdated = await _restaurantsApiService.UpdateRestaurantDataAsync(restaurantId, putRestaurantData);
             if (!isRestaurantUpdated)
             {
                 return BadRequest("Something went wrong unable to update restaurant data");

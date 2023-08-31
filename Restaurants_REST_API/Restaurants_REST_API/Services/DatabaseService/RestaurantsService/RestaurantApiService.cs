@@ -445,29 +445,32 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
         }
 
-        public async Task<bool> UpdateRestaurantDataAsync(int restaurantId, Restaurant newRestaurantData)
+        public async Task<bool> UpdateRestaurantDataAsync(int restaurantId, PutRestaurantDTO restaurantData)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
                 try
                 {
                     var updateRestaurantDataQuery = await
-                        (_context.Restaurant.Where(r => r.IdRestaurant == restaurantId)).FirstAsync();
+                        _context.Restaurant
+                        .Where(r => r.IdRestaurant == restaurantId)
+                        .FirstAsync();
 
-                    updateRestaurantDataQuery.Name = newRestaurantData.Name;
-                    updateRestaurantDataQuery.RestaurantStatus = newRestaurantData.RestaurantStatus;
-                    updateRestaurantDataQuery.BonusBudget = newRestaurantData.BonusBudget;
+                    updateRestaurantDataQuery.Name = restaurantData.Name;
+                    updateRestaurantDataQuery.RestaurantStatus = restaurantData.Status;
+                    updateRestaurantDataQuery.BonusBudget = restaurantData.BonusBudget;
 
                     await _context.SaveChangesAsync();
 
+                    var updateRestaurantAddressQuery = 
+                        await _context.Address
+                        .Where(a => a.IdAddress == updateRestaurantDataQuery.IdAddress)
+                        .FirstAsync();
 
-                    var updateRestaurantAddressQuery = await
-                        (_context.Address.Where(a => a.IdAddress == newRestaurantData.Address.IdAddress)).FirstAsync();
-
-                    updateRestaurantAddressQuery.City = newRestaurantData.Address.City;
-                    updateRestaurantAddressQuery.Street = newRestaurantData.Address.Street;
-                    updateRestaurantAddressQuery.BuildingNumber = newRestaurantData.Address.BuildingNumber;
-                    updateRestaurantAddressQuery.LocalNumber = newRestaurantData.Address.LocalNumber;
+                    updateRestaurantAddressQuery.City = restaurantData.Address.City;
+                    updateRestaurantAddressQuery.Street = restaurantData.Address.Street;
+                    updateRestaurantAddressQuery.BuildingNumber = restaurantData.Address.BuildingNumber;
+                    updateRestaurantAddressQuery.LocalNumber = restaurantData.Address.LocalNumber;
 
                     await _context.SaveChangesAsync();
                 }
