@@ -276,7 +276,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound($"Restaurant not found");
             }
 
-            IEnumerable<GetEmployeeDTO>? restaurantWorkers = await _employeeApiService.GetEmployeeDetailsByRestaurantIdAsync(restaurantId);
+            IEnumerable<GetEmployeeDTO>? restaurantWorkers = await _employeeApiService.GetAllEmployeesDetailsByRestaurantIdAsync(restaurantId);
             if (restaurantWorkers == null || restaurantWorkers.Count() == 0)
             {
                 return NotFound($"Employees not found");
@@ -432,7 +432,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("One or more certificates has empty name");
             }
 
-            Employee? employeeDatabase = await _employeeApiService.GetBasicEmployeeDataByIdAsync(empId);
+            Employee? employeeDatabase = await _employeeApiService.GetEmployeeSimpleDataByIdAsync(empId);
             if (employeeDatabase == null)
             {
                 return NotFound("Employee not found");
@@ -512,7 +512,7 @@ namespace Restaurants_REST_API.Controllers
             }
 
             //checking if employee exist
-            Employee? employeeDatabase = await _employeeApiService.GetBasicEmployeeDataByIdAsync(empId);
+            Employee? employeeDatabase = await _employeeApiService.GetEmployeeSimpleDataByIdAsync(empId);
             if (employeeDatabase == null)
             {
                 return NotFound("Employee doesn't exist");
@@ -575,7 +575,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound($"Employee certificate id={certificateId} not found");
             }
 
-            bool isCertificatesHasBeenUpdated = await _employeeApiService.UpdateEmployeeCertificatesByIdAsync(certificateId, putEmpCertificates);
+            bool isCertificatesHasBeenUpdated = await _employeeApiService.UpdateEmployeeCertificateByIdAsync(certificateId, putEmpCertificates);
             if (!isCertificatesHasBeenUpdated)
             {
                 return Problem("Unable to update certificate");

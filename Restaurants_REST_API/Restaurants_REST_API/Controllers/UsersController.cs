@@ -115,7 +115,7 @@ namespace Restaurants_REST_API.Controllers
                     return BadRequest("Hired date is required");
                 }
 
-                Employee? basicExistingEmpData = await _employeeApiService.GetEmployeeDataByPeselAsync(pesel);
+                Employee? basicExistingEmpData = await _employeeApiService.GetEmployeeSimpleDataByPeselAsync(pesel);
                 if (basicExistingEmpData == null)
                 {
                     return BadRequest("Given employee data are invalid");

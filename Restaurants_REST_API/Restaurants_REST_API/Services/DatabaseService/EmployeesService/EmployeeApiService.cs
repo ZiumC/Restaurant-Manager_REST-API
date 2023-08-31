@@ -61,7 +61,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 
         }
 
-        public async Task<Employee?> GetBasicEmployeeDataByIdAsync(int empId)
+        public async Task<Employee?> GetEmployeeSimpleDataByIdAsync(int empId)
         {
             return await _context.Employee
                 .Where(e => e.IdEmployee == empId)
@@ -217,7 +217,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                  }).FirstOrDefaultAsync();
         }
 
-        public async Task<Employee?> GetEmployeeDataByPeselAsync(string pesel)
+        public async Task<Employee?> GetEmployeeSimpleDataByPeselAsync(string pesel)
         {
             return await
                 (from emp in _context.Employee
@@ -244,7 +244,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                  }).FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<GetEmployeeDTO>?> GetEmployeeDetailsByRestaurantIdAsync(int restaurantId)
+        public async Task<IEnumerable<GetEmployeeDTO>?> GetAllEmployeesDetailsByRestaurantIdAsync(int restaurantId)
         {
             return await
                 (from eir in _context.EmployeeRestaurant
@@ -455,7 +455,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 
         }
 
-        public async Task<bool> UpdateEmployeeCertificatesByIdAsync(int certificateId, PutCertificateDTO empCertificateData)
+        public async Task<bool> UpdateEmployeeCertificateByIdAsync(int certificateId, PutCertificateDTO empCertificateData)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
