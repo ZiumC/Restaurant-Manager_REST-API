@@ -101,7 +101,7 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpGet("{empId}")]
         [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
-        public async Task<IActionResult> GetEmployeeBy(int empId)
+        public async Task<IActionResult> GetEmployeeDetails(int empId)
         {
             if (!GeneralValidatorUtility.isIntNumberGtZero(empId))
             {
@@ -126,7 +126,7 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpGet("supervisors")]
         [Authorize(Roles = UserRolesUtility.Owner)]
-        public async Task<IActionResult> GetSupervisors()
+        public async Task<IActionResult> GetAllSupervisors()
         {
             IEnumerable<GetEmployeeTypeDTO>? allTypes = await _restaurantsApiService.GetEmployeeTypesAsync();
             if (allTypes == null)
@@ -163,7 +163,7 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpGet("supervisor/{supervisorId}")]
         [Authorize(Roles = UserRolesUtility.Owner)]
-        public async Task<IActionResult> GetSupervisorBy(int supervisorId)
+        public async Task<IActionResult> GetSupervisorDetails(int supervisorId)
         {
             if (!GeneralValidatorUtility.isIntNumberGtZero(supervisorId))
             {
@@ -248,7 +248,7 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpGet("restaurant/{restaurantId}")]
         [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
-        public async Task<IActionResult> GetEmployeeByRestaurant(int restaurantId)
+        public async Task<IActionResult> GetEmployeeDetailsByRestaurant(int restaurantId)
         {
             if (!GeneralValidatorUtility.isIntNumberGtZero(restaurantId))
             {
@@ -383,7 +383,7 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpPost("{empId}/certificate")]
         [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
-        public async Task<IActionResult> AddCertificateBy(int empId, IEnumerable<PostCertificateDTO> newCertificates)
+        public async Task<IActionResult> AddCertificateToEmployee(int empId, IEnumerable<PostCertificateDTO> newCertificates)
         {
             if (!ModelState.IsValid)
             {
@@ -515,7 +515,7 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpPut("{empId}/certificate/{certificateId}")]
         [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
-        public async Task<IActionResult> UpdateEmployeeCertificatesBy(int empId, int certificateId, PutCertificateDTO putEmpCertificates)
+        public async Task<IActionResult> UpdateEmployeeCertificates(int empId, int certificateId, PutCertificateDTO putEmpCertificates)
         {
             if (!GeneralValidatorUtility.isIntNumberGtZero(empId))
             {
