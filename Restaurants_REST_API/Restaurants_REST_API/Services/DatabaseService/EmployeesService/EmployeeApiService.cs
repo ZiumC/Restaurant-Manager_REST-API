@@ -124,7 +124,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 
         public async Task<IEnumerable<GetEmployeeDTO>?> GetAllEmployeesDetailsByTypeIdAsync(int typeId)
         {
-            IEnumerable<GetEmployeeDTO> employeesQuery = await
+            return await
                 (from emp in _context.Employee
                  join eir in _context.EmployeeRestaurant
                  on emp.IdEmployee equals eir.IdEmployee
@@ -169,13 +169,11 @@ namespace Restaurants_REST_API.Services.Database_Service
                                      }).ToList()
 
                  }).ToListAsync();
-
-            return employeesQuery;
         }
 
         public async Task<GetEmployeeDTO?> GetEmployeeDetailsByTypeIdAsync(int typeId)
         {
-            GetEmployeeDTO? employeeQuery = await
+            return await
                 (from emp in _context.Employee
                  join eir in _context.EmployeeRestaurant
                  on emp.IdEmployee equals eir.IdEmployee
@@ -217,90 +215,90 @@ namespace Restaurants_REST_API.Services.Database_Service
                                          ExpirationDate = empCert.ExpirationDate
                                      }).ToList()
                  }).FirstOrDefaultAsync();
-
-            return employeeQuery;
         }
 
         public async Task<Employee?> GetEmployeeDataByPeselAsync(string pesel)
         {
-            return await (from emp in _context.Employee
+            return await
+                (from emp in _context.Employee
 
-                          where emp.PESEL == pesel
+                 where emp.PESEL == pesel
 
-                          select new Employee
-                          {
-                              IdEmployee = emp.IdEmployee,
-                              FirstName = emp.FirstName,
-                              LastName = emp.LastName,
-                              PESEL = emp.PESEL,
-                              HiredDate = emp.HiredDate,
-                              FirstPromotionChefDate = emp.FirstPromotionChefDate,
-                              Salary = emp.Salary,
-                              BonusSalary = emp.BonusSalary,
-                              IsOwner = emp.IsOwner,
-                              EmployeeInRestaurant = (from eir in _context.EmployeeRestaurant
-                                                      where eir.IdEmployee == emp.IdEmployee
-                                                      select new EmployeeRestaurant
-                                                      {
-                                                          IdType = eir.IdType
-                                                      }).ToList()
-                          }).FirstOrDefaultAsync();
+                 select new Employee
+                 {
+                     IdEmployee = emp.IdEmployee,
+                     FirstName = emp.FirstName,
+                     LastName = emp.LastName,
+                     PESEL = emp.PESEL,
+                     HiredDate = emp.HiredDate,
+                     FirstPromotionChefDate = emp.FirstPromotionChefDate,
+                     Salary = emp.Salary,
+                     BonusSalary = emp.BonusSalary,
+                     IsOwner = emp.IsOwner,
+                     EmployeeInRestaurant = (from eir in _context.EmployeeRestaurant
+                                             where eir.IdEmployee == emp.IdEmployee
+                                             select new EmployeeRestaurant
+                                             {
+                                                 IdType = eir.IdType
+                                             }).ToList()
+                 }).FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<GetEmployeeDTO>?> GetEmployeeDetailsByRestaurantIdAsync(int restaurantId)
         {
-            return await (from eir in _context.EmployeeRestaurant
-                          join emp in _context.Employee
-                          on eir.IdEmployee equals emp.IdEmployee
+            return await
+                (from eir in _context.EmployeeRestaurant
+                 join emp in _context.Employee
+                 on eir.IdEmployee equals emp.IdEmployee
 
-                          join addr in _context.Address
-                          on emp.IdAddress equals addr.IdAddress
+                 join addr in _context.Address
+                 on emp.IdAddress equals addr.IdAddress
 
-                          where eir.IdRestaurant == restaurantId
+                 where eir.IdRestaurant == restaurantId
 
-                          select new GetEmployeeDTO
-                          {
-                              IdEmployee = emp.IdEmployee,
-                              FirstName = emp.FirstName,
-                              LastName = emp.LastName,
-                              PESEL = emp.PESEL,
-                              Salary = emp.Salary,
-                              BonusSalary = emp.BonusSalary,
-                              HiredDate = emp.HiredDate,
-                              IsOwner = emp.IsOwner,
-                              FirstPromotionChefDate = emp.FirstPromotionChefDate,
+                 select new GetEmployeeDTO
+                 {
+                     IdEmployee = emp.IdEmployee,
+                     FirstName = emp.FirstName,
+                     LastName = emp.LastName,
+                     PESEL = emp.PESEL,
+                     Salary = emp.Salary,
+                     BonusSalary = emp.BonusSalary,
+                     HiredDate = emp.HiredDate,
+                     IsOwner = emp.IsOwner,
+                     FirstPromotionChefDate = emp.FirstPromotionChefDate,
 
-                              Address = (from addr in _context.Address
-                                         where addr.IdAddress == emp.IdAddress
+                     Address = (from addr in _context.Address
+                                where addr.IdAddress == emp.IdAddress
 
-                                         select new GetAddressDTO
-                                         {
-                                             IdAddress = addr.IdAddress,
-                                             City = addr.City,
-                                             Street = addr.Street,
-                                             BuildingNumber = addr.BuildingNumber,
-                                             LocalNumber = addr.LocalNumber,
-                                         }
-                                         ).First(),
+                                select new GetAddressDTO
+                                {
+                                    IdAddress = addr.IdAddress,
+                                    City = addr.City,
+                                    Street = addr.Street,
+                                    BuildingNumber = addr.BuildingNumber,
+                                    LocalNumber = addr.LocalNumber,
+                                }
+                                ).First(),
 
-                              Certificates = (from empCert in _context.EmployeeCertificate
-                                              join cert in _context.Certificate
-                                              on empCert.IdCertificate equals cert.IdCertificate
+                     Certificates = (from empCert in _context.EmployeeCertificate
+                                     join cert in _context.Certificate
+                                     on empCert.IdCertificate equals cert.IdCertificate
 
-                                              where empCert.IdEmployee == emp.IdEmployee
+                                     where empCert.IdEmployee == emp.IdEmployee
 
-                                              select new GetCertificateDTO
-                                              {
-                                                  IdCertificate = cert.IdCertificate,
-                                                  Name = cert.Name,
-                                                  ExpirationDate = empCert.ExpirationDate
-                                              }).ToList()
-                          }
+                                     select new GetCertificateDTO
+                                     {
+                                         IdCertificate = cert.IdCertificate,
+                                         Name = cert.Name,
+                                         ExpirationDate = empCert.ExpirationDate
+                                     }).ToList()
+                 }
                           ).ToListAsync();
         }
 
 
-        public async Task<bool> AddNewEmployeeAsync(PostEmployeeDTO employeeData, string ownerStatus)
+        public async Task<bool> AddNewEmployeeAsync(PostEmployeeDTO newEmpData, string ownerStatus)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -310,34 +308,34 @@ namespace Restaurants_REST_API.Services.Database_Service
                         (
                             new Address
                             {
-                                City = employeeData.Address.City,
-                                Street = employeeData.Address.Street,
-                                BuildingNumber = employeeData.Address.BuildingNumber,
-                                LocalNumber = employeeData.Address.LocalNumber
+                                City = newEmpData.Address.City,
+                                Street = newEmpData.Address.Street,
+                                BuildingNumber = newEmpData.Address.BuildingNumber,
+                                LocalNumber = newEmpData.Address.LocalNumber
                             }
                     );
                     await _context.SaveChangesAsync();
 
-                    var newEmployeeQuery = _context.Add
+                    var newEmpQuery = _context.Add
                         (
                             new Employee
                             {
-                                FirstName = employeeData.FirstName,
-                                LastName = employeeData.LastName,
-                                PESEL = employeeData.PESEL,
+                                FirstName = newEmpData.FirstName,
+                                LastName = newEmpData.LastName,
+                                PESEL = newEmpData.PESEL,
                                 HiredDate = DateTime.Now,
-                                Salary = employeeData.Salary,
-                                BonusSalary = employeeData.BonusSalary,
+                                Salary = newEmpData.Salary,
+                                BonusSalary = newEmpData.BonusSalary,
                                 IsOwner = ownerStatus,
                                 IdAddress = newAddressQuery.Entity.IdAddress
                             }
                         );
                     await _context.SaveChangesAsync();
 
-                    if (employeeData.Certificates != null && employeeData.Certificates.Count() > 0)
+                    if (newEmpData.Certificates != null && newEmpData.Certificates.Count() > 0)
                     {
                         //inside EmployeesController certificates names are checked if they are NOT NULL
-                        foreach (PostCertificateDTO empCertificate in employeeData.Certificates)
+                        foreach (PostCertificateDTO empCertificate in newEmpData.Certificates)
                         {
                             var newDatabaseCertificate = _context.Add
                                 (
@@ -353,7 +351,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                                    new EmployeeCertificate
                                    {
                                        IdCertificate = newDatabaseCertificate.Entity.IdCertificate,
-                                       IdEmployee = newEmployeeQuery.Entity.IdEmployee,
+                                       IdEmployee = newEmpQuery.Entity.IdEmployee,
                                        ExpirationDate = empCertificate.ExpirationDate
                                    }
                                 );
@@ -374,15 +372,15 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
         }
 
-        public async Task<bool> AddNewEmployeeCertificatesAsync(int empId, IEnumerable<PostCertificateDTO> certificatesData)
+        public async Task<bool> AddNewEmployeeCertificatesAsync(int empId, IEnumerable<PostCertificateDTO> empCertificatesData)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
                 try
                 {
-                    foreach (PostCertificateDTO postCert in certificatesData)
+                    foreach (PostCertificateDTO postCert in empCertificatesData)
                     {
-                        var newCertificate = _context.Add
+                        var newCertificateQuery = _context.Add
                         (
                             new Certificate
                             {
@@ -392,13 +390,13 @@ namespace Restaurants_REST_API.Services.Database_Service
 
                         await _context.SaveChangesAsync();
 
-                        var newEmployeeCertificate = _context.Add
+                        var newEmpCertificateQuery = _context.Add
                             (
                                 new EmployeeCertificate
                                 {
                                     IdEmployee = empId,
                                     ExpirationDate = postCert.ExpirationDate,
-                                    IdCertificate = newCertificate.Entity.IdCertificate
+                                    IdCertificate = newCertificateQuery.Entity.IdCertificate
                                 }
                             );
 
@@ -416,32 +414,32 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
         }
 
-        public async Task<bool> UpdateEmployeeDataByIdAsync(int id, PutEmployeeDTO employeeData)
+        public async Task<bool> UpdateEmployeeDataByIdAsync(int id, PutEmployeeDTO empData)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
                 try
                 {
-                    var updateEmployeeQuery = await
+                    var getEmpQuery = await
                         (_context.Employee
                         .Where(e => e.IdEmployee == id)
                         .FirstAsync());
 
-                    updateEmployeeQuery.FirstName = employeeData.FirstName;
-                    updateEmployeeQuery.LastName = employeeData.LastName;
-                    updateEmployeeQuery.PESEL = employeeData.PESEL;
-                    updateEmployeeQuery.Salary = employeeData.Salary;
-                    updateEmployeeQuery.BonusSalary = employeeData.BonusSalary;
+                    getEmpQuery.FirstName = empData.FirstName;
+                    getEmpQuery.LastName = empData.LastName;
+                    getEmpQuery.PESEL = empData.PESEL;
+                    getEmpQuery.Salary = empData.Salary;
+                    getEmpQuery.BonusSalary = empData.BonusSalary;
 
-                    var updateEmployeeAddressQuery =
+                    var getEmpAddressQuery =
                         await _context.Address
-                        .Where(a => a.IdAddress == updateEmployeeQuery.IdAddress)
+                        .Where(a => a.IdAddress == getEmpQuery.IdAddress)
                         .FirstAsync();
 
-                    updateEmployeeAddressQuery.City = employeeData.Address.City;
-                    updateEmployeeAddressQuery.Street = employeeData.Address.Street;
-                    updateEmployeeAddressQuery.BuildingNumber = employeeData.Address.BuildingNumber;
-                    updateEmployeeAddressQuery.LocalNumber = employeeData.Address.LocalNumber;
+                    getEmpAddressQuery.City = empData.Address.City;
+                    getEmpAddressQuery.Street = empData.Address.Street;
+                    getEmpAddressQuery.BuildingNumber = empData.Address.BuildingNumber;
+                    getEmpAddressQuery.LocalNumber = empData.Address.LocalNumber;
 
                     await _context.SaveChangesAsync();
                 }
@@ -457,26 +455,26 @@ namespace Restaurants_REST_API.Services.Database_Service
 
         }
 
-        public async Task<bool> UpdateEmployeeCertificatesByIdAsync(int certificateId, PutCertificateDTO updatedCertificatesData)
+        public async Task<bool> UpdateEmployeeCertificatesByIdAsync(int certificateId, PutCertificateDTO empCertificateData)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
                 try
                 {
-                    var updateCertNameQuery = await
+                    var getEmpCertificateQuery = await
                             (_context.Certificate
                             .Where(c => c.IdCertificate == certificateId)
                             .FirstAsync());
 
-                    updateCertNameQuery.Name = updatedCertificatesData.Name;
+                    getEmpCertificateQuery.Name = empCertificateData.Name;
                     await _context.SaveChangesAsync();
 
-                    var updateCertExpiriationDateQuery = await
+                    var getEmpCertificatesQuery = await
                            (_context.EmployeeCertificate
                            .Where(ec => ec.IdCertificate == certificateId)
                            .FirstAsync());
 
-                    updateCertExpiriationDateQuery.ExpirationDate = updatedCertificatesData.ExpirationDate;
+                    getEmpCertificatesQuery.ExpirationDate = empCertificateData.ExpirationDate;
                     await _context.SaveChangesAsync();
                 }
                 catch (Exception ex)
@@ -490,48 +488,49 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
         }
 
-        public async Task<bool> DeleteEmployeeDataByIdAsync(int empId, GetEmployeeDTO employeeData)
+        public async Task<bool> DeleteEmployeeDataByIdAsync(int empId, GetEmployeeDTO empData)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
                 try
                 {
                     //removing user if employee has registered in db
-                    var userQuery = await _context.User.Where(u => u.IdEmployee == empId).FirstOrDefaultAsync();
-                    if (userQuery != null)
+                    var getUserQuery = await _context.User
+                        .Where(u => u.IdEmployee == empId)
+                        .FirstOrDefaultAsync();
+                    if (getUserQuery != null)
                     {
-                        _context.Remove(userQuery);
+                        _context.Remove(getUserQuery);
                     }
                     await _context.SaveChangesAsync();
 
-                    var employeeAddressQuery = await
-                       (_context.Address.Where(a => a.IdAddress == employeeData.Address.IdAddress)).FirstAsync();
+                    var getEmpAddressQuery = await _context.Address
+                        .Where(a => a.IdAddress == empData.Address.IdAddress)
+                        .FirstAsync();
 
-                    _context.Remove(employeeAddressQuery);
+                    _context.Remove(getEmpAddressQuery);
                     await _context.SaveChangesAsync();
 
-                    var workerQuery = await
-                       (_context.EmployeeRestaurant.Where(eir => eir.IdEmployee == empId)).ToListAsync();
-
-                    foreach (EmployeeRestaurant worker in workerQuery)
+                    var gerWorkerQuery = await _context.EmployeeRestaurant
+                        .Where(eir => eir.IdEmployee == empId)
+                        .ToListAsync();
+                    foreach (EmployeeRestaurant worker in gerWorkerQuery)
                     {
-                        var singleWorkerQuery = await
-                            (_context.EmployeeRestaurant.Where(eir => eir.IdEmployee == empId)).FirstAsync();
-
-                        _context.Remove(singleWorkerQuery);
+                        _context.Remove(worker);
                         await _context.SaveChangesAsync();
                     }
 
 
-                    if (employeeData.Certificates != null && employeeData.Certificates.Count() > 0)
+                    if (empData.Certificates != null && empData.Certificates.Count() > 0)
                     {
-                        foreach (GetCertificateDTO empCert in employeeData.Certificates)
+                        foreach (GetCertificateDTO empCert in empData.Certificates)
                         {
-                            var certificateQuery = await
-                                (_context.Certificate.Where(c => c.IdCertificate == empCert.IdCertificate)).FirstAsync();
+                            var empCertificateQuery = await _context.Certificate
+                                .Where(c => c.IdCertificate == empCert.IdCertificate)
+                                .FirstAsync();
 
                             //removing each employee certificate
-                            _context.Remove(certificateQuery);
+                            _context.Remove(empCertificateQuery);
                             await _context.SaveChangesAsync();
                         }
                     }
@@ -547,14 +546,14 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
         }
 
-        public async Task<bool> DeleteEmployeeCertificateAsync(int empId, GetCertificateDTO employeeCertificateData)
+        public async Task<bool> DeleteEmployeeCertificateAsync(int empId, GetCertificateDTO empCertificateData)
         {
             try
             {
                 Certificate certificateToDelete = new Certificate
                 {
-                    IdCertificate = employeeCertificateData.IdCertificate,
-                    Name = employeeCertificateData.Name
+                    IdCertificate = empCertificateData.IdCertificate,
+                    Name = empCertificateData.Name
                 };
 
                 _context.Remove(certificateToDelete);
