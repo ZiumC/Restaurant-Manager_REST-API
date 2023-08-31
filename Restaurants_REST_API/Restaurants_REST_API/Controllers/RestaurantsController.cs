@@ -244,6 +244,7 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpPost]
         [Authorize(Roles = UserRolesService.Owner)]
+        [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> AddNewRestaurant(PostRestaurantDTO newRestaurant)
         {
             if (!ModelState.IsValid)
@@ -335,6 +336,7 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpPost("dish")]
         [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
+        [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> AddNewDishToRestaurant(PostDishDTO newDish)
         {
             if (!ModelState.IsValid)
@@ -416,6 +418,7 @@ namespace Restaurants_REST_API.Controllers
          */
         [HttpPost("{restaurantId}/employee/{empId}/type/{typeId}")]
         [Authorize(Roles = UserRolesService.Owner)]
+        [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> AddNewEmployeeToRestaurant(int restaurantId, int empId, int typeId)
         {
 
@@ -526,6 +529,7 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpPut("{restaurantId}/employee/{empId}/type/{typeId}")]
         [Authorize(Roles = UserRolesService.Owner)]
+        [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> UpdateEmployeeRoleInRestaurant(int restaurantId, int empId, int typeId)
         {
             if (!GeneralValidator.isNumberGtZero(empId))
@@ -644,6 +648,7 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpPut("{restaurantId}")]
         [Authorize(Roles = UserRolesService.Owner)]
+        [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> UpdateRestaurantData(int restaurantId, PutRestaurantDTO putRestaurantData)
         {
             if (!ModelState.IsValid)
@@ -718,6 +723,7 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpPut("dish/{dishId}")]
         [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
+        [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> UpdateDish(int dishId, PutDishDTO putDishData)
         {
             if (!ModelState.IsValid)
