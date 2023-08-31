@@ -26,6 +26,7 @@ namespace Restaurants_REST_API.Controllers
         private readonly string _loginRegex;
         private readonly string _emailRegex;
         private readonly string _peselRegex;
+        private readonly string _baseCharactersSalt;
 
         public UsersController(IUserApiService userApiService, IEmployeeApiService employeeApiService, IConfiguration config, IJwtService jwtService)
         {
@@ -37,6 +38,8 @@ namespace Restaurants_REST_API.Controllers
             _loginRegex = _config["ApplicationSettings:DataValidation:LoginRegex"];
             _emailRegex = _config["ApplicationSettings:DataValidation:EmailRegex"];
             _peselRegex = _config["ApplicationSettings:DataValidation:PeselRegex"];
+
+            _baseCharactersSalt = _config["ApplicationSettings:Security:SaltBase"]
 
             try
             {
@@ -62,6 +65,11 @@ namespace Restaurants_REST_API.Controllers
                 if (_saltLength < 0 || _saltLength > 10 )
                 {
                     throw new Exception("Length of password salt is invalid. Length should be between 1 and 10 characters.");
+                }
+
+                if (string.IsNullOrEmpty(_baseCharactersSalt))
+                {
+                    throw new Exception("Base characters for salt can't be empty");
                 }
             }
             catch (Exception ex)
@@ -314,12 +322,11 @@ namespace Restaurants_REST_API.Controllers
             }
 
             string result = "";
-            string baseCharactersForSalt = _config["ApplicationSettings:Security:SaltBase"];
 
             for (int i = 0; i < length; i++)
             {
                 Random random = new Random();
-                char c = baseCharactersForSalt[random.Next(baseCharactersForSalt.Length)];
+                char c = _baseCharactersSalt[random.Next(_baseCharactersSalt.Length)];
                 result = result + c;
             }
 
