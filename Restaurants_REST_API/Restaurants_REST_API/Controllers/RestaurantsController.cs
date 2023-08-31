@@ -90,7 +90,7 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpGet]
         [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
-        public async Task<IActionResult> GetAllRestaurantsData()
+        public async Task<IActionResult> GetAllRestaurants()
         {
             IEnumerable<GetRestaurantDTO>? restaurants = await _restaurantsApiService.GetAllRestaurantsAsync();
 
@@ -120,7 +120,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest($"Restaurant id={restaurantId} is invalid");
             }
 
-            GetRestaurantDTO? restaurantDetails = await _restaurantsApiService.GetDetailedRestaurantDataAsync(restaurantId);
+            GetRestaurantDTO? restaurantDetails = await _restaurantsApiService.GetRestaurantDetailedDataAsync(restaurantId);
             if (restaurantDetails == null)
             {
                 return NotFound($"Restaurant not found");
@@ -138,7 +138,7 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpGet("stats")]
         [Authorize(Roles = UserRolesUtility.Owner)]
-        public async Task<IActionResult> GetRestaurantsStatistics()
+        public async Task<IActionResult> GetAllRestaurantsStatistics()
         {
             IEnumerable<GetRestaurantDTO>? restaurantsDetails = await _restaurantsApiService.GetAllRestaurantsAsync();
 
@@ -179,8 +179,8 @@ namespace Restaurants_REST_API.Controllers
                 Employees = new
                 {
                     EmployeesCount = rd.RestaurantWorkers?.Count(),
-                    TotalSalary = _employeeApiService.GetAllEmployeesDetailsByRestaurantIdAsync(rd.IdRestaurant).Result.Sum(a => a.Salary),
-                    TotalBonus = _employeeApiService.GetAllEmployeesDetailsByRestaurantIdAsync(rd.IdRestaurant).Result.Sum(a => a.BonusSalary)
+                    TotalSalary = _employeeApiService.GetAllEmployeesDetailsByRestaurantIdAsync(rd.IdRestaurant).Result?.Sum(a => a.Salary),
+                    TotalBonus = _employeeApiService.GetAllEmployeesDetailsByRestaurantIdAsync(rd.IdRestaurant).Result?.Sum(a => a.BonusSalary)
                 }
             });
 
@@ -205,7 +205,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest($"Dish id={dishId} is invalid");
             }
 
-            Dish? dishDetailsData = await _restaurantsApiService.GetBasicDishDataByIdAsync(dishId);
+            Dish? dishDetailsData = await _restaurantsApiService.GetDishSimpleDataByIdAsync(dishId);
             if (dishDetailsData == null)
             {
                 return NotFound($"Dish id={dishId} not found");
@@ -360,7 +360,7 @@ namespace Restaurants_REST_API.Controllers
                     return BadRequest($"Restaurant id={restaurantId} isn't correct");
                 }
 
-                GetRestaurantDTO? restaurantDetails = await _restaurantsApiService.GetDetailedRestaurantDataAsync(restaurantId);
+                GetRestaurantDTO? restaurantDetails = await _restaurantsApiService.GetRestaurantDetailedDataAsync(restaurantId);
                 if (restaurantDetails == null)
                 {
                     return NotFound($"Restaurant at id={restaurantId} not found");
@@ -458,7 +458,7 @@ namespace Restaurants_REST_API.Controllers
             }
 
             //checking if restaurant exist
-            Restaurant? restaurantDatabase = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(restaurantId);
+            Restaurant? restaurantDatabase = await _restaurantsApiService.GetRestaurantSimpleDataByIdAsync(restaurantId);
             if (restaurantDatabase == null)
             {
                 return NotFound($"Restaurant id={restaurantId} not found");
@@ -567,7 +567,7 @@ namespace Restaurants_REST_API.Controllers
             }
 
             //checking if restaurant exist
-            Restaurant? restaurantDatabase = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(restaurantId);
+            Restaurant? restaurantDatabase = await _restaurantsApiService.GetRestaurantSimpleDataByIdAsync(restaurantId);
             if (restaurantDatabase == null)
             {
                 return NotFound("Restaurant not found");
@@ -691,7 +691,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Restaurant bonus budget can't be less than 0");
             }
 
-            Restaurant? restaurantDatabase = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(restaurantId);
+            Restaurant? restaurantDatabase = await _restaurantsApiService.GetRestaurantSimpleDataByIdAsync(restaurantId);
             if (restaurantDatabase == null)
             {
                 return NotFound($"Restaurant id={restaurantId} not found");
@@ -718,7 +718,7 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpPut("dish/{dishId}")]
         [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
-        public async Task<IActionResult> UpdateDish(int dishId, PutDishDTO putDishData)
+        public async Task<IActionResult> UpdateDishData(int dishId, PutDishDTO putDishData)
         {
             if (!ModelState.IsValid)
             {
@@ -740,7 +740,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Dish price is invalid");
             }
 
-            Dish? dishDetailsDatabase = await _restaurantsApiService.GetBasicDishDataByIdAsync(dishId);
+            Dish? dishDetailsDatabase = await _restaurantsApiService.GetDishSimpleDataByIdAsync(dishId);
             if (dishDetailsDatabase == null)
             {
                 return NotFound("Dish to update not found");
@@ -765,14 +765,14 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpDelete("dish/{dishId}")]
         [Authorize(Roles = UserRolesUtility.Owner)]
-        public async Task<IActionResult> DeleteEverywhereDish(int dishId)
+        public async Task<IActionResult> DeleteDishFromEverywhere(int dishId)
         {
             if (!GeneralValidatorUtility.isIntNumberGtZero(dishId))
             {
                 return BadRequest($"Dish id={dishId} is invalid");
             }
 
-            Dish? dishDatabase = await _restaurantsApiService.GetBasicDishDataByIdAsync(dishId);
+            Dish? dishDatabase = await _restaurantsApiService.GetDishSimpleDataByIdAsync(dishId);
             if (dishDatabase == null)
             {
                 return NotFound("Dish not found");
@@ -811,13 +811,13 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest($"Dish id={dishId} is invalid");
             }
 
-            Dish? dishDatabase = await _restaurantsApiService.GetBasicDishDataByIdAsync(dishId);
+            Dish? dishDatabase = await _restaurantsApiService.GetDishSimpleDataByIdAsync(dishId);
             if (dishDatabase == null)
             {
                 return NotFound("Dish not found");
             }
 
-            Restaurant? restaurantDatabase = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(restaurantId);
+            Restaurant? restaurantDatabase = await _restaurantsApiService.GetRestaurantSimpleDataByIdAsync(restaurantId);
             if (restaurantDatabase == null)
             {
                 return NotFound("Restaurant not found");
@@ -855,7 +855,7 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpDelete("{restaurantId}/employee/{empId}")]
         [Authorize(Roles = UserRolesUtility.Owner)]
-        public async Task<IActionResult> DeleteEmployeeFromRestaurantBy(int empId, int restaurantId)
+        public async Task<IActionResult> DeleteEmployeeFromRestaurant(int empId, int restaurantId)
         {
             if (!GeneralValidatorUtility.isIntNumberGtZero(empId))
             {
@@ -873,7 +873,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound("Employee not found");
             }
 
-            Restaurant? restaurantDatabase = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(restaurantId);
+            Restaurant? restaurantDatabase = await _restaurantsApiService.GetRestaurantSimpleDataByIdAsync(restaurantId);
             if (restaurantDatabase == null)
             {
                 return NotFound("Restaurant not found");

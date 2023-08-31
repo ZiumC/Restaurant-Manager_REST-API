@@ -13,97 +13,98 @@ namespace Restaurants_REST_API.Services.Database_Service
     {
 
         private readonly MainDbContext _context;
-        private readonly IConfiguration _configuration;
+        private readonly IConfiguration _config;
 
-        public RestaurantApiService(MainDbContext context, IConfiguration configuration)
+        public RestaurantApiService(MainDbContext context, IConfiguration config)
         {
             _context = context;
-            _configuration = configuration;
+            _config = config;
         }
 
         public async Task<IEnumerable<GetRestaurantDTO>?> GetAllRestaurantsAsync()
         {
-            return await (from rest in _context.Restaurant
-                          join addr in _context.Address
-                          on rest.IdAddress equals addr.IdAddress
+            return await
+                (from rest in _context.Restaurant
+                 join addr in _context.Address
+                 on rest.IdAddress equals addr.IdAddress
 
-                          select new GetRestaurantDTO
-                          {
-                              IdRestaurant = rest.IdRestaurant,
-                              Name = rest.Name,
-                              Status = rest.RestaurantStatus,
-                              BonusBudget = rest.BonusBudget,
-                              Address = new GetAddressDTO
-                              {
-                                  IdAddress = addr.IdAddress,
-                                  City = addr.City,
-                                  Street = addr.Street,
-                                  BuildingNumber = addr.BuildingNumber,
-                                  LocalNumber = addr.LocalNumber
-                              },
+                 select new GetRestaurantDTO
+                 {
+                     IdRestaurant = rest.IdRestaurant,
+                     Name = rest.Name,
+                     Status = rest.RestaurantStatus,
+                     BonusBudget = rest.BonusBudget,
+                     Address = new GetAddressDTO
+                     {
+                         IdAddress = addr.IdAddress,
+                         City = addr.City,
+                         Street = addr.Street,
+                         BuildingNumber = addr.BuildingNumber,
+                         LocalNumber = addr.LocalNumber
+                     },
 
-                              RestaurantDishes = (from rd in _context.RestaurantDish
-                                                  join d in _context.Dish
-                                                  on rd.IdDish equals d.IdDish
+                     RestaurantDishes = (from rd in _context.RestaurantDish
+                                         join d in _context.Dish
+                                         on rd.IdDish equals d.IdDish
 
-                                                  where rd.IdRestaurant == rest.IdRestaurant
+                                         where rd.IdRestaurant == rest.IdRestaurant
 
-                                                  select new Dish
-                                                  {
-                                                      IdDish = d.IdDish,
-                                                      Name = d.Name,
-                                                      Price = d.Price,
-                                                  }).ToList(),
+                                         select new Dish
+                                         {
+                                             IdDish = d.IdDish,
+                                             Name = d.Name,
+                                             Price = d.Price,
+                                         }).ToList(),
 
-                              RestaurantWorkers = (from eir in _context.EmployeeRestaurant
-                                                   join et in _context.EmployeeType
-                                                   on eir.IdType equals et.IdType
+                     RestaurantWorkers = (from eir in _context.EmployeeRestaurant
+                                          join et in _context.EmployeeType
+                                          on eir.IdType equals et.IdType
 
-                                                   join e in _context.Employee
-                                                   on eir.IdEmployee equals e.IdEmployee
+                                          join e in _context.Employee
+                                          on eir.IdEmployee equals e.IdEmployee
 
-                                                   where eir.IdRestaurant == rest.IdRestaurant
+                                          where eir.IdRestaurant == rest.IdRestaurant
 
-                                                   select new GetRestaurantWorkersDTO
-                                                   {
-                                                       IdEmployee = eir.IdEmployee,
-                                                       FirstName = e.FirstName,
-                                                       LastName = e.LastName,
-                                                       EmployeeType = et.Name
-                                                   }).ToList(),
+                                          select new GetRestaurantWorkersDTO
+                                          {
+                                              IdEmployee = eir.IdEmployee,
+                                              FirstName = e.FirstName,
+                                              LastName = e.LastName,
+                                              EmployeeType = et.Name
+                                          }).ToList(),
 
-                              RestaurantReservations = (from r in _context.Reservation
-                                                        where r.IdRestaurant == rest.IdRestaurant
+                     RestaurantReservations = (from r in _context.Reservation
+                                               where r.IdRestaurant == rest.IdRestaurant
 
-                                                        select new GetReservationDTO
-                                                        {
-                                                            IdReservation = r.IdReservation,
-                                                            ReservationDate = r.ReservationDate,
-                                                            Status = r.ReservationStatus,
-                                                            ReservationGrade = r.ReservationGrade,
-                                                            HowManyPeoples = r.HowManyPeoples,
-                                                            ReservationComplaint = (from c in _context.Complaint
-                                                                                    where c.IdReservation == r.IdReservation
+                                               select new GetReservationDTO
+                                               {
+                                                   IdReservation = r.IdReservation,
+                                                   ReservationDate = r.ReservationDate,
+                                                   Status = r.ReservationStatus,
+                                                   ReservationGrade = r.ReservationGrade,
+                                                   HowManyPeoples = r.HowManyPeoples,
+                                                   ReservationComplaint = (from c in _context.Complaint
+                                                                           where c.IdReservation == r.IdReservation
 
-                                                                                    select new GetComplaintDTO
-                                                                                    {
-                                                                                        IdComplaint = c.IdComplaint,
-                                                                                        ComplaintDate = c.ComplainDate,
-                                                                                        Status = c.ComplaintStatus,
-                                                                                        Message = c.ComplaintMessage
-                                                                                    }).FirstOrDefault()
-                                                        }).ToList(),
-                          }).ToListAsync();
+                                                                           select new GetComplaintDTO
+                                                                           {
+                                                                               IdComplaint = c.IdComplaint,
+                                                                               ComplaintDate = c.ComplainDate,
+                                                                               Status = c.ComplaintStatus,
+                                                                               Message = c.ComplaintMessage
+                                                                           }).FirstOrDefault()
+                                               }).ToList(),
+                 }).ToListAsync();
         }
 
-        public async Task<GetRestaurantDTO?> GetDetailedRestaurantDataAsync(int restaurantId)
+        public async Task<GetRestaurantDTO?> GetRestaurantDetailedDataAsync(int restaurantId)
         {
-            var getRestaurantDataQuery = 
+            var getRestaurantDataQuery =
                 await _context.Restaurant
                 .Where(r => r.IdRestaurant == restaurantId)
                 .FirstOrDefaultAsync();
 
-            if (getRestaurantDataQuery == null) 
+            if (getRestaurantDataQuery == null)
             {
                 return null;
             }
@@ -206,29 +207,30 @@ namespace Restaurants_REST_API.Services.Database_Service
 
         public async Task<IEnumerable<GetReservationDTO>?> GetAllReservationsAsync()
         {
-            return await (from r in _context.Reservation
-                          select new GetReservationDTO
-                          {
-                              IdReservation = r.IdReservation,
-                              ReservationDate = r.ReservationDate,
-                              Status = r.ReservationStatus,
-                              ReservationGrade = r.ReservationGrade,
-                              HowManyPeoples = r.HowManyPeoples,
+            return await
+                (from r in _context.Reservation
+                 select new GetReservationDTO
+                 {
+                     IdReservation = r.IdReservation,
+                     ReservationDate = r.ReservationDate,
+                     Status = r.ReservationStatus,
+                     ReservationGrade = r.ReservationGrade,
+                     HowManyPeoples = r.HowManyPeoples,
 
-                              ReservationComplaint = (from c in _context.Complaint
-                                                      where c.IdReservation == r.IdReservation
+                     ReservationComplaint = (from c in _context.Complaint
+                                             where c.IdReservation == r.IdReservation
 
-                                                      select new GetComplaintDTO
-                                                      {
-                                                          IdComplaint = c.IdComplaint,
-                                                          ComplaintDate = c.ComplainDate,
-                                                          Status = c.ComplaintStatus,
-                                                          Message = c.ComplaintMessage
-                                                      }).FirstOrDefault()
-                          }).ToListAsync();
+                                             select new GetComplaintDTO
+                                             {
+                                                 IdComplaint = c.IdComplaint,
+                                                 ComplaintDate = c.ComplainDate,
+                                                 Status = c.ComplaintStatus,
+                                                 Message = c.ComplaintMessage
+                                             }).FirstOrDefault()
+                 }).ToListAsync();
         }
 
-        public async Task<Restaurant?> GetBasicRestaurantDataByIdAsync(int restaurantId)
+        public async Task<Restaurant?> GetRestaurantSimpleDataByIdAsync(int restaurantId)
         {
             return await _context.Restaurant
                 .Where(e => e.IdRestaurant == restaurantId)
@@ -257,7 +259,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                 }).ToListAsync();
         }
 
-        public async Task<Dish?> GetBasicDishDataByIdAsync(int dishId)
+        public async Task<Dish?> GetDishSimpleDataByIdAsync(int dishId)
         {
             return await
                 (from d in _context.Dish
@@ -273,93 +275,72 @@ namespace Restaurants_REST_API.Services.Database_Service
 
         public async Task<IEnumerable<RestaurantDish>?> GetRestaurantDishesByRestaurantIdAsync(int restaurantId)
         {
-            return await
-                (_context.RestaurantDish
-                .Where(rd => rd.IdRestaurant == restaurantId))
+            return await _context.RestaurantDish
+                .Where(rd => rd.IdRestaurant == restaurantId)
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Dish>?> GetAllDishes() 
+        public async Task<IEnumerable<Dish>?> GetAllDishes()
         {
-            return await _context.Dish.ToListAsync();
+            return await _context.Dish
+                .ToListAsync();
         }
 
-        public async Task<bool> AddNewEmployeeTypeAsync(string name)
-        {
-            try
-            {
-                var newType = _context.Add
-                (
-                    new EmployeeType
-                    {
-                        Name = name
-                    }
-                );
-
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-                return false;
-            }
-
-            return true;
-        }
-
-        public async Task<bool> AddNewRestaurantAsync(PostRestaurantDTO newRestaurant, int ownerTypeId)
+        public async Task<bool> AddNewRestaurantAsync(PostRestaurantDTO newRestaurantData, int ownerTypeId)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
                 try
                 {
-                    var newDatabaseAddress = _context.Address.Add
+                    var newAddressQuery = _context.Address.Add
                         (
                             new Address
                             {
-                                City = newRestaurant.Address.City,
-                                Street = newRestaurant.Address.Street,
-                                BuildingNumber = newRestaurant.Address.BuildingNumber,
-                                LocalNumber = newRestaurant.Address.LocalNumber
+                                City = newRestaurantData.Address.City,
+                                Street = newRestaurantData.Address.Street,
+                                BuildingNumber = newRestaurantData.Address.BuildingNumber,
+                                LocalNumber = newRestaurantData.Address.LocalNumber
                             }
                     );
                     await _context.SaveChangesAsync();
 
-                    var newDatabaseRestaurant = _context.Restaurant.Add
+                    var newRestaurantQuery = _context.Restaurant.Add
                         (
                            new Restaurant
                            {
-                               Name = newRestaurant.Name,
-                               RestaurantStatus = newRestaurant.Status,
-                               BonusBudget = newRestaurant.BonusBudget,
-                               IdAddress = newDatabaseAddress.Entity.IdAddress,
+                               Name = newRestaurantData.Name,
+                               RestaurantStatus = newRestaurantData.Status,
+                               BonusBudget = newRestaurantData.BonusBudget,
+                               IdAddress = newAddressQuery.Entity.IdAddress,
                            }
                         );
                     await _context.SaveChangesAsync();
 
-                    var queryForChef = await _context.Employee
+                    var getChefQuery = await _context.Employee
                         .Where(e => e.IsOwner.ToLower() == "y" || e.IsOwner.ToLower() == "t")
                         .FirstAsync();
 
                     //adding owner to restaurant
-                    var newDatabaseEmployeeHired = _context.EmployeeRestaurant.Add
+                    var newEmployeeHiredQuery = _context.EmployeeRestaurant.Add
                         (
                             new EmployeeRestaurant
                             {
-                                IdEmployee = queryForChef.IdEmployee,
-                                IdRestaurant = newDatabaseRestaurant.Entity.IdRestaurant,
+                                IdEmployee = getChefQuery.IdEmployee,
+                                IdRestaurant = newRestaurantQuery.Entity.IdRestaurant,
                                 IdType = ownerTypeId
                             }
                         );
                     await _context.SaveChangesAsync();
 
-                    var userQuery = await _context.User.Where(u => u.IdEmployee == queryForChef.IdEmployee).FirstOrDefaultAsync();
-                    if (userQuery != null)
+                    var getUserQuery = await _context.User
+                        .Where(u => u.IdEmployee == getChefQuery.IdEmployee)
+                        .FirstOrDefaultAsync();
+                    if (getUserQuery != null)
                     {
                         IEnumerable<int> employeeRoles = _context.EmployeeRestaurant
-                            .Where(eir => eir.IdEmployee == queryForChef.IdEmployee)
+                            .Where(eir => eir.IdEmployee == getChefQuery.IdEmployee)
                             .Select(eir => eir.IdType);
-                        userQuery.UserRole = new MapUserRolesUtility(_configuration).GetUserRoleBasedOnEmployeeTypesId(employeeRoles);
+                        getUserQuery.UserRole = new MapUserRolesUtility(_config).GetUserRoleBasedOnEmployeeTypesId(employeeRoles);
                     }
                     await _context.SaveChangesAsync();
                 }
@@ -375,29 +356,29 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
         }
 
-        public async Task<bool> AddNewDishToRestaurantsAsync(PostDishDTO newDish)
+        public async Task<bool> AddNewDishToRestaurantsAsync(PostDishDTO newDishData)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
                 try
                 {
-                    var newDatabaseDish = _context.Dish.Add
+                    var newDishQuery = _context.Dish.Add
                         (
                             new Dish
                             {
-                                Name = newDish.Name,
-                                Price = newDish.Price
+                                Name = newDishData.Name,
+                                Price = newDishData.Price
                             }
                         );
                     await _context.SaveChangesAsync();
 
-                    foreach (int idRestaurant in newDish.IdRestaurants)
+                    foreach (int idRestaurant in newDishData.IdRestaurants)
                     {
-                        var newDishInRestaurant = _context.RestaurantDish.Add
+                        var newDishInRestaurantQuery = _context.RestaurantDish.Add
                             (
                                     new RestaurantDish
                                     {
-                                        IdDish = newDatabaseDish.Entity.IdDish,
+                                        IdDish = newDishQuery.Entity.IdDish,
                                         IdRestaurant = idRestaurant
                                     }
                             );
@@ -423,7 +404,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             {
                 try
                 {
-                    var newDatabaseEmployeeHired = _context.EmployeeRestaurant.Add
+                    var newEmployeeHiredQuery = _context.EmployeeRestaurant.Add
                         (
                             new EmployeeRestaurant
                             {
@@ -434,13 +415,15 @@ namespace Restaurants_REST_API.Services.Database_Service
                         );
                     await _context.SaveChangesAsync();
 
-                    var userQuery = await _context.User.Where(u => u.IdEmployee == empId).FirstOrDefaultAsync();
+                    var userQuery = await _context.User
+                        .Where(u => u.IdEmployee == empId)
+                        .FirstOrDefaultAsync();
                     if (userQuery != null)
                     {
                         IEnumerable<int> employeeRoles = _context.EmployeeRestaurant
                             .Where(eir => eir.IdEmployee == empId)
                             .Select(eir => eir.IdType);
-                        userQuery.UserRole = new MapUserRolesUtility(_configuration).GetUserRoleBasedOnEmployeeTypesId(employeeRoles);
+                        userQuery.UserRole = new MapUserRolesUtility(_config).GetUserRoleBasedOnEmployeeTypesId(employeeRoles);
                     }
                     await _context.SaveChangesAsync();
                 }
@@ -461,26 +444,26 @@ namespace Restaurants_REST_API.Services.Database_Service
             {
                 try
                 {
-                    var updateRestaurantDataQuery = await
+                    var getRestaurantQuery = await
                         _context.Restaurant
                         .Where(r => r.IdRestaurant == restaurantId)
                         .FirstAsync();
 
-                    updateRestaurantDataQuery.Name = restaurantData.Name;
-                    updateRestaurantDataQuery.RestaurantStatus = restaurantData.Status;
-                    updateRestaurantDataQuery.BonusBudget = restaurantData.BonusBudget;
+                    getRestaurantQuery.Name = restaurantData.Name;
+                    getRestaurantQuery.RestaurantStatus = restaurantData.Status;
+                    getRestaurantQuery.BonusBudget = restaurantData.BonusBudget;
 
                     await _context.SaveChangesAsync();
 
-                    var updateRestaurantAddressQuery = 
+                    var getRestaurantAddressQuery =
                         await _context.Address
-                        .Where(a => a.IdAddress == updateRestaurantDataQuery.IdAddress)
+                        .Where(a => a.IdAddress == getRestaurantQuery.IdAddress)
                         .FirstAsync();
 
-                    updateRestaurantAddressQuery.City = restaurantData.Address.City;
-                    updateRestaurantAddressQuery.Street = restaurantData.Address.Street;
-                    updateRestaurantAddressQuery.BuildingNumber = restaurantData.Address.BuildingNumber;
-                    updateRestaurantAddressQuery.LocalNumber = restaurantData.Address.LocalNumber;
+                    getRestaurantAddressQuery.City = restaurantData.Address.City;
+                    getRestaurantAddressQuery.Street = restaurantData.Address.Street;
+                    getRestaurantAddressQuery.BuildingNumber = restaurantData.Address.BuildingNumber;
+                    getRestaurantAddressQuery.LocalNumber = restaurantData.Address.LocalNumber;
 
                     await _context.SaveChangesAsync();
                 }
@@ -495,7 +478,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
         }
 
-        public async Task<bool> UpdateDishDataAsync(int dishId, PutDishDTO dishDataToUpdate)
+        public async Task<bool> UpdateDishDataAsync(int dishId, PutDishDTO dishData)
         {
             try
             {
@@ -504,8 +487,8 @@ namespace Restaurants_REST_API.Services.Database_Service
                     .Where(d => d.IdDish == dishId)
                     .FirstAsync());
 
-                getDishQuery.Name = dishDataToUpdate.Name;
-                getDishQuery.Price = dishDataToUpdate.Price;
+                getDishQuery.Name = dishData.Name;
+                getDishQuery.Price = dishData.Price;
 
                 await _context.SaveChangesAsync();
             }
@@ -523,22 +506,24 @@ namespace Restaurants_REST_API.Services.Database_Service
             {
                 try
                 {
-                    var updateEmpTypeInRestaurantQuery = await
+                    var getEmpTypeInRestaurantQuery = await
                         (_context.EmployeeRestaurant
                         .Where(eir => eir.IdEmployee == empId && eir.IdRestaurant == restaurantId)
                         .FirstAsync());
 
-                    updateEmpTypeInRestaurantQuery.IdType = typeId;
+                    getEmpTypeInRestaurantQuery.IdType = typeId;
 
                     await _context.SaveChangesAsync();
 
-                    var userQuery = await _context.User.Where(u => u.IdEmployee == empId).FirstOrDefaultAsync();
-                    if (userQuery != null)
+                    var getUserQuery = await _context.User
+                        .Where(u => u.IdEmployee == empId)
+                        .FirstOrDefaultAsync();
+                    if (getUserQuery != null)
                     {
                         IEnumerable<int> employeeRoles = _context.EmployeeRestaurant
                             .Where(eir => eir.IdEmployee == empId)
                             .Select(eir => eir.IdType);
-                        userQuery.UserRole = new MapUserRolesUtility(_configuration).GetUserRoleBasedOnEmployeeTypesId(employeeRoles);
+                        getUserQuery.UserRole = new MapUserRolesUtility(_config).GetUserRoleBasedOnEmployeeTypesId(employeeRoles);
                     }
                     await _context.SaveChangesAsync();
                 }
@@ -573,13 +558,13 @@ namespace Restaurants_REST_API.Services.Database_Service
         {
             try
             {
-                var deleteDishFromRestaurantQuery = await
+                var getDishInRestaurantQuery = await
                     (_context.RestaurantDish
                     .Where(rd => rd.IdRestaurant == restaurantId && rd.IdDish == dishId)
                     .FirstAsync()
                     );
 
-                _context.Remove(deleteDishFromRestaurantQuery);
+                _context.Remove(getDishInRestaurantQuery);
 
                 await _context.SaveChangesAsync();
             }
@@ -597,21 +582,23 @@ namespace Restaurants_REST_API.Services.Database_Service
             {
                 try
                 {
-                    var deleteEmployeeFromRestaurantQuery = await
+                    var getEmployeeInRestaurantQuery = await
                         (_context.EmployeeRestaurant
                         .Where(eir => eir.IdRestaurant == restaurantId && eir.IdEmployee == empId)
                         .FirstAsync());
 
-                    _context.Remove(deleteEmployeeFromRestaurantQuery);
+                    _context.Remove(getEmployeeInRestaurantQuery);
                     await _context.SaveChangesAsync();
 
-                    var userQuery = await _context.User.Where(u => u.IdEmployee == empId).FirstOrDefaultAsync();
-                    if (userQuery != null)
+                    var getUserQuery = await _context.User
+                        .Where(u => u.IdEmployee == empId)
+                        .FirstOrDefaultAsync();
+                    if (getUserQuery != null)
                     {
                         IEnumerable<int> employeeRoles = _context.EmployeeRestaurant
                             .Where(eir => eir.IdEmployee == empId)
                             .Select(eir => eir.IdType);
-                        userQuery.UserRole = new MapUserRolesUtility(_configuration).GetUserRoleBasedOnEmployeeTypesId(employeeRoles);
+                        getUserQuery.UserRole = new MapUserRolesUtility(_config).GetUserRoleBasedOnEmployeeTypesId(employeeRoles);
                     }
                     await _context.SaveChangesAsync();
 
