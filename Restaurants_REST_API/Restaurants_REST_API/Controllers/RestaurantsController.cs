@@ -8,7 +8,6 @@ using Restaurants_REST_API.DTOs.PutDTO;
 using Restaurants_REST_API.Models.Database;
 using Restaurants_REST_API.Services;
 using Restaurants_REST_API.Services.Database_Service;
-using Restaurants_REST_API.Services.MapperService;
 using Restaurants_REST_API.Services.ValidatorService;
 using System.Data;
 using System.Text.RegularExpressions;
@@ -366,20 +365,33 @@ namespace Restaurants_REST_API.Controllers
                 }
 
                 Restaurant? restaurant = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(restaurantId);
-
                 if (restaurant == null)
                 {
                     return NotFound($"Restaurant at id={restaurantId} not found");
                 }
 
-                foreach (RestaurantDish restaurantDish in restaurant.RestaurantDishes)
+                IEnumerable<Dish>? dishes = await _restaurantsApiService.GetAllDishes();
+                if (dishes != null) 
                 {
-                    Dish dish = restaurantDish.Dish;
-                    if (dish.Name.Equals(newDish.Name) && dish.Price == newDish.Price)
+                    foreach (Dish dish in dishes) 
                     {
-                        return BadRequest($"Dish {dish.Name} already exist in restaurant {restaurant.Name}");
+                        if (dish.Name.ToLower().Replace("\\s","").Equals(newDish.Name.ToLower().Replace("\\s","")))
+                        {
+                            return BadRequest($"Dish {newDish.Name} already exist");
+                        }
                     }
+                }
 
+                GetRestaurantDTO restaurantDetails = await _restaurantsApiService.GetDetailedRestaurantDataAsync(restaurant);
+                if (restaurantDetails.RestaurantDishes != null && restaurantDetails.RestaurantDishes.Count() > 0)
+                {
+                    foreach (Dish dish in restaurantDetails.RestaurantDishes)
+                    {
+                        if (dish.Name.Equals(newDish.Name))
+                        {
+                            return BadRequest($"Dish {dish.Name} already exist in restaurant {restaurant.Name}");
+                        }
+                    }
                 }
             }
 
@@ -674,6 +686,11 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Building number can't be empty");
             }
 
+            if (string.IsNullOrEmpty(putRestaurantData.Address.LocalNumber))
+            {
+                putRestaurantData.Address.LocalNumber = null;
+            }
+
             if (putRestaurantData.BonusBudget != null && putRestaurantData.BonusBudget < 0)
             {
                 return BadRequest("Restaurant bonus budget can't be less than 0");
@@ -708,6 +725,11 @@ namespace Restaurants_REST_API.Controllers
         [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
         public async Task<IActionResult> UpdateDish(int dishId, PutDishDTO putDishData)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Dish data is invalid");
+            }
+
             if (!GeneralValidator.isNumberGtZero(dishId))
             {
                 return BadRequest($"Dish id={dishId} is invalid");
@@ -748,7 +770,7 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpDelete("dish/{dishId}")]
         [Authorize(Roles = UserRolesService.Owner)]
-        public async Task<IActionResult> DeleteDishBy(int dishId)
+        public async Task<IActionResult> DeleteEverywhereDish(int dishId)
         {
             if (!GeneralValidator.isNumberGtZero(dishId))
             {
@@ -782,7 +804,7 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpDelete("{restaurantId}/dish/{dishId}")]
         [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
-        public async Task<IActionResult> DeleteDishBy(int restaurantId, int dishId)
+        public async Task<IActionResult> DeleteDishFromRestaurant(int restaurantId, int dishId)
         {
             if (!GeneralValidator.isNumberGtZero(restaurantId))
             {
@@ -874,9 +896,9 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound($"Employee {employeeDatabase.FirstName} not found in restaurant {restaurantDatabase.Name}");
             }
 
-            if (employeeDatabase.IsOwner.ToLower().Equals("y"))
+            if (Regex.Match(employeeDatabase.IsOwner, _ownerRegex, RegexOptions.IgnoreCase).Success)
             {
-                return BadRequest("Owner can't be deleted from restaurant");
+                return BadRequest($"Employee {employeeDatabase.FirstName} can't be deleted because is an owner");
             }
 
             bool isEmployeeHasBeenRemoved = await _restaurantsApiService.DeleteEmployeeFromRestaurantAsync(empId, restaurantId);

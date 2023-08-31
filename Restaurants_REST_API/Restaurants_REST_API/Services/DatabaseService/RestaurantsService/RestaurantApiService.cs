@@ -274,6 +274,11 @@ namespace Restaurants_REST_API.Services.Database_Service
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Dish>?> GetAllDishes() 
+        {
+            return await _context.Dish.ToListAsync();
+        }
+
         public async Task<bool> AddNewEmployeeTypeAsync(string name)
         {
             try
