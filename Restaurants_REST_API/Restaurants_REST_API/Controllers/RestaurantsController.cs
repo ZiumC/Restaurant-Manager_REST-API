@@ -179,8 +179,8 @@ namespace Restaurants_REST_API.Controllers
                 Employees = new
                 {
                     EmployeesCount = rd.RestaurantWorkers?.Count(),
-                    TotalSalary = _employeeApiService.GetEmployeeDetailsByRestaurantIdAsync(rd.IdRestaurant).Result.Sum(a => a.Salary),
-                    TotalBonus = _employeeApiService.GetEmployeeDetailsByRestaurantIdAsync(rd.IdRestaurant).Result.Sum(a => a.BonusSalary)
+                    TotalSalary = _employeeApiService.GetAllEmployeesDetailsByRestaurantIdAsync(rd.IdRestaurant).Result.Sum(a => a.Salary),
+                    TotalBonus = _employeeApiService.GetAllEmployeesDetailsByRestaurantIdAsync(rd.IdRestaurant).Result.Sum(a => a.BonusSalary)
                 }
             });
 
@@ -451,7 +451,7 @@ namespace Restaurants_REST_API.Controllers
             }
 
             //checking if employee exist
-            Employee? employeeDatabase = await _employeeApiService.GetBasicEmployeeDataByIdAsync(empId);
+            Employee? employeeDatabase = await _employeeApiService.GetEmployeeSimpleDataByIdAsync(empId);
             if (employeeDatabase == null)
             {
                 return NotFound($"Employee id={empId} not found");
@@ -560,7 +560,7 @@ namespace Restaurants_REST_API.Controllers
             }
 
             //checking if employee exist
-            Employee? employeeDatabase = await _employeeApiService.GetBasicEmployeeDataByIdAsync(empId);
+            Employee? employeeDatabase = await _employeeApiService.GetEmployeeSimpleDataByIdAsync(empId);
             if (employeeDatabase == null)
             {
                 return NotFound("Employee not found");
@@ -867,7 +867,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest($"Restaurant id={restaurantId} is invalid");
             }
 
-            Employee? employeeDatabase = await _employeeApiService.GetBasicEmployeeDataByIdAsync(empId);
+            Employee? employeeDatabase = await _employeeApiService.GetEmployeeSimpleDataByIdAsync(empId);
             if (employeeDatabase == null)
             {
                 return NotFound("Employee not found");
