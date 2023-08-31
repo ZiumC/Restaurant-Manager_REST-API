@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.Services.Database_Service;
-using Restaurants_REST_API.Services.DatabaseService.CustomersService;
 using Restaurants_REST_API.Utils;
 using Restaurants_REST_API.Utils.ValidatorService;
 
@@ -13,17 +12,73 @@ namespace Restaurants_REST_API.Controllers
     public class ComplaintsController : ControllerBase
     {
         private readonly IRestaurantApiService _restaurantsApiService;
-        private readonly IClientApiService _clientApiService;
         private readonly IComplaintApiService _complaintsApiService;
         private readonly IConfiguration _config;
+        private readonly string _newComplaintStatus;
+        private readonly string _pendingComplaintStatus;
+        private readonly string _acceptedComplaintStatus;
+        private readonly string _rejectedComplaintStatus;
+        private readonly string _considerAction;
+        private readonly string _acceptAction;
+        private readonly string _rejectAction;
 
-        public ComplaintsController(IRestaurantApiService restaurantsApiService, IComplaintApiService complaintsApiService, IClientApiService clientApiService, IConfiguration config)
+        public ComplaintsController(IRestaurantApiService restaurantsApiService, IComplaintApiService complaintsApiService, IConfiguration config)
         {
             _restaurantsApiService = restaurantsApiService;
-            _clientApiService = clientApiService;
             _complaintsApiService = complaintsApiService;
             _config = config;
-        }
+
+            _newComplaintStatus = _config["ApplicationSettings:ComplaintStatus:New"];
+            _pendingComplaintStatus = _config["ApplicationSettings:ComplaintStatus:Pending"];
+            _acceptedComplaintStatus = _config["ApplicationSettings:ComplaintStatus:Accepted"];
+            _rejectedComplaintStatus = _config["ApplicationSettings:ComplaintStatus:Rejected"];
+
+            _considerAction = _config["ApplicationSettings:ComplaintActions:Consider"];
+            _acceptAction = _config["ApplicationSettings:ComplaintActions:Accept"];
+            _rejectAction = _config["ApplicationSettings:ComplaintActions:Reject"];
+
+            try 
+            {
+                if (string.IsNullOrEmpty(_newComplaintStatus))
+                {
+                    throw new Exception("Complaint status (NEW) can't be empty");
+                }
+
+                if (string.IsNullOrEmpty(_pendingComplaintStatus))
+                {
+                    throw new Exception("Complaint status (PENDING) can't be empty");
+                }
+
+                if (string.IsNullOrEmpty(_acceptedComplaintStatus))
+                {
+                    throw new Exception("Complaint status (ACCEPTED) can't be empty");
+                }
+
+                if (string.IsNullOrEmpty(_rejectedComplaintStatus))
+                {
+                    throw new Exception("Complaint status (REJECTED) can't be empty");
+                }
+
+                if (string.IsNullOrEmpty(_considerAction))
+                {
+                    throw new Exception("Action (CONSIDER) can't be empty");
+                }
+
+                if (string.IsNullOrEmpty(_acceptAction))
+                {
+                    throw new Exception("Action (ACCEPT) can't be empty");
+                }
+
+                if (string.IsNullOrEmpty(_rejectAction))
+                {
+                    throw new Exception("Action (REJECT) can't be empty");
+                }
+            }
+            catch(Exception ex) 
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }   
 
         /// <summary>
         /// Returns client, client reservations and complaint data based on complaint status from all restaurants.
@@ -35,14 +90,14 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpGet]
         [Authorize(Roles = UserRolesUtility.Owner)]
-        public async Task<IActionResult> GetComplainsByStatusBy(string status)
+        public async Task<IActionResult> GetComplains(string status)
         {
             IEnumerable<string> availableStatuses = new List<string>
             {
-                _config["ApplicationSettings:ComplaintStatus:New"],
-                _config["ApplicationSettings:ComplaintStatus:Pending"],
-                _config["ApplicationSettings:ComplaintStatus:Accepted"],
-                _config["ApplicationSettings:ComplaintStatus:Rejected"]
+                _newComplaintStatus,
+                _pendingComplaintStatus,
+                _acceptedComplaintStatus,
+                _rejectedComplaintStatus
             };
 
             if (!availableStatuses.Contains(status))
@@ -105,7 +160,7 @@ namespace Restaurants_REST_API.Controllers
          */
         [HttpPut("{complaintId}/update")]
         [Authorize(Roles = UserRolesUtility.Owner)]
-        public async Task<IActionResult> UpdateComplaintStatusBy(int complaintId, string action)
+        public async Task<IActionResult> UpdateComplaintStatus(int complaintId, string action)
         {
 
             if (!GeneralValidatorUtility.isIntNumberGtZero(complaintId))
@@ -115,9 +170,9 @@ namespace Restaurants_REST_API.Controllers
 
             IEnumerable<string> availableActionsForEndpoint = new List<string>
             {
-                _config["ApplicationSettings:ComplaintActions:Consider"],
-                _config["ApplicationSettings:ComplaintActions:Accept"],
-                _config["ApplicationSettings:ComplaintActions:Reject"],
+                _considerAction,
+                _acceptAction,
+                _rejectAction
             };
 
             action = action.ToLower();
@@ -132,66 +187,57 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound("Complaint not found");
             }
 
-            return await UpdateComplaintByActionAsync(action, complaint);
+            return await UpdateComplaintUsingAction(action, complaint);
         }
 
-        private async Task<IActionResult> UpdateComplaintByActionAsync(string action, GetComplaintDTO complaint)
+        private async Task<IActionResult> UpdateComplaintUsingAction(string action, GetComplaintDTO complaint)
         {
-            //NEED TO REFACTOR THIS!!!!!!!!!
-            string newStatus = _config["ApplicationSettings:ComplaintStatus:New"];
-            string pendingStatus = _config["ApplicationSettings:ComplaintStatus:Pending"];
-            string acceptedStatus = _config["ApplicationSettings:ComplaintStatus:Accepted"];
-            string rejectedStatus = _config["ApplicationSettings:ComplaintStatus:Rejected"];
-
-            string considerAction = _config["ApplicationSettings:ComplaintActions:Consider"];
-            string acceptAction = _config["ApplicationSettings:ComplaintActions:Accept"];
-
-            string statusToUpdate = newStatus;
+            string statusToUpdate = _newComplaintStatus;
             string currentComplaintStatus = complaint.Status;
 
-            if (action == considerAction)
+            if (action == _considerAction)
             {
-                if (currentComplaintStatus == newStatus)
+                if (currentComplaintStatus == _newComplaintStatus)
                 {
-                    statusToUpdate = pendingStatus;
+                    statusToUpdate = _pendingComplaintStatus;
                 }
-                else if (currentComplaintStatus == pendingStatus)
+                else if (currentComplaintStatus == _pendingComplaintStatus)
                 {
                     return BadRequest($"Complaint status is {currentComplaintStatus} already");
                 }
                 else 
                 {
-                    return BadRequest($"Unable to update complaint status to {pendingStatus} because current status is {currentComplaintStatus}");
+                    return BadRequest($"Unable to update complaint status to {_pendingComplaintStatus} because current status is {currentComplaintStatus}");
                 }
             }
-            else if (action == acceptAction)
+            else if (action == _acceptAction)
             {
-                if (currentComplaintStatus == pendingStatus)
+                if (currentComplaintStatus == _pendingComplaintStatus)
                 {
-                    statusToUpdate = acceptedStatus;
+                    statusToUpdate = _acceptedComplaintStatus;
                 }
-                else if (currentComplaintStatus == acceptedStatus)
+                else if (currentComplaintStatus == _acceptedComplaintStatus)
                 {
                     return BadRequest($"Complaint status is {currentComplaintStatus} already");
                 }
                 else
                 {
-                    return BadRequest($"Unable to update complaint status to {acceptedStatus} because current status is {currentComplaintStatus}");
+                    return BadRequest($"Unable to update complaint status to {_acceptedComplaintStatus} because current status is {currentComplaintStatus}");
                 }
             }
             else
             {
-                if (currentComplaintStatus == pendingStatus)
+                if (currentComplaintStatus == _pendingComplaintStatus)
                 {
-                    statusToUpdate = rejectedStatus;
+                    statusToUpdate = _rejectedComplaintStatus;
                 }
-                else if (currentComplaintStatus == rejectedStatus)
+                else if (currentComplaintStatus == _rejectedComplaintStatus)
                 {
                     return BadRequest($"Complaint status is {currentComplaintStatus} already");
                 }
                 else
                 {
-                    return BadRequest($"Unable to update complaint status to {rejectedStatus} because current status is {currentComplaintStatus}");
+                    return BadRequest($"Unable to update complaint status to {_rejectedComplaintStatus} because current status is {currentComplaintStatus}");
                 }
             }
 
