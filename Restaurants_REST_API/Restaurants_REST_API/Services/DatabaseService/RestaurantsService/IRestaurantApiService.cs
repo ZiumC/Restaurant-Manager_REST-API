@@ -1,6 +1,7 @@
 ﻿using Restaurants_REST_API.DTOs.GetDTO;
 using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.DTOs.PostOrPutDTO;
+using Restaurants_REST_API.DTOs.PutDTO;
 using Restaurants_REST_API.Models.Database;
 
 namespace Restaurants_REST_API.Services.Database_Service
@@ -19,7 +20,7 @@ namespace Restaurants_REST_API.Services.Database_Service
         public Task<bool> AddNewDishToRestaurantsAsync(PostDishDTO newDish);
         public Task<bool> AddNewEmployeeToRestaurantAsync(int empId, int typeId, int restaurantId);
         public Task<bool> UpdateRestaurantDataAsync(int restaurantId, Restaurant newRestaurantData);
-        public Task<bool> UpdateDishDataAsync(int dishId, Dish newDishData);
+        public Task<bool> UpdateDishDataAsync(int dishId, PutDishDTO newDishData);
         public Task<bool> UpdateEmployeeTypeAsync(int empId, int typeId, int restaurantId);
         public Task<bool> DeleteDishAsync(Dish dishData);
         public Task<bool> DeleteDishFromRestaurantAsync(int restaurantId, int dishId);

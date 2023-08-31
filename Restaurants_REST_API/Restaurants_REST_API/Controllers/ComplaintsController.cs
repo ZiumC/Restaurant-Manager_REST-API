@@ -137,6 +137,7 @@ namespace Restaurants_REST_API.Controllers
 
         private async Task<IActionResult> UpdateComplaintByActionAsync(string action, GetComplaintDTO complaint)
         {
+            //NEED TO REFACTOR THIS!!!!!!!!!
             string newStatus = _config["ApplicationSettings:ComplaintStatus:New"];
             string pendingStatus = _config["ApplicationSettings:ComplaintStatus:Pending"];
             string acceptedStatus = _config["ApplicationSettings:ComplaintStatus:Accepted"];

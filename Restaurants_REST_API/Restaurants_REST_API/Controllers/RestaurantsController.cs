@@ -21,6 +21,10 @@ namespace Restaurants_REST_API.Controllers
         private readonly IEmployeeApiService _employeeApiService;
         private readonly IConfiguration _config;
         private readonly string _ownerTypeName;
+        private readonly string _newComplaintStatus;
+        private readonly string _acceptedComplaintStatus;
+        private readonly string _pendingComplaintStatus;
+        private readonly string _rejectedComplaintStatus;
 
         public RestaurantsController(IRestaurantApiService restaurantsApiService, IEmployeeApiService employeeApiService, IConfiguration config)
         {
@@ -30,11 +34,36 @@ namespace Restaurants_REST_API.Controllers
 
             _ownerTypeName = _config["ApplicationSettings:AdministrativeRoles:Owner"];
 
+            _newComplaintStatus = _config["ApplicationSettings:ComplaintStatus:New"];
+            _pendingComplaintStatus = _config["ApplicationSettings:ComplaintStatus:Pending"];
+            _acceptedComplaintStatus = _config["ApplicationSettings:ComplaintStatus:Accepted"];
+            _rejectedComplaintStatus = _config["ApplicationSettings:ComplaintStatus:Rejected"];
+
             try
             {
                 if (string.IsNullOrEmpty(_ownerTypeName))
                 {
                     throw new Exception("Owner type name can't be empty");
+                }
+
+                if (string.IsNullOrEmpty(_newComplaintStatus))
+                {
+                    throw new Exception("Complaint status (NEW) can't be empty");
+                }
+
+                if (string.IsNullOrEmpty(_pendingComplaintStatus))
+                {
+                    throw new Exception("Complaint status (PENDING) can't be empty");
+                }
+
+                if (string.IsNullOrEmpty(_acceptedComplaintStatus))
+                {
+                    throw new Exception("Complaint status (ACCEPTED) can't be empty");
+                }
+
+                if (string.IsNullOrEmpty(_rejectedComplaintStatus))
+                {
+                    throw new Exception("Complaint status (REJECTED) can't be empty");
                 }
             }
             catch (Exception ex)
@@ -53,7 +82,7 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpGet]
         [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
-        public async Task<IActionResult> GetAllRestaurants()
+        public async Task<IActionResult> GetAllRestaurantsData()
         {
             IEnumerable<GetRestaurantDTO>? restaurants = await _restaurantsApiService.GetAllRestaurantsAsync();
 
@@ -76,7 +105,7 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpGet("{restaurantId}")]
         [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
-        public async Task<IActionResult> GetRestaurantBy(int restaurantId)
+        public async Task<IActionResult> GetRestaurantData(int restaurantId)
         {
             if (!GeneralValidator.isNumberGtZero(restaurantId))
             {
@@ -104,7 +133,7 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpGet("stats")]
         [Authorize(Roles = UserRolesService.Owner)]
-        public async Task<IActionResult> GetRestaurantStatistics()
+        public async Task<IActionResult> GetRestaurantsStatistics()
         {
             IEnumerable<GetRestaurantDTO>? restaurantsDetails = await _restaurantsApiService.GetAllRestaurantsAsync();
 
@@ -117,23 +146,30 @@ namespace Restaurants_REST_API.Controllers
             var result = restaurantsDetails.Select(rd => new
             {
                 RestaurantName = rd.Name,
-                RestaurantGrade = rd.RestaurantReservations?.Where(rr => rr.ReservationGrade != null).Average(rr => rr.ReservationGrade),
+                RestaurantGrade =
+                        rd.RestaurantReservations?
+                        .Where(rr => rr.ReservationGrade != null)
+                        .Average(rr => rr.ReservationGrade),
                 ReservationsCount = rd.RestaurantReservations?.Count(),
                 Complaints = new
                 {
                     ComplaintsCount = rd.RestaurantReservations?.Where(rc => rc.ReservationComplaint != null).Count(),
-                    NewComplaintsCount = rd.RestaurantReservations?
-                                        .Where(rc => rc.ReservationComplaint?.Status == _config["ApplicationSettings:ComplaintStatus:New"])
-                                        .Count(),
-                    PendingComplaintsCount = rd.RestaurantReservations?
-                                        .Where(rc => rc.ReservationComplaint?.Status == _config["ApplicationSettings:ComplaintStatus:Pending"])
-                                        .Count(),
-                    AcceptedComplaintsCount = rd.RestaurantReservations?
-                                        .Where(rc => rc.ReservationComplaint?.Status == _config["ApplicationSettings:ComplaintStatus:Accepted"])
-                                        .Count(),
-                    RejectedComplaintsCount = rd.RestaurantReservations?
-                                        .Where(rc => rc.ReservationComplaint?.Status == _config["ApplicationSettings:ComplaintStatus:Rejected"])
-                                        .Count(),
+                    NewComplaintsCount =
+                            rd.RestaurantReservations?
+                            .Where(rc => rc.ReservationComplaint?.Status == _newComplaintStatus)
+                            .Count(),
+                    PendingComplaintsCount =
+                            rd.RestaurantReservations?
+                            .Where(rc => rc.ReservationComplaint?.Status == _pendingComplaintStatus)
+                            .Count(),
+                    AcceptedComplaintsCount =
+                            rd.RestaurantReservations?
+                            .Where(rc => rc.ReservationComplaint?.Status == _acceptedComplaintStatus)
+                            .Count(),
+                    RejectedComplaintsCount =
+                            rd.RestaurantReservations?
+                            .Where(rc => rc.ReservationComplaint?.Status == _rejectedComplaintStatus)
+                            .Count(),
                 },
                 Employees = new
                 {
@@ -157,7 +193,7 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpGet("dish/{dishId}")]
         [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
-        public async Task<IActionResult> GetDishBy(int dishId)
+        public async Task<IActionResult> GetDishData(int dishId)
         {
             if (!GeneralValidator.isNumberGtZero(dishId))
             {
@@ -205,54 +241,61 @@ namespace Restaurants_REST_API.Controllers
         [Authorize(Roles = UserRolesService.Owner)]
         public async Task<IActionResult> AddNewRestaurant(PostRestaurantDTO newRestaurant)
         {
-            if (newRestaurant == null)
+            if (!ModelState.IsValid)
             {
-                return BadRequest("Restaurant must be specified");
+                return BadRequest("Restaurant data is invalid");
             }
 
-            if (GeneralValidator.isEmptyNameOf(newRestaurant.Name))
+            if (string.IsNullOrEmpty(newRestaurant.Name))
             {
                 return BadRequest("Restaurant name can't be empty");
             }
 
-            if (GeneralValidator.isEmptyNameOf(newRestaurant.Address.City))
+            if (string.IsNullOrEmpty(newRestaurant.Address.City))
             {
                 return BadRequest("City adress can't be empty");
             }
 
-            if (GeneralValidator.isEmptyNameOf(newRestaurant.Address.Street))
+            if (string.IsNullOrEmpty(newRestaurant.Address.Street))
             {
                 return BadRequest("Street adress can't be empty");
             }
 
-            if (GeneralValidator.isEmptyNameOf(newRestaurant.Address.BuildingNumber))
+            if (string.IsNullOrEmpty(newRestaurant.Address.BuildingNumber))
             {
                 return BadRequest("Building number adress can't be empty");
             }
 
-            if (GeneralValidator.isEmptyNameOf(newRestaurant.Address.LocalNumber))
+            if (string.IsNullOrEmpty(newRestaurant.Address.LocalNumber))
             {
                 newRestaurant.Address.LocalNumber = null;
             }
 
-            if (GeneralValidator.isEmptyNameOf(newRestaurant.Status))
+            if (string.IsNullOrEmpty(newRestaurant.Status))
             {
                 return BadRequest("Restaurant status can't be empty");
             }
 
             IEnumerable<GetRestaurantDTO>? allRestaurants = await _restaurantsApiService.GetAllRestaurantsAsync();
-            if (RestaurantValidator.isRestaurantExistIn(allRestaurants, newRestaurant))
+            if (allRestaurants != null && allRestaurants.Count() > 0)
             {
-                return BadRequest("Restaurant already exist");
+                GetRestaurantDTO? restaurant = allRestaurants
+                    .Where(ar => ar.Name.ToLower() == newRestaurant.Name.ToLower())
+                    .FirstOrDefault();
+
+                if (restaurant != null)
+                {
+                    return BadRequest("Restaurant already exist");
+                }
             }
 
-            IEnumerable<GetEmployeeTypeDTO>? types = await _restaurantsApiService.GetEmployeeTypesAsync();
-            if (types == null)
+            IEnumerable<GetEmployeeTypeDTO>? allTypes = await _restaurantsApiService.GetEmployeeTypesAsync();
+            if (allTypes == null)
             {
                 return NotFound("Employee types not found");
             }
 
-            int ownerTypeId = types
+            int ownerTypeId = allTypes
                 .Where(t => t.Name == _ownerTypeName)
                 .Select(t => t.IdType)
                 .FirstOrDefault();
@@ -265,7 +308,7 @@ namespace Restaurants_REST_API.Controllers
             GetEmployeeDTO? ownerData = await _employeeApiService.GetEmployeeDetailsByTypeIdAsync(ownerTypeId);
             if (ownerData == null)
             {
-                return NotFound("Owner not found, unable to add new restaurant");
+                return NotFound("Owner of restaurants not found, unable to add new restaurant");
             }
 
             bool isRestaurantAdded = await _restaurantsApiService.AddNewRestaurantAsync(newRestaurant, ownerTypeId);
@@ -287,50 +330,47 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpPost("dish")]
         [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
-        public async Task<IActionResult> AddNewDish(PostDishDTO newDish)
+        public async Task<IActionResult> AddNewDishToRestaurant(PostDishDTO newDish)
         {
-            if (newDish == null)
+            if (!ModelState.IsValid)
             {
-                return BadRequest("Dish must be specified");
+                return BadRequest("Dish data is invalid");
             }
 
-            if (newDish.IdRestaurants == null)
+            if (newDish.IdRestaurants == null || newDish.IdRestaurants.Count() == 0)
             {
-                return BadRequest("Dish must have specified one or more restaurants");
+                return BadRequest("Dish should be assigned at least to one restaurant");
             }
 
-            if (GeneralValidator.isEmptyNameOf(newDish.Name))
+            if (string.IsNullOrEmpty(newDish.Name))
             {
                 return BadRequest("Dish name can't be empty");
             }
 
-            if (newDish.IdRestaurants.Count() == 0)
-            {
-                return BadRequest("Restasurants id are required");
-            }
-
-            List<GetRestaurantDTO> restaurants = new List<GetRestaurantDTO>();
-
+            //checking if restaurant exist and does dish exist already in restaurant
             foreach (int restaurantId in newDish.IdRestaurants)
             {
                 if (!GeneralValidator.isNumberGtZero(restaurantId))
                 {
-                    return BadRequest("One or many restaurant id isn't correct");
+                    return BadRequest($"Restaurant id={restaurantId} isn't correct");
                 }
 
                 Restaurant? restaurant = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(restaurantId);
 
                 if (restaurant == null)
                 {
-                    return NotFound($"Restaurant id={restaurantId} not found");
+                    return NotFound($"Restaurant at id={restaurantId} not found");
                 }
 
-                restaurants.Add(await _restaurantsApiService.GetDetailedRestaurantDataAsync(restaurant));
-            }
+                foreach (RestaurantDish restaurantDish in restaurant.RestaurantDishes) 
+                {
+                    Dish dish = restaurantDish.Dish;
+                    if (dish.Name.Equals(newDish.Name) && dish.Price == newDish.Price)
+                    {
+                        return BadRequest($"Dish {dish.Name} already exist in restaurant {restaurant.Name}");
+                    }
 
-            if (RestaurantValidator.isDishExistIn(restaurants, newDish))
-            {
-                return BadRequest("Dish already exist in one or many restaurants");
+                }
             }
 
             bool isDishAdded = await _restaurantsApiService.AddNewDishToRestaurantsAsync(newDish);
@@ -666,28 +706,30 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpPut("dish/{dishId}")]
         [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
-        public async Task<IActionResult> UpdateDishDataBy(int dishId, PutDishDTO putDishData)
+        public async Task<IActionResult> UpdateDish(int dishId, PutDishDTO putDishData)
         {
             if (!GeneralValidator.isNumberGtZero(dishId))
             {
                 return BadRequest($"Dish id={dishId} is invalid");
             }
 
-            if (GeneralValidator.isEmptyNameOf(putDishData.Name))
+            if (string.IsNullOrEmpty(putDishData.Name))
             {
                 return BadRequest("Dish name can't be empty");
+            }
+
+            if (putDishData.Price <= new decimal(0.0))
+            {
+                return BadRequest("Dish price is invalid");
             }
 
             Dish? dishDetailsDatabase = await _restaurantsApiService.GetBasicDishDataByIdAsync(dishId);
             if (dishDetailsDatabase == null)
             {
-                return NotFound($"Dish id={dishId} not found");
+                return NotFound("Dish to update not found");
             }
 
-            MapDishDataService dishDataMapper = new MapDishDataService(dishDetailsDatabase, putDishData);
-            Dish dishUpdatedData = dishDataMapper.GetDishUpdatedData();
-
-            bool isDishUpdated = await _restaurantsApiService.UpdateDishDataAsync(dishId, dishUpdatedData);
+            bool isDishUpdated = await _restaurantsApiService.UpdateDishDataAsync(dishId, putDishData);
             if (!isDishUpdated)
             {
                 return BadRequest("Something went wrong unable to update dish data");
