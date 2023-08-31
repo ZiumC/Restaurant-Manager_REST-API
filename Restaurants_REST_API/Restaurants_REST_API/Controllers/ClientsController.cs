@@ -142,7 +142,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest($"Reestaurant id={retaurantId} is invalid");
             }
 
-            GetRestaurantDTO? restaurantDetails = await _restaurantApiService.GetDetailedRestaurantDataAsync(retaurantId);
+            GetRestaurantDTO? restaurantDetails = await _restaurantApiService.GetRestaurantDetailedDataAsync(retaurantId);
             if (restaurantDetails == null)
             {
                 return NotFound("Restaurant not found");
@@ -316,7 +316,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound("Client not found");
             }
 
-            var restaurantBasicData = await _restaurantApiService.GetBasicRestaurantDataByIdAsync(newReservation.IdRestaurant);
+            var restaurantBasicData = await _restaurantApiService.GetRestaurantSimpleDataByIdAsync(newReservation.IdRestaurant);
             if (restaurantBasicData == null)
             {
                 return NotFound("Restaurant not found");

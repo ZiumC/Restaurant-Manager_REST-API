@@ -270,7 +270,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest($"Restaurant id={restaurantId} is invalid");
             }
 
-            Restaurant? restaurant = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(restaurantId);
+            Restaurant? restaurant = await _restaurantsApiService.GetRestaurantSimpleDataByIdAsync(restaurantId);
             if (restaurant == null)
             {
                 return NotFound($"Restaurant not found");

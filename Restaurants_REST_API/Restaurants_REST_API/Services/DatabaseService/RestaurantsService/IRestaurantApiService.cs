@@ -8,22 +8,21 @@ namespace Restaurants_REST_API.Services.Database_Service
 {
     public interface IRestaurantApiService
     {
-        public Task<Restaurant?> GetBasicRestaurantDataByIdAsync(int restaurantId);
-        public Task<GetRestaurantDTO?> GetDetailedRestaurantDataAsync(int restaurantId);
+        public Task<Restaurant?> GetRestaurantSimpleDataByIdAsync(int restaurantId);
+        public Task<GetRestaurantDTO?> GetRestaurantDetailedDataAsync(int restaurantId);
         public Task<IEnumerable<GetRestaurantDTO>?> GetAllRestaurantsAsync();
         public Task<IEnumerable<EmployeeRestaurant>?> GetHiredEmployeesInRestaurantsAsync();
         public Task<IEnumerable<GetEmployeeTypeDTO>?> GetEmployeeTypesAsync();
-        public Task<Dish?> GetBasicDishDataByIdAsync(int dishId);
+        public Task<Dish?> GetDishSimpleDataByIdAsync(int dishId);
         public Task<IEnumerable<Dish>?> GetAllDishes();
         public Task<IEnumerable<RestaurantDish>?> GetRestaurantDishesByRestaurantIdAsync(int restaurantId);
-        public Task<bool> AddNewEmployeeTypeAsync(string name);
-        public Task<bool> AddNewRestaurantAsync(PostRestaurantDTO newRestaurant, int ownerTypeId);
+        public Task<bool> AddNewRestaurantAsync(PostRestaurantDTO newRestaurantData, int ownerTypeId);
         public Task<bool> AddNewDishToRestaurantsAsync(PostDishDTO newDish);
         public Task<bool> AddNewEmployeeToRestaurantAsync(int empId, int typeId, int restaurantId);
-        public Task<bool> UpdateRestaurantDataAsync(int restaurantId, PutRestaurantDTO putRestaurantData);
-        public Task<bool> UpdateDishDataAsync(int dishId, PutDishDTO newDishData);
+        public Task<bool> UpdateRestaurantDataAsync(int restaurantId, PutRestaurantDTO restaurantData);
+        public Task<bool> UpdateDishDataAsync(int dishId, PutDishDTO dishData);
         public Task<bool> UpdateEmployeeTypeAsync(int empId, int typeId, int restaurantId);
-        public Task<bool> DeleteDishAsync(Dish dishData);
+        public Task<bool> DeleteDishAsync(Dish dish);
         public Task<bool> DeleteDishFromRestaurantAsync(int restaurantId, int dishId);
         public Task<bool> DeleteEmployeeFromRestaurantAsync(int empId, int restaurantId);
     }
