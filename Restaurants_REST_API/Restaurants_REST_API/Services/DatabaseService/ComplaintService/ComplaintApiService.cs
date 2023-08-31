@@ -15,33 +15,34 @@ namespace Restaurants_REST_API.Services.Database_Service
 
         public async Task<List<GetClientDataDTO>?> GetClientComplaintsByStatusAsync(string status)
         {
-            return await (from c in _context.Client
-                          select new GetClientDataDTO
-                          {
-                              IdClient = c.IdClient,
-                              Name = c.Name,
-                              IsBusinessman = c.IsBusinessman,
-                              ClientReservations = (from r in _context.Reservation
-                                                    where r.IdClient == c.IdClient
-                                                    && r.Complaint.ComplaintStatus == status
-                                                    select new GetReservationDTO
-                                                    {
-                                                        IdReservation = r.IdReservation,
-                                                        ReservationDate = r.ReservationDate,
-                                                        Status = r.ReservationStatus,
-                                                        ReservationGrade = r.ReservationGrade,
-                                                        HowManyPeoples = r.HowManyPeoples,
-                                                        ReservationComplaint = new GetComplaintDTO
-                                                        {
-                                                            IdComplaint = r.Complaint.IdComplaint,
-                                                            ComplaintDate = r.Complaint.ComplainDate,
-                                                            Status = r.Complaint.ComplaintStatus,
-                                                            Message = r.Complaint.ComplaintMessage
-                                                        }
+            return await
+                (from c in _context.Client
+                 select new GetClientDataDTO
+                 {
+                     IdClient = c.IdClient,
+                     Name = c.Name,
+                     IsBusinessman = c.IsBusinessman,
+                     ClientReservations = (from r in _context.Reservation
+                                           where r.IdClient == c.IdClient
+                                           && r.Complaint.ComplaintStatus == status
+                                           select new GetReservationDTO
+                                           {
+                                               IdReservation = r.IdReservation,
+                                               ReservationDate = r.ReservationDate,
+                                               Status = r.ReservationStatus,
+                                               ReservationGrade = r.ReservationGrade,
+                                               HowManyPeoples = r.HowManyPeoples,
+                                               ReservationComplaint = new GetComplaintDTO
+                                               {
+                                                   IdComplaint = r.Complaint.IdComplaint,
+                                                   ComplaintDate = r.Complaint.ComplainDate,
+                                                   Status = r.Complaint.ComplaintStatus,
+                                                   Message = r.Complaint.ComplaintMessage
+                                               }
 
-                                                    }).ToList(),
+                                           }).ToList(),
 
-                          }).ToListAsync();
+                 }).ToListAsync();
         }
 
         public async Task<bool> UpdateComplaintStatusByIdAsync(int complaintId, string status)
@@ -73,7 +74,7 @@ namespace Restaurants_REST_API.Services.Database_Service
         {
             return await _context.Complaint
                 .Where(c => c.IdComplaint == complaintId)
-                .Select(c => new GetComplaintDTO 
+                .Select(c => new GetComplaintDTO
                 {
                     IdComplaint = c.IdComplaint,
                     ComplaintDate = c.ComplainDate,
