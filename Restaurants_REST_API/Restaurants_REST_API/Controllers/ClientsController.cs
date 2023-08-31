@@ -142,13 +142,11 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest($"Reestaurant id={retaurantId} is invalid");
             }
 
-            var restaurantBasicInfo = await _restaurantApiService.GetBasicRestaurantDataByIdAsync(retaurantId);
-            if (restaurantBasicInfo == null)
+            GetRestaurantDTO? restaurantDetails = await _restaurantApiService.GetDetailedRestaurantDataAsync(retaurantId);
+            if (restaurantDetails == null)
             {
                 return NotFound("Restaurant not found");
             }
-
-            var restaurantDetails = await _restaurantApiService.GetDetailedRestaurantDataAsync(restaurantBasicInfo);
 
             try
             {
