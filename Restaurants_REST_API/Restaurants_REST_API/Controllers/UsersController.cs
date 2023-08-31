@@ -5,7 +5,7 @@ using Restaurants_REST_API.Models.DatabaseModel;
 using Restaurants_REST_API.Services.Database_Service;
 using Restaurants_REST_API.Services.DatabaseService.UsersService;
 using Restaurants_REST_API.Services.JwtService;
-using Restaurants_REST_API.Services.MapperService;
+using Restaurants_REST_API.Utils.MapperService;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -154,7 +154,7 @@ namespace Restaurants_REST_API.Controllers
             if (newUser.RegisterMeAsEmployee)
             {
                 userToSave.IdEmployee = emp?.IdEmployee;
-                userToSave.UserRole = new MapUserRoleService(_config)
+                userToSave.UserRole = new MapUserRolesUtility(_config)
                     .GetUserRoleBasedOnEmployeeTypesId(emp?.EmployeeInRestaurant.Select(eir => eir.IdType));
 
                 bool isEmployeeRegistrationCompletedSuccess = await _userApiService.RegisterNewEmployeeAsync(userToSave);
@@ -166,7 +166,7 @@ namespace Restaurants_REST_API.Controllers
             }
             else
             {
-                userToSave.UserRole = new MapUserRoleService(_config).GetClientUserRole();
+                userToSave.UserRole = new MapUserRolesUtility(_config).GetClientUserRole();
 
                 bool isClientRegistrationCompletedSuccess = await _userApiService.RegisterNewClientAsync(userToSave);
                 if (!isClientRegistrationCompletedSuccess)

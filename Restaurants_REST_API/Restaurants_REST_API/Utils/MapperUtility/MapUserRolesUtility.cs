@@ -1,6 +1,6 @@
-﻿namespace Restaurants_REST_API.Services.MapperService
+﻿namespace Restaurants_REST_API.Utils.MapperService
 {
-    public class MapUserRoleService
+    public class MapUserRolesUtility
     {
 
         private readonly IConfiguration _config;
@@ -9,7 +9,7 @@
         private readonly string _employeeRole;
         private readonly string _clientRole;
 
-        public MapUserRoleService(IConfiguration config)
+        public MapUserRolesUtility(IConfiguration config)
         {
             _config = config;
 
@@ -78,7 +78,7 @@
         /// Returns name of client role.
         /// </summary>
         /// <returns>String of user role.</returns>
-        public string GetClientUserRole() 
+        public string GetClientUserRole()
         {
             return _clientRole;
         }

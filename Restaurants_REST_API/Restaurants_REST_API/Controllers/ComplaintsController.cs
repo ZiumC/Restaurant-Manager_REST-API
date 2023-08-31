@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Restaurants_REST_API.DTOs.GetDTOs;
-using Restaurants_REST_API.Services;
 using Restaurants_REST_API.Services.Database_Service;
 using Restaurants_REST_API.Services.DatabaseService.CustomersService;
-using Restaurants_REST_API.Services.ValidatorService;
+using Restaurants_REST_API.Utils;
+using Restaurants_REST_API.Utils.ValidatorService;
 
 namespace Restaurants_REST_API.Controllers
 {
@@ -34,7 +34,7 @@ namespace Restaurants_REST_API.Controllers
         /// - Owner.
         /// </remarks>
         [HttpGet]
-        [Authorize(Roles = UserRolesService.Owner)]
+        [Authorize(Roles = UserRolesUtility.Owner)]
         public async Task<IActionResult> GetComplainsByStatusBy(string status)
         {
             IEnumerable<string> availableStatuses = new List<string>
@@ -104,11 +104,11 @@ namespace Restaurants_REST_API.Controllers
          * a lot of endpoints which business logic is very similar.
          */
         [HttpPut("{complaintId}/update")]
-        [Authorize(Roles = UserRolesService.Owner)]
+        [Authorize(Roles = UserRolesUtility.Owner)]
         public async Task<IActionResult> UpdateComplaintStatusBy(int complaintId, string action)
         {
 
-            if (!GeneralValidator.isIntNumberGtZero(complaintId))
+            if (!GeneralValidatorUtility.isIntNumberGtZero(complaintId))
             {
                 return BadRequest($"Complaint id={complaintId} is invalid");
             }

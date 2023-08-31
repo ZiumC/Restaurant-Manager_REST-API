@@ -5,8 +5,7 @@ using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.DTOs.PostOrPutDTO;
 using Restaurants_REST_API.DTOs.PutDTO;
 using Restaurants_REST_API.Models.Database;
-using Restaurants_REST_API.Services.MapperService;
-using System;
+using Restaurants_REST_API.Utils.MapperService;
 
 namespace Restaurants_REST_API.Services.Database_Service
 {
@@ -360,7 +359,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                         IEnumerable<int> employeeRoles = _context.EmployeeRestaurant
                             .Where(eir => eir.IdEmployee == queryForChef.IdEmployee)
                             .Select(eir => eir.IdType);
-                        userQuery.UserRole = new MapUserRoleService(_configuration).GetUserRoleBasedOnEmployeeTypesId(employeeRoles);
+                        userQuery.UserRole = new MapUserRolesUtility(_configuration).GetUserRoleBasedOnEmployeeTypesId(employeeRoles);
                     }
                     await _context.SaveChangesAsync();
                 }
@@ -441,7 +440,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                         IEnumerable<int> employeeRoles = _context.EmployeeRestaurant
                             .Where(eir => eir.IdEmployee == empId)
                             .Select(eir => eir.IdType);
-                        userQuery.UserRole = new MapUserRoleService(_configuration).GetUserRoleBasedOnEmployeeTypesId(employeeRoles);
+                        userQuery.UserRole = new MapUserRolesUtility(_configuration).GetUserRoleBasedOnEmployeeTypesId(employeeRoles);
                     }
                     await _context.SaveChangesAsync();
                 }
@@ -539,7 +538,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                         IEnumerable<int> employeeRoles = _context.EmployeeRestaurant
                             .Where(eir => eir.IdEmployee == empId)
                             .Select(eir => eir.IdType);
-                        userQuery.UserRole = new MapUserRoleService(_configuration).GetUserRoleBasedOnEmployeeTypesId(employeeRoles);
+                        userQuery.UserRole = new MapUserRolesUtility(_configuration).GetUserRoleBasedOnEmployeeTypesId(employeeRoles);
                     }
                     await _context.SaveChangesAsync();
                 }
@@ -612,7 +611,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                         IEnumerable<int> employeeRoles = _context.EmployeeRestaurant
                             .Where(eir => eir.IdEmployee == empId)
                             .Select(eir => eir.IdType);
-                        userQuery.UserRole = new MapUserRoleService(_configuration).GetUserRoleBasedOnEmployeeTypesId(employeeRoles);
+                        userQuery.UserRole = new MapUserRolesUtility(_configuration).GetUserRoleBasedOnEmployeeTypesId(employeeRoles);
                     }
                     await _context.SaveChangesAsync();
 

@@ -1,6 +1,6 @@
-﻿namespace Restaurants_REST_API.Services
+﻿namespace Restaurants_REST_API.Utils
 {
-    public static class UserRolesService
+    public static class UserRolesUtility
     {
         public const string Owner = "OWNER";
         public const string Supervisor = "SUPERVISOR";
