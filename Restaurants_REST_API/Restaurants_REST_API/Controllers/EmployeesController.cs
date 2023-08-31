@@ -24,6 +24,8 @@ namespace Restaurants_REST_API.Controllers
         private readonly string _supervisorTypeName;
         private readonly string _peselRegex;
         private readonly decimal _basicBonus;
+        private readonly string _ownerStatusYes;
+        private readonly string _ownerStatusNo;
 
         public EmployeesController(IEmployeeApiService employeeApiService, IRestaurantApiService restaurantsApiService, IConfiguration config)
         {
@@ -37,6 +39,9 @@ namespace Restaurants_REST_API.Controllers
             _supervisorTypeName = _config["ApplicationSettings:AdministrativeRoles:Supervisor"];
 
             _peselRegex = _config["ApplicationSettings:DataValidation:PeselRegex"];
+
+            _ownerStatusYes = _config["ApplicationSettings:AdministrativeRoles:OwnerStatusYes"];
+            _ownerStatusNo = _config["ApplicationSettings:AdministrativeRoles:OwnerStatusNo"];
 
             try
             {
@@ -59,6 +64,16 @@ namespace Restaurants_REST_API.Controllers
                 if (_basicBonus < acceptedMinBonus)
                 {
                     throw new Exception($"Bonus should be at least {acceptedMinBonus}");
+                }
+
+                if (string.IsNullOrEmpty(_ownerStatusYes))
+                {
+                    throw new Exception("Owner status (YES) can't be empty");
+                }
+
+                if (string.IsNullOrEmpty(_ownerStatusNo))
+                {
+                    throw new Exception("Owner status (NO) can't be empty");
                 }
             }
             catch (Exception ex)
@@ -362,8 +377,17 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest($"Bonus salary is less than minimum bonus (min bonus is {_basicBonus})");
             }
 
-            bool isEmpAdded = await _employeeApiService.AddNewEmployeeAsync(newEmployee);
+            string employeeOwnerStatus;
+            if (allEmployees == null || allEmployees.Count() == 0)
+            {
+                employeeOwnerStatus = _ownerStatusYes;
+            }
+            else 
+            {
+                employeeOwnerStatus = _ownerStatusNo;
+            }
 
+            bool isEmpAdded = await _employeeApiService.AddNewEmployeeAsync(newEmployee, employeeOwnerStatus);
             if (!isEmpAdded)
             {
                 return BadRequest("Something went wrong unable to add new Employee");
@@ -627,7 +651,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound("Employee certificates not found");
             }
 
-            GetCertificateDTO? empCertificate = 
+            GetCertificateDTO? empCertificate =
                 employeeDetails.Certificates
                 .Where(ec => ec.IdCertificate == certificateId)
                 .FirstOrDefault();

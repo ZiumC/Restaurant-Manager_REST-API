@@ -10,11 +10,9 @@ namespace Restaurants_REST_API.Services.Database_Service
     public class EmployeeApiService : IEmployeeApiService
     {
         private readonly MainDbContext _context;
-        private readonly IConfiguration _config;
-        public EmployeeApiService(MainDbContext context, IConfiguration config)
+        public EmployeeApiService(MainDbContext context)
         {
             _context = context;
-            _config = config;
         }
 
         public async Task<IEnumerable<GetEmployeeDTO>?> GetAllEmployeesAsync()
@@ -302,7 +300,7 @@ namespace Restaurants_REST_API.Services.Database_Service
         }
 
 
-        public async Task<bool> AddNewEmployeeAsync(PostEmployeeDTO employeeData)
+        public async Task<bool> AddNewEmployeeAsync(PostEmployeeDTO employeeData, string ownerStatus)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -330,7 +328,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                                 HiredDate = DateTime.Now,
                                 Salary = employeeData.Salary,
                                 BonusSalary = employeeData.BonusSalary,
-                                IsOwner = "N",
+                                IsOwner = ownerStatus,
                                 IdAddress = newAddressQuery.Entity.IdAddress
                             }
                         );
