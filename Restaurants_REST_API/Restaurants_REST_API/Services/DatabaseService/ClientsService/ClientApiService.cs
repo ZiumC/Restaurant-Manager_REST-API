@@ -9,16 +9,30 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
     public class ClientApiService : IClientApiService
     {
         private readonly MainDbContext _context;
-        private readonly IConfiguration _configuration;
+        private readonly IConfiguration _config;
+        private readonly string _newReservationStatus;
 
 
-        public ClientApiService(MainDbContext context, IConfiguration configuration)
+        public ClientApiService(MainDbContext context, IConfiguration config)
         {
             _context = context;
-            _configuration = configuration;
+            _config = config;
+
+            _newReservationStatus = _config["ApplicationSettings:ReservationStatus:New"];
+            try 
+            {
+                if (string.IsNullOrEmpty(_newReservationStatus))
+                {
+                    throw new Exception("Reservation status (NEW) can't be empty");
+                }
+            }
+            catch (Exception ex) 
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
-        public async Task<GetClientDataDTO?> GetClientDetailsByIdAsync(int clientId)
+        public async Task<GetClientDataDTO?> GetClientDetailedDataByIdAsync(int clientId)
         {
             return await _context.Client
                 .Where(c => c.IdClient == clientId)
@@ -32,7 +46,7 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<GetReservationDTO>?> GetAllReservationsDetailsByClientIdAsync(int clientId)
+        public async Task<IEnumerable<GetReservationDTO>?> GetAllReservationsDetailedDataByClientIdAsync(int clientId)
         {
             return await _context.Reservation
                 .Where(r => r.IdClient == clientId)
@@ -55,36 +69,37 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
                 }).ToListAsync();
         }
 
-        public async Task<GetReservationDTO?> GetReservationDetailsByCliennIdReservationIdAsync(int clientId, int reservationId)
+        public async Task<GetReservationDTO?> GetReservationDetailedDataByCliennIdReservationIdAsync(int clientId, int reservationId)
         {
-            return await (from r in _context.Reservation
-                          join c in _context.Client
-                          on r.IdClient equals c.IdClient
-                          where c.IdClient == clientId && r.IdReservation == reservationId
-                          select new GetReservationDTO
-                          {
-                              IdReservation = r.IdReservation,
-                              ReservationDate = r.ReservationDate,
-                              Status = r.ReservationStatus,
-                              ReservationGrade = r.ReservationGrade,
-                              HowManyPeoples = r.HowManyPeoples,
-                              ReservationComplaint = _context.Complaint
-                                                    .Where(c => c.IdReservation == r.IdReservation)
-                                                    .Select(c => new GetComplaintDTO
-                                                    {
-                                                        IdComplaint = c.IdComplaint,
-                                                        ComplaintDate = c.ComplainDate,
-                                                        Status = c.ComplaintStatus,
-                                                        Message = c.ComplaintMessage
-                                                    }).FirstOrDefault()
-                          }).FirstOrDefaultAsync();
+            return await
+                (from r in _context.Reservation
+                 join c in _context.Client
+                 on r.IdClient equals c.IdClient
+                 where c.IdClient == clientId && r.IdReservation == reservationId
+                 select new GetReservationDTO
+                 {
+                     IdReservation = r.IdReservation,
+                     ReservationDate = r.ReservationDate,
+                     Status = r.ReservationStatus,
+                     ReservationGrade = r.ReservationGrade,
+                     HowManyPeoples = r.HowManyPeoples,
+                     ReservationComplaint = _context.Complaint
+                                           .Where(c => c.IdReservation == r.IdReservation)
+                                           .Select(c => new GetComplaintDTO
+                                           {
+                                               IdComplaint = c.IdComplaint,
+                                               ComplaintDate = c.ComplainDate,
+                                               Status = c.ComplaintStatus,
+                                               Message = c.ComplaintMessage
+                                           }).FirstOrDefault()
+                 }).FirstOrDefaultAsync();
         }
 
         public async Task<bool> MakeReservationByClientIdAsync(int clientId, PostReservationDTO newReservation)
         {
             try
             {
-                var newReservatin = _context.Add
+                var newReservationQuery = _context.Add
                 (
                     new Reservation
                     {
@@ -92,7 +107,7 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
                         HowManyPeoples = newReservation.HowManyPeoples,
                         IdClient = clientId,
                         ReservationGrade = null,
-                        ReservationStatus = _configuration["ApplicationSettings:ReservationStatus:New"],
+                        ReservationStatus = ,
                         IdRestaurant = newReservation.IdRestaurant
                     }
                 );
@@ -108,23 +123,23 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
             return true;
         }
 
-        public async Task<bool> UpdateReservationByClientIdAsync(int clientId, GetReservationDTO reservation)
+        public async Task<bool> UpdateReservationByClientIdAsync(int clientId, GetReservationDTO reservationData)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
                 try
                 {
-                    var updateReservation = await (_context.Reservation
-                        .Where(r => r.IdReservation == reservation.IdReservation && r.IdClient == clientId))
+                    var getReservationQuery = await _context.Reservation
+                        .Where(r => r.IdReservation == reservationData.IdReservation && r.IdClient == clientId)
                         .FirstAsync();
 
-                    updateReservation.ReservationStatus = reservation.Status;
-                    updateReservation.ReservationGrade = reservation.ReservationGrade;
-                    
-                    var reservationComplaint = reservation.ReservationComplaint;
-                    if (reservationComplaint != null) 
+                    getReservationQuery.ReservationStatus = reservationData.Status;
+                    getReservationQuery.ReservationGrade = reservationData.ReservationGrade;
+
+                    var reservationComplaint = reservationData.ReservationComplaint;
+                    if (reservationComplaint != null)
                     {
-                        reservationComplaint.Status = reservation.ReservationComplaint.Status;
+                        reservationComplaint.Status = reservationData.ReservationComplaint.Status;
                     }
 
                     await _context.SaveChangesAsync();
@@ -141,7 +156,7 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
         }
 
 
-        public async Task<bool> MakeComplainByClientIdAsync(int clientId, GetReservationDTO reservationData, GetComplaintDTO complaint)
+        public async Task<bool> MakeComplainByClientIdAsync(int clientId, GetReservationDTO reservationData, GetComplaintDTO complaintData)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -152,13 +167,13 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
                         .Select(r => new { IdRestaurant = r.IdRestaurant })
                         .FirstAsync();
 
-                    var newComplaint = _context.Add
+                    var newComplaintQuery = _context.Add
                     (
                         new Complaint
                         {
-                            ComplaintMessage = complaint.Message,
-                            ComplainDate = complaint.ComplaintDate,
-                            ComplaintStatus = complaint.Status,
+                            ComplaintMessage = complaintData.Message,
+                            ComplainDate = complaintData.ComplaintDate,
+                            ComplaintStatus = complaintData.Status,
                             IdReservation = reservationData.IdReservation,
                             IdRestaurant = restaurantId.IdRestaurant
                         }

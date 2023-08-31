@@ -87,7 +87,7 @@ namespace Restaurants_REST_API.Controllers
          * here because this is visible for everyone.
          */
         [HttpGet("restaurants")]
-        public async Task<IActionResult> GetRestaurantsData()
+        public async Task<IActionResult> GetAllRestaurants()
         {
             var allRestaurantsDetails = await _restaurantApiService.GetAllRestaurantsAsync();
 
@@ -135,7 +135,7 @@ namespace Restaurants_REST_API.Controllers
          * here because this is visible for everyone.
          */
         [HttpGet("restaurants/{retaurantId}")]
-        public async Task<IActionResult> GetRestaurantDetailsBy(int retaurantId)
+        public async Task<IActionResult> GetRestaurantDetails(int retaurantId)
         {
             if (!GeneralValidatorUtility.isIntNumberGtZero(retaurantId))
             {
@@ -192,7 +192,7 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpGet("{clientId}")]
         [Authorize(Roles = UserRolesUtility.Client)]
-        public async Task<IActionResult> GetClientDataBy(int clientId)
+        public async Task<IActionResult> GetClientData(int clientId)
         {
             if (!GeneralValidatorUtility.isIntNumberGtZero(clientId))
             {
@@ -206,14 +206,14 @@ namespace Restaurants_REST_API.Controllers
                 return StatusCode(403, "Unauthorized access or jwt doesn't contains required claims");
             }
 
-            GetClientDataDTO? clientData = await _clientApiService.GetClientDetailsByIdAsync(clientId);
+            GetClientDataDTO? clientData = await _clientApiService.GetClientDetailedDataByIdAsync(clientId);
 
             if (clientData == null)
             {
                 return NotFound("Client not found");
             }
 
-            IEnumerable<GetReservationDTO>? reservations = await _clientApiService.GetAllReservationsDetailsByClientIdAsync(clientId);
+            IEnumerable<GetReservationDTO>? reservations = await _clientApiService.GetAllReservationsDetailedDataByClientIdAsync(clientId);
 
             if (reservations != null && reservations.Count() > 0)
             {
@@ -234,7 +234,7 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpGet("{clientId}/reservation/{reservationId}")]
         [Authorize(Roles = UserRolesUtility.Client)]
-        public async Task<IActionResult> GetClientReservationDataBy(int clientId, int reservationId)
+        public async Task<IActionResult> GetClientReservation(int clientId, int reservationId)
         {
             if (!GeneralValidatorUtility.isIntNumberGtZero(clientId))
             {
@@ -253,14 +253,14 @@ namespace Restaurants_REST_API.Controllers
                 return StatusCode(403, "Unauthorized access or jwt doesn't contains required claims");
             }
 
-            GetClientDataDTO? clientData = await _clientApiService.GetClientDetailsByIdAsync(clientId);
+            GetClientDataDTO? clientData = await _clientApiService.GetClientDetailedDataByIdAsync(clientId);
 
             if (clientData == null)
             {
                 return NotFound("Client not found");
             }
 
-            GetReservationDTO? reservationDetails = await _clientApiService.GetReservationDetailsByCliennIdReservationIdAsync(clientId, reservationId);
+            GetReservationDTO? reservationDetails = await _clientApiService.GetReservationDetailedDataByCliennIdReservationIdAsync(clientId, reservationId);
 
             if (reservationDetails == null)
             {
@@ -281,7 +281,7 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpPost("{clientId}/reservation")]
         [Authorize(Roles = UserRolesUtility.Client)]
-        public async Task<IActionResult> MakeReservationBy(int clientId, PostReservationDTO newReservation)
+        public async Task<IActionResult> MakeReservation(int clientId, PostReservationDTO newReservation)
         {
             if (!GeneralValidatorUtility.isIntNumberGtZero(clientId))
             {
@@ -310,7 +310,7 @@ namespace Restaurants_REST_API.Controllers
                 return StatusCode(403, "Unauthorized access or jwt doesn't contains required claims");
             }
 
-            GetClientDataDTO? clientData = await _clientApiService.GetClientDetailsByIdAsync(clientId);
+            GetClientDataDTO? clientData = await _clientApiService.GetClientDetailedDataByIdAsync(clientId);
             if (clientData == null)
             {
                 return NotFound("Client not found");
@@ -350,7 +350,7 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpPost("{clientId}/reservation/{reservationId}/complaint")]
         [Authorize(Roles = UserRolesUtility.Client)]
-        public async Task<IActionResult> MakeComplaintBy(int clientId, int reservationId, PostComplaintDTO newComplaint)
+        public async Task<IActionResult> MakeComplaint(int clientId, int reservationId, PostComplaintDTO newComplaint)
         {
             if (!GeneralValidatorUtility.isIntNumberGtZero(clientId))
             {
@@ -374,7 +374,7 @@ namespace Restaurants_REST_API.Controllers
                 return StatusCode(403, "Unauthorized access or jwt doesn't contains required claims");
             }
 
-            GetReservationDTO? reservationDetails = await _clientApiService.GetReservationDetailsByCliennIdReservationIdAsync(clientId, reservationId);
+            GetReservationDTO? reservationDetails = await _clientApiService.GetReservationDetailedDataByCliennIdReservationIdAsync(clientId, reservationId);
             if (reservationDetails == null)
             {
                 return NotFound("Reservation associated with client not found");
@@ -422,7 +422,7 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpPut("{clientId}/reservation/{reservationId}/confirm")]
         [Authorize(Roles = UserRolesUtility.Client)]
-        public async Task<IActionResult> ConfirmReservationBy(int clientId, int reservationId)
+        public async Task<IActionResult> ConfirmReservation(int clientId, int reservationId)
         {
             if (!GeneralValidatorUtility.isIntNumberGtZero(clientId))
             {
@@ -441,7 +441,7 @@ namespace Restaurants_REST_API.Controllers
                 return StatusCode(403, "Unauthorized access or jwt doesn't contains required claims");
             }
 
-            GetReservationDTO? reservationDetails = await _clientApiService.GetReservationDetailsByCliennIdReservationIdAsync(clientId, reservationId);
+            GetReservationDTO? reservationDetails = await _clientApiService.GetReservationDetailedDataByCliennIdReservationIdAsync(clientId, reservationId);
             if (reservationDetails == null)
             {
                 return NotFound("Reservation associated with client not found");
@@ -490,7 +490,7 @@ namespace Restaurants_REST_API.Controllers
         */
         [HttpPut("{clientId}/reservation/{reservationId}/cancel")]
         [Authorize(Roles = UserRolesUtility.Client)]
-        public async Task<IActionResult> CancelReserationBy(int clientId, int reservationId)
+        public async Task<IActionResult> CancelReseration(int clientId, int reservationId)
         {
             if (!GeneralValidatorUtility.isIntNumberGtZero(clientId))
             {
@@ -509,7 +509,7 @@ namespace Restaurants_REST_API.Controllers
                 return StatusCode(403, "Unauthorized access or jwt doesn't contains required claims");
             }
 
-            GetReservationDTO? reservationDetails = await _clientApiService.GetReservationDetailsByCliennIdReservationIdAsync(clientId, reservationId);
+            GetReservationDTO? reservationDetails = await _clientApiService.GetReservationDetailedDataByCliennIdReservationIdAsync(clientId, reservationId);
             if (reservationDetails == null)
             {
                 return NotFound("Reservation associated with client not found");
@@ -554,7 +554,7 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpPut("{clientId}/reservation/{reservationId}/rate")]
         [Authorize(Roles = UserRolesUtility.Client)]
-        public async Task<IActionResult> RateReserationBy(int clientId, int reservationId, int grade)
+        public async Task<IActionResult> RateReseration(int clientId, int reservationId, int grade)
         {
             if (!GeneralValidatorUtility.isIntNumberGtZero(clientId))
             {
@@ -578,7 +578,7 @@ namespace Restaurants_REST_API.Controllers
                 return StatusCode(403, "Unauthorized access or jwt doesn't contains required claims");
             }
 
-            GetReservationDTO? reservationDetails = await _clientApiService.GetReservationDetailsByCliennIdReservationIdAsync(clientId, reservationId);
+            GetReservationDTO? reservationDetails = await _clientApiService.GetReservationDetailedDataByCliennIdReservationIdAsync(clientId, reservationId);
             if (reservationDetails == null)
             {
                 return NotFound("Reservation associated with client not found");
