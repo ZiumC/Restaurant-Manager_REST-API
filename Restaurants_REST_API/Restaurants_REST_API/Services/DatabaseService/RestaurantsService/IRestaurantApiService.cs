@@ -9,7 +9,7 @@ namespace Restaurants_REST_API.Services.Database_Service
     public interface IRestaurantApiService
     {
         public Task<Restaurant?> GetBasicRestaurantDataByIdAsync(int restaurantId);
-        public Task<GetRestaurantDTO> GetDetailedRestaurantDataAsync(Restaurant restaurant);
+        public Task<GetRestaurantDTO?> GetDetailedRestaurantDataAsync(int restaurantId);
         public Task<IEnumerable<GetRestaurantDTO>?> GetAllRestaurantsAsync();
         public Task<IEnumerable<EmployeeRestaurant>?> GetHiredEmployeesInRestaurantsAsync();
         public Task<IEnumerable<GetEmployeeTypeDTO>?> GetEmployeeTypesAsync();

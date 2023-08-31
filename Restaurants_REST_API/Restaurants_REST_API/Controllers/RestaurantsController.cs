@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.FileSystemGlobbing.Internal;
 using Restaurants_REST_API.DTOs.GetDTO;
 using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.DTOs.PostOrPutDTO;
@@ -121,16 +120,13 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest($"Restaurant id={restaurantId} is invalid");
             }
 
-            Restaurant? restaurant = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(restaurantId);
-
-            if (restaurant == null)
+            GetRestaurantDTO? restaurantDetails = await _restaurantsApiService.GetDetailedRestaurantDataAsync(restaurantId);
+            if (restaurantDetails == null)
             {
                 return NotFound($"Restaurant not found");
             }
 
-            GetRestaurantDTO restaurantDTO = await _restaurantsApiService.GetDetailedRestaurantDataAsync(restaurant);
-
-            return Ok(restaurantDTO);
+            return Ok(restaurantDetails);
         }
 
         /// <summary>
@@ -364,8 +360,8 @@ namespace Restaurants_REST_API.Controllers
                     return BadRequest($"Restaurant id={restaurantId} isn't correct");
                 }
 
-                Restaurant? restaurant = await _restaurantsApiService.GetBasicRestaurantDataByIdAsync(restaurantId);
-                if (restaurant == null)
+                GetRestaurantDTO? restaurantDetails = await _restaurantsApiService.GetDetailedRestaurantDataAsync(restaurantId);
+                if (restaurantDetails == null)
                 {
                     return NotFound($"Restaurant at id={restaurantId} not found");
                 }
@@ -382,14 +378,13 @@ namespace Restaurants_REST_API.Controllers
                     }
                 }
 
-                GetRestaurantDTO restaurantDetails = await _restaurantsApiService.GetDetailedRestaurantDataAsync(restaurant);
                 if (restaurantDetails.RestaurantDishes != null && restaurantDetails.RestaurantDishes.Count() > 0)
                 {
                     foreach (Dish dish in restaurantDetails.RestaurantDishes)
                     {
                         if (dish.Name.Equals(newDish.Name))
                         {
-                            return BadRequest($"Dish {dish.Name} already exist in restaurant {restaurant.Name}");
+                            return BadRequest($"Dish {dish.Name} already exist in restaurant {restaurantDetails.Name}");
                         }
                     }
                 }

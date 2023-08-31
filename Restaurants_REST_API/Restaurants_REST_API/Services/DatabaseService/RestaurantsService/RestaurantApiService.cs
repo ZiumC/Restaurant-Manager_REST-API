@@ -97,9 +97,17 @@ namespace Restaurants_REST_API.Services.Database_Service
                           }).ToListAsync();
         }
 
-        public async Task<GetRestaurantDTO> GetDetailedRestaurantDataAsync(Restaurant restaurant)
+        public async Task<GetRestaurantDTO?> GetDetailedRestaurantDataAsync(int restaurantId)
         {
-            int restaurantId = restaurant.IdRestaurant;
+            var getRestaurantDataQuery = 
+                await _context.Restaurant
+                .Where(r => r.IdRestaurant == restaurantId)
+                .FirstOrDefaultAsync();
+
+            if (getRestaurantDataQuery == null) 
+            {
+                return null;
+            }
 
             var getRestaurantAddressQuery = await
                 (from rest in _context.Restaurant
@@ -186,12 +194,10 @@ namespace Restaurants_REST_API.Services.Database_Service
 
             return new GetRestaurantDTO
             {
-                IdRestaurant = restaurant.IdRestaurant,
-                Name = restaurant.Name,
-                Status = restaurant.RestaurantStatus,
-                BonusBudget = restaurant.BonusBudget,
-
-
+                IdRestaurant = restaurantId,
+                Name = getRestaurantDataQuery.Name,
+                Status = getRestaurantDataQuery.RestaurantStatus,
+                BonusBudget = getRestaurantDataQuery.BonusBudget,
                 Address = getRestaurantAddressQuery,
                 RestaurantWorkers = getRestaurantWorkersQuery,
                 RestaurantDishes = getRestaurantDishesQuery,
