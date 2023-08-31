@@ -7,16 +7,17 @@ namespace Restaurants_REST_API.Services.Database_Service
 {
     public interface IEmployeeApiService
     {
-        public Task<IEnumerable<GetEmployeeDTO>> GetAllEmployeesAsync();
+        public Task<IEnumerable<GetEmployeeDTO>?> GetAllEmployeesAsync();
+        //need to refactor this shit
         public Task<Employee?> GetBasicEmployeeDataByIdAsync(int empId);
-        public Task<GetEmployeeDTO> GetEmployeeDetailsAsync(Employee employeeData);
+        public Task<GetEmployeeDTO?> GetEmployeeDetailsByEmpIdAsync(int empId);
         public Task<IEnumerable<GetEmployeeDTO>?> GetAllEmployeesDetailsByTypeIdAsync(int typeId);
         public Task<GetEmployeeDTO?> GetEmployeeDetailsByTypeIdAsync(int typeId);
         public Task<Employee?> GetEmployeeDataByPeselAsync(string pesel);
-        public Task<IEnumerable<GetEmployeeDTO>> GetEmployeeDetailsByRestaurantIdAsync(int restaurantId);
-        public Task<bool> AddNewEmployeeAsync(PostEmployeeDTO newEmployee, bool certificatesExist);
+        public Task<IEnumerable<GetEmployeeDTO>?> GetEmployeeDetailsByRestaurantIdAsync(int restaurantId);
+        public Task<bool> AddNewEmployeeAsync(PostEmployeeDTO newEmployee);
         public Task<bool> AddNewEmployeeCertificatesAsync(int empId, IEnumerable<PostCertificateDTO> certificatesData);
-        public Task<bool> UpdateEmployeeDataByIdAsync(int empId, Employee updatedEmployeeData);
+        public Task<bool> UpdateEmployeeDataByIdAsync(int empId, PutEmployeeDTO employeeData);
         public Task<bool> UpdateEmployeeCertificatesByIdAsync(int certificateId, PutCertificateDTO updatedCertificatesData);
         public Task<bool> DeleteEmployeeDataByIdAsync(int empId, GetEmployeeDTO employeeData);
         public Task<bool> DeleteEmployeeCertificateAsync(int empId, GetCertificateDTO employeeCertificateData);

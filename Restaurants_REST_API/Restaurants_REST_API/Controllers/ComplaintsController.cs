@@ -108,7 +108,7 @@ namespace Restaurants_REST_API.Controllers
         public async Task<IActionResult> UpdateComplaintStatusBy(int complaintId, string action)
         {
 
-            if (!GeneralValidator.isNumberGtZero(complaintId))
+            if (!GeneralValidator.isIntNumberGtZero(complaintId))
             {
                 return BadRequest($"Complaint id={complaintId} is invalid");
             }
