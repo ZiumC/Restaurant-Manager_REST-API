@@ -137,7 +137,7 @@ namespace Restaurants_REST_API.Controllers
         [HttpGet("restaurants/{retaurantId}")]
         public async Task<IActionResult> GetRestaurantDetailsBy(int retaurantId)
         {
-            if (!GeneralValidator.isNumberGtZero(retaurantId))
+            if (!GeneralValidator.isIntNumberGtZero(retaurantId))
             {
                 return BadRequest($"Reestaurant id={retaurantId} is invalid");
             }
@@ -194,7 +194,7 @@ namespace Restaurants_REST_API.Controllers
         [Authorize(Roles = UserRolesService.Client)]
         public async Task<IActionResult> GetClientDataBy(int clientId)
         {
-            if (!GeneralValidator.isNumberGtZero(clientId))
+            if (!GeneralValidator.isIntNumberGtZero(clientId))
             {
                 return BadRequest($"Client id={clientId} is invalid");
             }
@@ -236,12 +236,12 @@ namespace Restaurants_REST_API.Controllers
         [Authorize(Roles = UserRolesService.Client)]
         public async Task<IActionResult> GetClientReservationDataBy(int clientId, int reservationId)
         {
-            if (!GeneralValidator.isNumberGtZero(clientId))
+            if (!GeneralValidator.isIntNumberGtZero(clientId))
             {
                 return BadRequest($"Client id={clientId} is invalid");
             }
 
-            if (!GeneralValidator.isNumberGtZero(reservationId))
+            if (!GeneralValidator.isIntNumberGtZero(reservationId))
             {
                 return BadRequest($"Reservation id={reservationId} is invalid");
             }
@@ -283,7 +283,7 @@ namespace Restaurants_REST_API.Controllers
         [Authorize(Roles = UserRolesService.Client)]
         public async Task<IActionResult> MakeReservationBy(int clientId, PostReservationDTO newReservation)
         {
-            if (!GeneralValidator.isNumberGtZero(clientId))
+            if (!GeneralValidator.isIntNumberGtZero(clientId))
             {
                 return BadRequest($"Client id={clientId} is invalid");
             }
@@ -293,12 +293,12 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Reservation details are invalid");
             }
 
-            if (!GeneralValidator.isNumberGtZero(newReservation.IdRestaurant))
+            if (!GeneralValidator.isIntNumberGtZero(newReservation.IdRestaurant))
             {
                 return BadRequest($"Restaurant id={newReservation.IdRestaurant} is invalid");
             }
 
-            if (!GeneralValidator.isNumberGtZero(newReservation.HowManyPeoples))
+            if (!GeneralValidator.isIntNumberGtZero(newReservation.HowManyPeoples))
             {
                 return BadRequest("Number of reservation peoples is invalid");
             }
@@ -352,12 +352,12 @@ namespace Restaurants_REST_API.Controllers
         [Authorize(Roles = UserRolesService.Client)]
         public async Task<IActionResult> MakeComplaintBy(int clientId, int reservationId, PostComplaintDTO newComplaint)
         {
-            if (!GeneralValidator.isNumberGtZero(clientId))
+            if (!GeneralValidator.isIntNumberGtZero(clientId))
             {
                 return BadRequest($"Client id={clientId} is invalid");
             }
 
-            if (!GeneralValidator.isNumberGtZero(reservationId))
+            if (!GeneralValidator.isIntNumberGtZero(reservationId))
             {
                 return BadRequest($"Reservation id={reservationId} is invalid");
             }
@@ -424,12 +424,12 @@ namespace Restaurants_REST_API.Controllers
         [Authorize(Roles = UserRolesService.Client)]
         public async Task<IActionResult> ConfirmReservationBy(int clientId, int reservationId)
         {
-            if (!GeneralValidator.isNumberGtZero(clientId))
+            if (!GeneralValidator.isIntNumberGtZero(clientId))
             {
                 return BadRequest($"Client id={clientId} is invalid");
             }
 
-            if (!GeneralValidator.isNumberGtZero(reservationId))
+            if (!GeneralValidator.isIntNumberGtZero(reservationId))
             {
                 return BadRequest($"Reservation id={reservationId} is invalid");
             }
@@ -492,12 +492,12 @@ namespace Restaurants_REST_API.Controllers
         [Authorize(Roles = UserRolesService.Client)]
         public async Task<IActionResult> CancelReserationBy(int clientId, int reservationId)
         {
-            if (!GeneralValidator.isNumberGtZero(clientId))
+            if (!GeneralValidator.isIntNumberGtZero(clientId))
             {
                 return BadRequest($"Client id={clientId} is invalid");
             }
 
-            if (!GeneralValidator.isNumberGtZero(reservationId))
+            if (!GeneralValidator.isIntNumberGtZero(reservationId))
             {
                 return BadRequest($"Reservation id={reservationId} is invalid");
             }
@@ -556,12 +556,12 @@ namespace Restaurants_REST_API.Controllers
         [Authorize(Roles = UserRolesService.Client)]
         public async Task<IActionResult> RateReserationBy(int clientId, int reservationId, int grade)
         {
-            if (!GeneralValidator.isNumberGtZero(clientId))
+            if (!GeneralValidator.isIntNumberGtZero(clientId))
             {
                 return BadRequest($"Client id={clientId} is invalid");
             }
 
-            if (!GeneralValidator.isNumberGtZero(reservationId))
+            if (!GeneralValidator.isIntNumberGtZero(reservationId))
             {
                 return BadRequest($"Reservation id={reservationId} is invalid");
             }

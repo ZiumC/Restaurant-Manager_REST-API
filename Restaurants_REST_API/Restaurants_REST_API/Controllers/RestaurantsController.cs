@@ -115,7 +115,7 @@ namespace Restaurants_REST_API.Controllers
         [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
         public async Task<IActionResult> GetRestaurantData(int restaurantId)
         {
-            if (!GeneralValidator.isNumberGtZero(restaurantId))
+            if (!GeneralValidator.isIntNumberGtZero(restaurantId))
             {
                 return BadRequest($"Restaurant id={restaurantId} is invalid");
             }
@@ -200,7 +200,7 @@ namespace Restaurants_REST_API.Controllers
         [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
         public async Task<IActionResult> GetDishData(int dishId)
         {
-            if (!GeneralValidator.isNumberGtZero(dishId))
+            if (!GeneralValidator.isIntNumberGtZero(dishId))
             {
                 return BadRequest($"Dish id={dishId} is invalid");
             }
@@ -357,7 +357,7 @@ namespace Restaurants_REST_API.Controllers
             //checking if restaurant exist and does dish exist already in restaurant
             foreach (int restaurantId in newDish.IdRestaurants)
             {
-                if (!GeneralValidator.isNumberGtZero(restaurantId))
+                if (!GeneralValidator.isIntNumberGtZero(restaurantId))
                 {
                     return BadRequest($"Restaurant id={restaurantId} isn't correct");
                 }
@@ -422,17 +422,17 @@ namespace Restaurants_REST_API.Controllers
         public async Task<IActionResult> AddNewEmployeeToRestaurant(int restaurantId, int empId, int typeId)
         {
 
-            if (!GeneralValidator.isNumberGtZero(empId))
+            if (!GeneralValidator.isIntNumberGtZero(empId))
             {
                 return BadRequest("Employee id isn't correct");
             }
 
-            if (!GeneralValidator.isNumberGtZero(typeId))
+            if (!GeneralValidator.isIntNumberGtZero(typeId))
             {
                 return BadRequest("Restaurant id isn't correct");
             }
 
-            if (!GeneralValidator.isNumberGtZero(restaurantId))
+            if (!GeneralValidator.isIntNumberGtZero(restaurantId))
             {
                 return BadRequest("Restaurant id isn't correct");
             }
@@ -532,17 +532,17 @@ namespace Restaurants_REST_API.Controllers
         [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> UpdateEmployeeRoleInRestaurant(int restaurantId, int empId, int typeId)
         {
-            if (!GeneralValidator.isNumberGtZero(empId))
+            if (!GeneralValidator.isIntNumberGtZero(empId))
             {
                 return BadRequest($"Employee id={empId} is invalid");
             }
 
-            if (!GeneralValidator.isNumberGtZero(typeId))
+            if (!GeneralValidator.isIntNumberGtZero(typeId))
             {
                 return BadRequest($"Employee type id={typeId} is invalid");
             }
 
-            if (!GeneralValidator.isNumberGtZero(restaurantId))
+            if (!GeneralValidator.isIntNumberGtZero(restaurantId))
             {
                 return BadRequest($"Restaurant id={restaurantId} is invalid");
             }
@@ -656,7 +656,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Restaurant data is invalid");
             }
 
-            if (!GeneralValidator.isNumberGtZero(restaurantId))
+            if (!GeneralValidator.isIntNumberGtZero(restaurantId))
             {
                 return BadRequest($"Restaurant id={restaurantId} is invalid");
             }
@@ -731,7 +731,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Dish data is invalid");
             }
 
-            if (!GeneralValidator.isNumberGtZero(dishId))
+            if (!GeneralValidator.isIntNumberGtZero(dishId))
             {
                 return BadRequest($"Dish id={dishId} is invalid");
             }
@@ -773,7 +773,7 @@ namespace Restaurants_REST_API.Controllers
         [Authorize(Roles = UserRolesService.Owner)]
         public async Task<IActionResult> DeleteEverywhereDish(int dishId)
         {
-            if (!GeneralValidator.isNumberGtZero(dishId))
+            if (!GeneralValidator.isIntNumberGtZero(dishId))
             {
                 return BadRequest($"Dish id={dishId} is invalid");
             }
@@ -807,12 +807,12 @@ namespace Restaurants_REST_API.Controllers
         [Authorize(Roles = UserRolesService.OwnerAndSupervisor)]
         public async Task<IActionResult> DeleteDishFromRestaurant(int restaurantId, int dishId)
         {
-            if (!GeneralValidator.isNumberGtZero(restaurantId))
+            if (!GeneralValidator.isIntNumberGtZero(restaurantId))
             {
                 return BadRequest($"Restaurant id={restaurantId} is invalid");
             }
 
-            if (!GeneralValidator.isNumberGtZero(dishId))
+            if (!GeneralValidator.isIntNumberGtZero(dishId))
             {
                 return BadRequest($"Dish id={dishId} is invalid");
             }
@@ -863,12 +863,12 @@ namespace Restaurants_REST_API.Controllers
         [Authorize(Roles = UserRolesService.Owner)]
         public async Task<IActionResult> DeleteEmployeeFromRestaurantBy(int empId, int restaurantId)
         {
-            if (!GeneralValidator.isNumberGtZero(empId))
+            if (!GeneralValidator.isIntNumberGtZero(empId))
             {
                 return BadRequest($"Employee id={empId} is invalid");
             }
 
-            if (!GeneralValidator.isNumberGtZero(restaurantId))
+            if (!GeneralValidator.isIntNumberGtZero(restaurantId))
             {
                 return BadRequest($"Restaurant id={restaurantId} is invalid");
             }

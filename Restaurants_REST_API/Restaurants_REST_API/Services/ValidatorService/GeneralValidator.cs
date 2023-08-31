@@ -2,14 +2,24 @@
 {
     public class GeneralValidator
     {
-        public static bool isNumberGtZero(int? id)
+        public static bool isIntNumberGtZero(int? val)
         {
-            if (id == null)
+            if (val == null)
             {
                 return false;
             }
 
-            return id > 0;
+            return val > 0;
+        }
+
+        public static bool isDecimalNumberGtZero(decimal? val) 
+        {
+            if (val == null)
+            {
+                return false;
+            }
+
+            return val > new decimal(0.0);
         }
 
         public static bool isEmptyNameOf(string? fieldToCheck)

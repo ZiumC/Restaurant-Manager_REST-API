@@ -1,11 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Restaurants_REST_API.DbContexts;
 using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.DTOs.PostOrPutDTO;
 using Restaurants_REST_API.DTOs.PutDTO;
 using Restaurants_REST_API.Models.Database;
-using Restaurants_REST_API.Services.MapperService;
 
 namespace Restaurants_REST_API.Services.Database_Service
 {
@@ -19,7 +17,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             _config = config;
         }
 
-        public async Task<IEnumerable<GetEmployeeDTO>> GetAllEmployeesAsync()
+        public async Task<IEnumerable<GetEmployeeDTO>?> GetAllEmployeesAsync()
         {
 
             return await (from emp in _context.Employee
@@ -72,24 +70,34 @@ namespace Restaurants_REST_API.Services.Database_Service
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<GetEmployeeDTO> GetEmployeeDetailsAsync(Employee employee)
+        public async Task<GetEmployeeDTO?> GetEmployeeDetailsByEmpIdAsync(int empId)
         {
 
+            var getEmpQuery =
+                await _context.Employee
+                .Where(e => e.IdEmployee == empId)
+                .FirstOrDefaultAsync();
+
+            if (getEmpQuery == null)
+            {
+                return null;
+            }
+
             Address address = await _context.Address
-                .Where(a => a.IdAddress == employee.IdAddress)
+                .Where(a => a.IdAddress == getEmpQuery.IdAddress)
                 .FirstAsync();
 
             return new GetEmployeeDTO
             {
-                IdEmployee = employee.IdEmployee,
-                FirstName = employee.FirstName,
-                LastName = employee.LastName,
-                PESEL = employee.PESEL,
-                Salary = employee.Salary,
-                BonusSalary = employee.BonusSalary,
-                HiredDate = employee.HiredDate,
-                FirstPromotionChefDate = employee.FirstPromotionChefDate,
-                IsOwner = employee.IsOwner,
+                IdEmployee = getEmpQuery.IdEmployee,
+                FirstName = getEmpQuery.FirstName,
+                LastName = getEmpQuery.LastName,
+                PESEL = getEmpQuery.PESEL,
+                Salary = getEmpQuery.Salary,
+                BonusSalary = getEmpQuery.BonusSalary,
+                HiredDate = getEmpQuery.HiredDate,
+                FirstPromotionChefDate = getEmpQuery.FirstPromotionChefDate,
+                IsOwner = getEmpQuery.IsOwner,
                 Address = new GetAddressDTO
                 {
                     IdAddress = address.IdAddress,
@@ -103,7 +111,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                                       join cert in _context.Certificate
                                       on empCert.IdCertificate equals cert.IdCertificate
 
-                                      where empCert.IdEmployee == employee.IdEmployee
+                                      where empCert.IdEmployee == empId
 
                                       select new GetCertificateDTO
                                       {
@@ -241,7 +249,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                           }).FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<GetEmployeeDTO>> GetEmployeeDetailsByRestaurantIdAsync(int restaurantId)
+        public async Task<IEnumerable<GetEmployeeDTO>?> GetEmployeeDetailsByRestaurantIdAsync(int restaurantId)
         {
             return await (from eir in _context.EmployeeRestaurant
                           join emp in _context.Employee
@@ -294,44 +302,44 @@ namespace Restaurants_REST_API.Services.Database_Service
         }
 
 
-        public async Task<bool> AddNewEmployeeAsync(PostEmployeeDTO newEmployee, bool certificatesExist)
+        public async Task<bool> AddNewEmployeeAsync(PostEmployeeDTO employeeData)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
                 try
                 {
-                    var newDatabaseAddress = _context.Address.Add
+                    var newAddressQuery = _context.Address.Add
                         (
                             new Address
                             {
-                                City = newEmployee.Address.City,
-                                Street = newEmployee.Address.Street,
-                                BuildingNumber = newEmployee.Address.BuildingNumber,
-                                LocalNumber = newEmployee.Address.LocalNumber
+                                City = employeeData.Address.City,
+                                Street = employeeData.Address.Street,
+                                BuildingNumber = employeeData.Address.BuildingNumber,
+                                LocalNumber = employeeData.Address.LocalNumber
                             }
                     );
                     await _context.SaveChangesAsync();
 
-                    var newDatabaseEmployee = _context.Add
+                    var newEmployeeQuery = _context.Add
                         (
                             new Employee
                             {
-                                FirstName = newEmployee.FirstName,
-                                LastName = newEmployee.LastName,
-                                PESEL = newEmployee.PESEL,
+                                FirstName = employeeData.FirstName,
+                                LastName = employeeData.LastName,
+                                PESEL = employeeData.PESEL,
                                 HiredDate = DateTime.Now,
-                                Salary = newEmployee.Salary,
-                                BonusSalary = newEmployee.BonusSalary,
+                                Salary = employeeData.Salary,
+                                BonusSalary = employeeData.BonusSalary,
                                 IsOwner = "N",
-                                IdAddress = newDatabaseAddress.Entity.IdAddress
+                                IdAddress = newAddressQuery.Entity.IdAddress
                             }
                         );
                     await _context.SaveChangesAsync();
 
-                    if (certificatesExist)
+                    if (employeeData.Certificates != null && employeeData.Certificates.Count() > 0)
                     {
-                        //inside EmployeesController certificates are checked if they are NOT NULL and are correct
-                        foreach (PostCertificateDTO empCertificate in newEmployee.Certificates)
+                        //inside EmployeesController certificates names are checked if they are NOT NULL
+                        foreach (PostCertificateDTO empCertificate in employeeData.Certificates)
                         {
                             var newDatabaseCertificate = _context.Add
                                 (
@@ -347,10 +355,11 @@ namespace Restaurants_REST_API.Services.Database_Service
                                    new EmployeeCertificate
                                    {
                                        IdCertificate = newDatabaseCertificate.Entity.IdCertificate,
-                                       IdEmployee = newDatabaseEmployee.Entity.IdEmployee,
+                                       IdEmployee = newEmployeeQuery.Entity.IdEmployee,
                                        ExpirationDate = empCertificate.ExpirationDate
                                    }
                                 );
+
                             await _context.SaveChangesAsync();
                         }
                     }
@@ -409,7 +418,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
         }
 
-        public async Task<bool> UpdateEmployeeDataByIdAsync(int id, Employee employeeData)
+        public async Task<bool> UpdateEmployeeDataByIdAsync(int id, PutEmployeeDTO employeeData)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -426,14 +435,15 @@ namespace Restaurants_REST_API.Services.Database_Service
                     updateEmployeeQuery.Salary = employeeData.Salary;
                     updateEmployeeQuery.BonusSalary = employeeData.BonusSalary;
 
-                    updateEmployeeQuery.Address.City = employeeData.Address.City;
-                    updateEmployeeQuery.Address.Street = employeeData.Address.Street;
-                    updateEmployeeQuery.Address.BuildingNumber = employeeData.Address.BuildingNumber;
-                    updateEmployeeQuery.Address.LocalNumber = employeeData.Address.LocalNumber;
+                    var updateEmployeeAddressQuery =
+                        await _context.Address
+                        .Where(a => a.IdAddress == updateEmployeeQuery.IdAddress)
+                        .FirstAsync();
 
-                    updateEmployeeQuery.HiredDate = updateEmployeeQuery.HiredDate;
-                    updateEmployeeQuery.FirstPromotionChefDate = updateEmployeeQuery.FirstPromotionChefDate;
-                    updateEmployeeQuery.IsOwner = updateEmployeeQuery.IsOwner;
+                    updateEmployeeAddressQuery.City = employeeData.Address.City;
+                    updateEmployeeAddressQuery.Street = employeeData.Address.Street;
+                    updateEmployeeAddressQuery.BuildingNumber = employeeData.Address.BuildingNumber;
+                    updateEmployeeAddressQuery.LocalNumber = employeeData.Address.LocalNumber;
 
                     await _context.SaveChangesAsync();
                 }
