@@ -288,7 +288,7 @@ namespace Restaurants_REST_API.Controllers
         /// <summary>
         /// Adds new employee.
         /// </summary>
-        /// <param name="newEmployee">Employee details data</param>
+        /// <param name="newEmpData">Employee details data</param>
         /// <remarks>
         /// To use that endpoint, access token should contain following roles:
         /// - Owner.
@@ -296,52 +296,52 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpPost]
         [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
-        public async Task<IActionResult> AddNewEmployee(PostEmployeeDTO newEmployee)
+        public async Task<IActionResult> AddNewEmployee(PostEmployeeDTO newEmpData)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest("Employee data is invalid");
             }
 
-            if (string.IsNullOrEmpty(newEmployee.FirstName) || string.IsNullOrEmpty(newEmployee.LastName))
+            if (string.IsNullOrEmpty(newEmpData.FirstName) || string.IsNullOrEmpty(newEmpData.LastName))
             {
                 return BadRequest("First or last name can't be empty");
             }
 
-            if (!Regex.Match(newEmployee.PESEL, _peselRegex, RegexOptions.IgnoreCase).Success)
+            if (!Regex.Match(newEmpData.PESEL, _peselRegex, RegexOptions.IgnoreCase).Success)
             {
                 return BadRequest("PESEL is invalid");
             }
 
-            if (!GeneralValidatorUtility.isDecimalNumberGtZero(newEmployee.Salary))
+            if (!GeneralValidatorUtility.isDecimalNumberGtZero(newEmpData.Salary))
             {
                 return BadRequest("Salary can't be less or equal 0");
             }
 
-            if (string.IsNullOrEmpty(newEmployee.Address.City))
+            if (string.IsNullOrEmpty(newEmpData.Address.City))
             {
                 return BadRequest("City can't be empty");
             }
 
-            if (string.IsNullOrEmpty(newEmployee.Address.Street))
+            if (string.IsNullOrEmpty(newEmpData.Address.Street))
             {
                 return BadRequest("Street can't be empty");
             }
 
-            if (string.IsNullOrEmpty(newEmployee.Address.BuildingNumber))
+            if (string.IsNullOrEmpty(newEmpData.Address.BuildingNumber))
             {
                 return BadRequest("Building number can't be empty");
             }
 
-            if (string.IsNullOrEmpty(newEmployee.Address.LocalNumber))
+            if (string.IsNullOrEmpty(newEmpData.Address.LocalNumber))
             {
-                newEmployee.Address.LocalNumber = null;
+                newEmpData.Address.LocalNumber = null;
             }
 
-            if (newEmployee.Certificates != null && newEmployee.Certificates.Count() > 0)
+            if (newEmpData.Certificates != null && newEmpData.Certificates.Count() > 0)
             {
                 int countOfEmptyCertificateName =
-                    newEmployee.Certificates
+                    newEmpData.Certificates
                     .Where(nec => nec.Name.Replace("\\s", "").Equals(""))
                     .ToList()
                     .Count();
@@ -359,9 +359,9 @@ namespace Restaurants_REST_API.Controllers
                     allEmployees
                     .Where
                     (ae =>
-                        ae.FirstName.ToLower().Replace("\\s", "").Equals(newEmployee.FirstName.ToLower().Replace("\\s", "")) &&
-                        ae.LastName.ToLower().Replace("\\s", "").Equals(newEmployee.LastName.ToLower().Replace("\\s", "")) &&
-                        ae.PESEL.Equals(newEmployee.PESEL)
+                        ae.FirstName.ToLower().Replace("\\s", "").Equals(newEmpData.FirstName.ToLower().Replace("\\s", "")) &&
+                        ae.LastName.ToLower().Replace("\\s", "").Equals(newEmpData.LastName.ToLower().Replace("\\s", "")) &&
+                        ae.PESEL.Equals(newEmpData.PESEL)
                     )
                     .FirstOrDefault();
                 if (empExists != null)
@@ -372,7 +372,7 @@ namespace Restaurants_REST_API.Controllers
 
 
             //checking if newEmp has bonus sal less than minimum value
-            if (newEmployee.BonusSalary < _basicBonus)
+            if (newEmpData.BonusSalary < _basicBonus)
             {
                 return BadRequest($"Bonus salary is less than minimum bonus (min bonus is {_basicBonus})");
             }
@@ -387,7 +387,7 @@ namespace Restaurants_REST_API.Controllers
                 employeeOwnerStatus = _ownerStatusNo;
             }
 
-            bool isEmpAdded = await _employeeApiService.AddNewEmployeeAsync(newEmployee, employeeOwnerStatus);
+            bool isEmpAdded = await _employeeApiService.AddNewEmployeeAsync(newEmpData, employeeOwnerStatus);
             if (!isEmpAdded)
             {
                 return BadRequest("Something went wrong unable to add new Employee");

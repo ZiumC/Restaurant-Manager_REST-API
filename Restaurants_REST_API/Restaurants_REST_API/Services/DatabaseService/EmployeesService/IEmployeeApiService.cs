@@ -15,11 +15,11 @@ namespace Restaurants_REST_API.Services.Database_Service
         public Task<Employee?> GetEmployeeDataByPeselAsync(string pesel);
         public Task<IEnumerable<GetEmployeeDTO>?> GetEmployeeDetailsByRestaurantIdAsync(int restaurantId);
         public Task<bool> AddNewEmployeeAsync(PostEmployeeDTO newEmployee, string ownerStatus);
-        public Task<bool> AddNewEmployeeCertificatesAsync(int empId, IEnumerable<PostCertificateDTO> certificatesData);
-        public Task<bool> UpdateEmployeeDataByIdAsync(int empId, PutEmployeeDTO employeeData);
-        public Task<bool> UpdateEmployeeCertificatesByIdAsync(int certificateId, PutCertificateDTO updatedCertificatesData);
-        public Task<bool> DeleteEmployeeDataByIdAsync(int empId, GetEmployeeDTO employeeData);
-        public Task<bool> DeleteEmployeeCertificateAsync(int empId, GetCertificateDTO employeeCertificateData);
+        public Task<bool> AddNewEmployeeCertificatesAsync(int empId, IEnumerable<PostCertificateDTO> empCertificatesData);
+        public Task<bool> UpdateEmployeeDataByIdAsync(int empId, PutEmployeeDTO empData);
+        public Task<bool> UpdateEmployeeCertificatesByIdAsync(int certificateId, PutCertificateDTO empCertificateData);
+        public Task<bool> DeleteEmployeeDataByIdAsync(int empId, GetEmployeeDTO empData);
+        public Task<bool> DeleteEmployeeCertificateAsync(int empId, GetCertificateDTO empCertificateData);
 
     }
 }
