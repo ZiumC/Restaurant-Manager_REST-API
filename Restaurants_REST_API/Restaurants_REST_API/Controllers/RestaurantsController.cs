@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.FileSystemGlobbing.Internal;
 using Restaurants_REST_API.DTOs.GetDTO;
 using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.DTOs.PostOrPutDTO;
@@ -10,6 +11,7 @@ using Restaurants_REST_API.Services.Database_Service;
 using Restaurants_REST_API.Services.MapperService;
 using Restaurants_REST_API.Services.ValidatorService;
 using System.Data;
+using System.Text.RegularExpressions;
 
 namespace Restaurants_REST_API.Controllers
 {
@@ -21,6 +23,7 @@ namespace Restaurants_REST_API.Controllers
         private readonly IEmployeeApiService _employeeApiService;
         private readonly IConfiguration _config;
         private readonly string _ownerTypeName;
+        private readonly string _ownerRegex;
         private readonly string _newComplaintStatus;
         private readonly string _acceptedComplaintStatus;
         private readonly string _pendingComplaintStatus;
@@ -34,6 +37,8 @@ namespace Restaurants_REST_API.Controllers
 
             _ownerTypeName = _config["ApplicationSettings:AdministrativeRoles:Owner"];
 
+            _ownerRegex = _config["ApplicationSettings:DataValidation:OwnerRegex"];
+
             _newComplaintStatus = _config["ApplicationSettings:ComplaintStatus:New"];
             _pendingComplaintStatus = _config["ApplicationSettings:ComplaintStatus:Pending"];
             _acceptedComplaintStatus = _config["ApplicationSettings:ComplaintStatus:Accepted"];
@@ -44,6 +49,11 @@ namespace Restaurants_REST_API.Controllers
                 if (string.IsNullOrEmpty(_ownerTypeName))
                 {
                     throw new Exception("Owner type name can't be empty");
+                }
+
+                if (string.IsNullOrEmpty(_ownerRegex))
+                {
+                    throw new Exception("Regex for owner can't be empty");
                 }
 
                 if (string.IsNullOrEmpty(_newComplaintStatus))
@@ -362,7 +372,7 @@ namespace Restaurants_REST_API.Controllers
                     return NotFound($"Restaurant at id={restaurantId} not found");
                 }
 
-                foreach (RestaurantDish restaurantDish in restaurant.RestaurantDishes) 
+                foreach (RestaurantDish restaurantDish in restaurant.RestaurantDishes)
                 {
                     Dish dish = restaurantDish.Dish;
                     if (dish.Name.Equals(newDish.Name) && dish.Price == newDish.Price)
@@ -399,7 +409,7 @@ namespace Restaurants_REST_API.Controllers
          */
         [HttpPost("{restaurantId}/employee/{empId}/type/{typeId}")]
         [Authorize(Roles = UserRolesService.Owner)]
-        public async Task<IActionResult> AddNewEmployeeToRestaurantBy(int restaurantId, int empId, int typeId)
+        public async Task<IActionResult> AddNewEmployeeToRestaurant(int restaurantId, int empId, int typeId)
         {
 
             if (!GeneralValidator.isNumberGtZero(empId))
@@ -419,13 +429,16 @@ namespace Restaurants_REST_API.Controllers
 
             //checking if types exist in db
             IEnumerable<GetEmployeeTypeDTO>? allTypes = await _restaurantsApiService.GetEmployeeTypesAsync();
-            if (allTypes == null)
+            if (allTypes == null || allTypes.Count() == 0)
             {
                 return NotFound("Employee types not found");
             }
 
-            //checking if type exist
-            if (!EmployeeTypeValidator.isTypeExistInById(allTypes, typeId))
+            int idType = allTypes
+                .Where(at => at.IdType == typeId)
+                .Select(at => at.IdType)
+                .FirstOrDefault();
+            if (idType == 0)
             {
                 return NotFound($"Type id={typeId} not found");
             }
@@ -445,15 +458,13 @@ namespace Restaurants_REST_API.Controllers
             }
 
             IEnumerable<EmployeeRestaurant>? restaurantWorkers = await _restaurantsApiService.GetHiredEmployeesInRestaurantsAsync();
-            if (restaurantWorkers != null)
+            if (restaurantWorkers != null && restaurantWorkers.Count() > 0)
             {
                 //checking if employee exist in passed restaurant id
-                int? empIdInRestaurantQuery = restaurantWorkers
-                    .Where(rw => rw?.IdEmployee == empId && rw.IdRestaurant == restaurantId)
-                    .Select(rw => rw?.IdEmployee)
+                EmployeeRestaurant? employeeHired = restaurantWorkers
+                    .Where(rw => rw.IdEmployee == empId && rw.IdRestaurant == restaurantId)
                     .FirstOrDefault();
-
-                if (empIdInRestaurantQuery != null)
+                if (employeeHired != null)
                 {
                     return BadRequest($"Employee {employeeDatabase.FirstName} already works in restaurant {restaurantDatabase.Name}");
                 }
@@ -462,26 +473,25 @@ namespace Restaurants_REST_API.Controllers
                     .Where(t => t.Name == _ownerTypeName)
                     .Select(t => t.IdType)
                     .FirstOrDefault();
-
                 if (ownerTypeId == 0)
                 {
                     return NotFound("Owner type not found");
 
                 }
 
-                //checking if owner already exist 
-                if (typeId == ownerTypeId)
+                //checking if owner already exist in selected restaurant
+                if (ownerTypeId == typeId)
                 {
-                    int ownersCount = restaurantWorkers
+                    EmployeeRestaurant? owner = restaurantWorkers
                         .Where(t => t?.IdType == ownerTypeId && t.IdRestaurant == restaurantId)
-                        .ToList().Count();
-
-                    if (ownersCount == 1)
+                        .FirstOrDefault();
+                    if (owner != null)
                     {
-                        return BadRequest($"Unable to add type Owner because owner already exists in restaurant");
+                        return BadRequest($"Employee {employeeDatabase.FirstName} can't be hired as an owner because" +
+                            $" owner already exists in restaurant {restaurantDatabase.Name}");
                     }
 
-                    if (!employeeDatabase.IsOwner.ToLower().Equals("y"))
+                    if (!Regex.Match(employeeDatabase.IsOwner, _ownerRegex, RegexOptions.IgnoreCase).Success)
                     {
                         return BadRequest($"Employee {employeeDatabase.FirstName} isn't an owner");
                     }
@@ -509,9 +519,8 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpPut("{restaurantId}/employee/{empId}/type/{typeId}")]
         [Authorize(Roles = UserRolesService.Owner)]
-        public async Task<IActionResult> UpdateEmployeeTypeBy(int restaurantId, int empId, int typeId)
+        public async Task<IActionResult> UpdateEmployeeRoleInRestaurant(int restaurantId, int empId, int typeId)
         {
-            //checking if ids are valid
             if (!GeneralValidator.isNumberGtZero(empId))
             {
                 return BadRequest($"Employee id={empId} is invalid");
@@ -529,13 +538,16 @@ namespace Restaurants_REST_API.Controllers
 
             //checking if types exist in db
             IEnumerable<GetEmployeeTypeDTO>? allTypes = await _restaurantsApiService.GetEmployeeTypesAsync();
-            if (allTypes == null)
+            if (allTypes == null || allTypes.Count() == 0)
             {
                 return NotFound("Employee types not found");
             }
 
-            //checking if type exist
-            if (!EmployeeTypeValidator.isTypeExistInById(allTypes, typeId))
+            int idType = allTypes
+                .Where(at => at.IdType == typeId)
+                .Select(at => at.IdType)
+                .FirstOrDefault();
+            if (idType == 0)
             {
                 return NotFound($"Type id={typeId} not found");
             }
@@ -557,57 +569,48 @@ namespace Restaurants_REST_API.Controllers
             IEnumerable<EmployeeRestaurant>? restaurantWorkers = await _restaurantsApiService.GetHiredEmployeesInRestaurantsAsync();
             if (restaurantWorkers != null)
             {
-                //checking if employee exist in passed restaurant id
-                bool employeeExistInRestaurant = restaurantWorkers
+                //checking if employee exist in restaurant
+                EmployeeRestaurant? employeeHired = restaurantWorkers
                     .Where(rw => rw.IdEmployee == empId && rw.IdRestaurant == restaurantId)
-                    .Select(rw => rw.IdEmployee)
-                    .FirstOrDefault() != 0;
-
-                if (!employeeExistInRestaurant)
+                    .FirstOrDefault();
+                if (employeeHired == null)
                 {
                     return NotFound($"Employee {employeeDatabase.FirstName} not found in restaurant {restaurantDatabase.Name}");
                 }
 
-                //checking if employee is already hired as passed type id in passed restaurant id
-                int empIdInRestaurantWithType = restaurantWorkers
-                    .Where(rw => rw.IdType == typeId && rw.IdEmployee == empId)
-                    .Select(rw => rw.IdEmployee)
-                    .FirstOrDefault();
-
-                if (empIdInRestaurantWithType != 0)
+                //checking if type are same
+                if (employeeHired.IdType == typeId)
                 {
-                    string? typeNameQuery = allTypes
+                    string typeNameQuery = allTypes
                            .Where(at => at.IdType == typeId)
                            .Select(at => at.Name)
-                           .FirstOrDefault();
+                           .First();
 
-                    return BadRequest($"Employee {employeeDatabase.FirstName} has already type {typeNameQuery} in restaurant {restaurantDatabase.Name}");
+                    return BadRequest($"Employee {employeeDatabase.FirstName} is already hired as {typeNameQuery} " +
+                        $"in restaurant {restaurantDatabase.Name}");
                 }
 
                 int ownerTypeId = allTypes
                     .Where(at => at.Name == _ownerTypeName)
                     .Select(at => at.IdType)
                     .FirstOrDefault();
-
                 if (ownerTypeId == 0)
                 {
                     return NotFound("Owner type not found");
                 }
 
-                //checking if owner already exist 
-                if (typeId == ownerTypeId)
+                if (ownerTypeId == typeId)
                 {
-                    bool ownerExistInRestaurant = restaurantWorkers
-                        .Where(rw => rw.IdType == ownerTypeId && rw.IdRestaurant == restaurantId)
-                        .Select(rw => rw.IdType)
-                        .FirstOrDefault() != 0;
-
-                    if (ownerExistInRestaurant)
+                    EmployeeRestaurant? owner = restaurantWorkers
+                        .Where(t => t?.IdType == ownerTypeId && t.IdRestaurant == restaurantId)
+                        .FirstOrDefault();
+                    if (owner != null)
                     {
-                        return BadRequest("Unable to update employee type to owner because owner already exists in restaurant");
+                        return BadRequest($"Employee {employeeDatabase.FirstName} can't be hired as an owner because" +
+                            $" owner already exists in restaurant {restaurantDatabase.Name}");
                     }
 
-                    if (!employeeDatabase.IsOwner.ToLower().Equals("y"))
+                    if (!Regex.Match(employeeDatabase.IsOwner, _ownerRegex, RegexOptions.IgnoreCase).Success)
                     {
                         return BadRequest($"Employee {employeeDatabase.FirstName} isn't an owner");
                     }
@@ -617,10 +620,10 @@ namespace Restaurants_REST_API.Controllers
             bool isEmployeeTypeChanged = await _restaurantsApiService.UpdateEmployeeTypeAsync(empId, typeId, restaurantId);
             if (!isEmployeeTypeChanged)
             {
-                return BadRequest($"Unalbe to change employee type in restaurant {restaurantDatabase.Name}");
+                return BadRequest($"Unalbe to update employee role in restaurant {restaurantDatabase.Name}");
             }
 
-            return Ok("Employee type has been updated");
+            return Ok("Employee role has been updated");
         }
 
         /// <summary>
