@@ -3,6 +3,7 @@ using Restaurants_REST_API.DbContexts;
 using Restaurants_REST_API.DTOs.GetDTO;
 using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.DTOs.PostOrPutDTO;
+using Restaurants_REST_API.DTOs.PutDTO;
 using Restaurants_REST_API.Models.Database;
 using Restaurants_REST_API.Services.MapperService;
 using System;
@@ -481,24 +482,23 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
         }
 
-        public async Task<bool> UpdateDishDataAsync(int dishId, Dish newDishData)
+        public async Task<bool> UpdateDishDataAsync(int dishId, PutDishDTO dishDataToUpdate)
         {
             try
             {
-                var updateDishDataQuery = await
+                var getDishQuery = await
                     (_context.Dish
                     .Where(d => d.IdDish == dishId)
                     .FirstAsync());
 
-                updateDishDataQuery.Name = newDishData.Name;
-                updateDishDataQuery.Price = newDishData.Price;
+                getDishQuery.Name = dishDataToUpdate.Name;
+                getDishQuery.Price = dishDataToUpdate.Price;
 
                 await _context.SaveChangesAsync();
-
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Console.WriteLine(ex.Message);
                 return false;
             }
             return true;
