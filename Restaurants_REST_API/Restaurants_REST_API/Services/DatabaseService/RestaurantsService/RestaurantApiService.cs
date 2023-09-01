@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Restaurants_REST_API.DAOs;
 using Restaurants_REST_API.DbContexts;
 using Restaurants_REST_API.DTOs.GetDTO;
 using Restaurants_REST_API.DTOs.GetDTOs;
@@ -509,7 +510,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
         }
 
-        public async Task<bool> UpdateRestaurantDataAsync(int restaurantId, PutRestaurantDTO restaurantData)
+        public async Task<bool> UpdateRestaurantDataAsync(int restaurantId, RestaurantDAO restaurantData)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -549,7 +550,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
         }
 
-        public async Task<bool> UpdateDishDataAsync(int dishId, PutDishDTO dishData)
+        public async Task<bool> UpdateDishDataAsync(int dishId, DishDAO dishData)
         {
             try
             {
