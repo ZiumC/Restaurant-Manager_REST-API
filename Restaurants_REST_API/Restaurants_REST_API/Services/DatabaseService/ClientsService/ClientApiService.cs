@@ -107,7 +107,7 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
                         HowManyPeoples = newReservation.HowManyPeoples,
                         IdClient = clientId,
                         ReservationGrade = null,
-                        ReservationStatus = ,
+                        ReservationStatus = _newReservationStatus,
                         IdRestaurant = newReservation.IdRestaurant
                     }
                 );
