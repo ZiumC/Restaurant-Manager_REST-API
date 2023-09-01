@@ -194,8 +194,16 @@ namespace Restaurants_REST_API.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Returns dishes data with restaurant name with dish exists.
+        /// </summary>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Owner.
+        /// - Supervisor.
+        /// </remarks>
         [HttpGet("dishes")]
-        //[Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
+        [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
         public async Task<IActionResult> GetAllDishes() 
         {
             IEnumerable<GetDishDTO>? allDishes = await _restaurantsApiService.GetAllDishesWithRestaurantsAsync();
