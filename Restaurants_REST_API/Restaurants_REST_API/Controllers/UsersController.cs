@@ -26,6 +26,7 @@ namespace Restaurants_REST_API.Controllers
         private readonly string _emailRegex;
         private readonly string _peselRegex;
         private readonly string _baseCharactersSalt;
+        private readonly string _serverPepper;
 
         public UsersController(IUserApiService userApiService, IEmployeeApiService employeeApiService, IConfiguration config, IJwtService jwtService)
         {
@@ -39,6 +40,8 @@ namespace Restaurants_REST_API.Controllers
             _peselRegex = _config["ApplicationSettings:DataValidation:PeselRegex"];
 
             _baseCharactersSalt = _config["ApplicationSettings:Security:SaltBase"];
+
+            _serverPepper = _config["ApplicationSettings:Security:PasswordPepper"];
 
             try
             {
@@ -70,6 +73,13 @@ namespace Restaurants_REST_API.Controllers
                 {
                     throw new Exception("Base characters for salt can't be empty");
                 }
+
+                if (string.IsNullOrEmpty(_serverPepper))
+                {
+                    throw new Exception("Pepper for passworc can't be empty");
+                }
+
+
             }
             catch (Exception ex)
             {
@@ -147,7 +157,7 @@ namespace Restaurants_REST_API.Controllers
             }
 
             var salt = UserPasswordUtility.GetSalt(_saltLength, _baseCharactersSalt);
-            var hashedPassword = UserPasswordUtility.GetHashedPasswordWithSalt(newUserData.Password, salt);
+            var hashedPassword = UserPasswordUtility.GetHashedPasswordWithSalt(newUserData.Password, salt, _serverPepper);
             User userToSave = new User
             {
                 Login = newUserData.Login,
@@ -222,7 +232,7 @@ namespace Restaurants_REST_API.Controllers
                 }
             }
 
-            var hashedPassword = UserPasswordUtility.GetHashedPasswordWithSalt(loginRequest.Password, user.PasswordSalt);
+            var hashedPassword = UserPasswordUtility.GetHashedPasswordWithSalt(loginRequest.Password, user.PasswordSalt, _serverPepper);
             if (hashedPassword.Equals(user.Password))
             {
                 user.LoginAttempts = 0;
