@@ -6,7 +6,7 @@ using Restaurants_REST_API.DTOs.PostOrPutDTO;
 using Restaurants_REST_API.DTOs.PutDTO;
 using Restaurants_REST_API.Models.Database;
 using Restaurants_REST_API.Services.Database_Service;
-using Restaurants_REST_API.Utils;
+using Restaurants_REST_API.Utils.UserUtility;
 using Restaurants_REST_API.Utils.ValidatorService;
 using System.Data;
 using System.Text.RegularExpressions;

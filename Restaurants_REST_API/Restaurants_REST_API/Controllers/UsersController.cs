@@ -6,8 +6,7 @@ using Restaurants_REST_API.Services.Database_Service;
 using Restaurants_REST_API.Services.DatabaseService.UsersService;
 using Restaurants_REST_API.Services.JwtService;
 using Restaurants_REST_API.Utils.MapperService;
-using System.Security.Cryptography;
-using System.Text;
+using Restaurants_REST_API.Utils.UserUtility;
 using System.Text.RegularExpressions;
 
 namespace Restaurants_REST_API.Controllers
@@ -39,7 +38,7 @@ namespace Restaurants_REST_API.Controllers
             _emailRegex = _config["ApplicationSettings:DataValidation:EmailRegex"];
             _peselRegex = _config["ApplicationSettings:DataValidation:PeselRegex"];
 
-            _baseCharactersSalt = _config["ApplicationSettings:Security:SaltBase"]
+            _baseCharactersSalt = _config["ApplicationSettings:Security:SaltBase"];
 
             try
             {
@@ -81,35 +80,35 @@ namespace Restaurants_REST_API.Controllers
         /// <summary>
         /// Registers new user.
         /// </summary>
-        /// <param name="newUser">Register data.</param>
+        /// <param name="newUserData">Register data.</param>
         [HttpPost("register")]
-        public async Task<IActionResult> RegisterNewUser(PostUserDTO newUser)
+        public async Task<IActionResult> RegisterNewUser(PostUserDTO newUserData)
         {
-            if (newUser == null)
+            if (!ModelState.IsValid) 
             {
-                return BadRequest("Data can't be null");
+                return BadRequest("User data to register is invalid");
             }
 
-            if (!Regex.Match(newUser.Login, _loginRegex, RegexOptions.IgnoreCase).Success)
+            if (!Regex.Match(newUserData.Login, _loginRegex, RegexOptions.IgnoreCase).Success)
             {
                 return BadRequest("Login is invalid");
             }
 
-            if (!Regex.Match(newUser.Email, _emailRegex, RegexOptions.IgnoreCase).Success)
+            if (!Regex.Match(newUserData.Email, _emailRegex, RegexOptions.IgnoreCase).Success)
             {
                 return BadRequest("Email is invalid");
             }
 
-            User? existingUser = await _userApiService.GetUserDataByEmail(newUser.Email);
+            User? existingUser = await _userApiService.GetUserDataByEmail(newUserData.Email);
             if (existingUser != null)
             {
                 return BadRequest("Email already exist");
             }
 
             Employee? emp = null;
-            if (newUser.RegisterMeAsEmployee)
+            if (newUserData.RegisterMeAsEmployee)
             {
-                string? pesel = newUser.PESEL;
+                string? pesel = newUserData.PESEL;
                 if (!string.IsNullOrEmpty(pesel))
                 {
                     if (pesel.Count() != 11 || !Regex.Match(pesel, _peselRegex, RegexOptions.IgnoreCase).Success)
@@ -118,7 +117,7 @@ namespace Restaurants_REST_API.Controllers
                     }
                 }
 
-                if (newUser?.HiredDate == null)
+                if (newUserData?.HiredDate == null)
                 {
                     return BadRequest("Hired date is required");
                 }
@@ -129,7 +128,7 @@ namespace Restaurants_REST_API.Controllers
                     return BadRequest("Given employee data are invalid");
                 }
 
-                if (newUser.HiredDate.Date != basicExistingEmpData.HiredDate.Date)
+                if (newUserData.HiredDate.Date != basicExistingEmpData.HiredDate.Date)
                 {
                     return BadRequest("Given employee data are invalid");
                 }
@@ -147,19 +146,19 @@ namespace Restaurants_REST_API.Controllers
                 emp = basicExistingEmpData;
             }
 
-            string salt = GetSalt(_saltLength);
-            string hashedPassword = GetHashedPasswordWithSalt(newUser.Password, salt);
+            var salt = UserPasswordUtility.GetSalt(_saltLength, _baseCharactersSalt);
+            var hashedPassword = UserPasswordUtility.GetHashedPasswordWithSalt(newUserData.Password, salt);
             User userToSave = new User
             {
-                Login = newUser.Login,
-                Email = newUser.Email,
+                Login = newUserData.Login,
+                Email = newUserData.Email,
                 Password = hashedPassword,
                 PasswordSalt = salt,
                 LoginAttempts = 0,
                 DateBlockedTo = null
             };
 
-            if (newUser.RegisterMeAsEmployee)
+            if (newUserData.RegisterMeAsEmployee)
             {
                 userToSave.IdEmployee = emp?.IdEmployee;
                 userToSave.UserRole = new MapUserRolesUtility(_config)
@@ -198,7 +197,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Invalid login request");
             }
 
-            var user = await _userApiService.GetUserDataByLoginOrEmail(loginRequest.LoginOrEmail);
+            User? user = await _userApiService.GetUserDataByLoginOrEmail(loginRequest.LoginOrEmail);
             if (user == null)
             {
                 /*
@@ -209,7 +208,7 @@ namespace Restaurants_REST_API.Controllers
                 return Unauthorized("Login or password are incorrect");
             }
 
-            var dateBlockedTo = user.DateBlockedTo;
+            DateTime? dateBlockedTo = user.DateBlockedTo;
             if (dateBlockedTo != null)
             {
                 if (dateBlockedTo > DateTime.Now)
@@ -223,8 +222,8 @@ namespace Restaurants_REST_API.Controllers
                 }
             }
 
-            string hashedPassedPassword = GetHashedPasswordWithSalt(loginRequest.Password, user.PasswordSalt);
-            if (hashedPassedPassword.Equals(user.Password))
+            var hashedPassword = UserPasswordUtility.GetHashedPasswordWithSalt(loginRequest.Password, user.PasswordSalt);
+            if (hashedPassword.Equals(user.Password))
             {
                 user.LoginAttempts = 0;
                 user.DateBlockedTo = null;
@@ -293,7 +292,7 @@ namespace Restaurants_REST_API.Controllers
             {
                 if (dateBlockedTo > DateTime.Now)
                 {
-                    return Unauthorized($"You can't refresh token due to {dateBlockedTo}");
+                    return Unauthorized($"You can't login and refresh access token due to {dateBlockedTo}");
                 }
             }
 
@@ -311,39 +310,6 @@ namespace Restaurants_REST_API.Controllers
             }
 
             return Ok(new { accessToken = accessToken, refreshToken = refreshToken });
-        }
-
-
-        private string GetSalt(int length)
-        {
-            if (length < 0 || length > 10)
-            {
-                throw new Exception("Salt length should be in range 1 - 10");
-            }
-
-            string result = "";
-
-            for (int i = 0; i < length; i++)
-            {
-                Random random = new Random();
-                char c = _baseCharactersSalt[random.Next(_baseCharactersSalt.Length)];
-                result = result + c;
-            }
-
-            return result;
-        }
-
-        private string GetHashedPasswordWithSalt(string password, string salt)
-        {
-            var sha256algorithm = SHA256.Create();
-            var hash = new StringBuilder();
-            byte[] crypto = sha256algorithm.ComputeHash(Encoding.UTF8.GetBytes(password + salt));
-            foreach (byte theByte in crypto)
-            {
-                hash.Append(theByte.ToString("x2"));
-            }
-
-            return hash.ToString();
         }
     }
 }

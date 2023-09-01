@@ -9,7 +9,7 @@ using Restaurants_REST_API.DTOs.GetDTO;
 using System.Data;
 using Microsoft.AspNetCore.Authorization;
 using System.Text.RegularExpressions;
-using Restaurants_REST_API.Utils;
+using Restaurants_REST_API.Utils.UserUtility;
 
 namespace Restaurants_REST_API.Controllers
 {
