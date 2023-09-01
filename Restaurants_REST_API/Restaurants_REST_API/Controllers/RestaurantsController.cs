@@ -434,6 +434,62 @@ namespace Restaurants_REST_API.Controllers
             return Ok("Dish has been added");
         }
 
+        [HttpPost("{restaurantId}/dish/{dishId}")]
+        [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
+        public async Task<IActionResult> AddExistingDishToRestaurant(int dishId, int restaurantId) 
+        {
+            if (!GeneralValidatorUtility.isIntNumberGtZero(dishId))
+            {
+                return BadRequest($"Dish id={dishId} is invalid");
+            }
+
+            if (!GeneralValidatorUtility.isIntNumberGtZero(restaurantId))
+            {
+                return BadRequest($"Restaurant id={restaurantId} is invalid");
+            }
+
+            Restaurant? simpleRestaurantData = 
+                await _restaurantsApiService.GetRestaurantSimpleDataByIdAsync(restaurantId);
+            if (simpleRestaurantData == null)
+            {
+                return NotFound("Restaurant not found");
+            }
+
+            Dish? simpleDishData = 
+                await _restaurantsApiService.GetDishSimpleDataByIdAsync(dishId);
+            if (simpleDishData == null)
+            {
+                return NotFound("Dish not found");
+            }
+
+            IEnumerable<GetDishDTO>? allDishes = await _restaurantsApiService.GetAllDishesWithRestaurantsAsync();
+            if (allDishes != null)
+            {
+                GetDishDTO? dish = allDishes
+                    .Where
+                    ( ad => 
+                        ad.IdDish == dishId &&
+                        ad.Restaurants != null && 
+                        ad.Restaurants.Any(a => a.IdRestaurant == restaurantId)
+                    )
+                    .FirstOrDefault();
+
+                if (dish != null)
+                {
+                    return BadRequest($"Dish {simpleDishData.Name} already exist in restaurant {simpleRestaurantData.Name}");
+                }
+            }
+
+            bool isDishAdded = await _restaurantsApiService.AddExistingDishToRestaurantAsync(dishId, restaurantId);
+            if (!isDishAdded)
+            {
+                return BadRequest("Something went wrong, unable to add dish to restaurant");
+            }
+            
+            return Ok($"Dish {simpleDishData.Name} has been added to restaurant {simpleRestaurantData.Name}");
+
+        }
+
         /// <summary>
         /// Adds existing employee to restaurant with specified role. 
         /// Employee only can have a one role at a restaurant.

@@ -304,7 +304,10 @@ namespace Restaurants_REST_API.Services.Database_Service
 
                                     select new GetSimpleRestaurantDTO 
                                     { 
-                                        Name = r.Name
+                                        IdRestaurant = r.IdRestaurant,
+                                        Name = r.Name,
+                                        Status = r.RestaurantStatus,
+                                        BonusBudget = r.BonusBudget
                                     }).ToList()
                  }).ToListAsync();
         }
@@ -377,6 +380,11 @@ namespace Restaurants_REST_API.Services.Database_Service
                 await transaction.CommitAsync();
                 return true;
             }
+        }
+
+        public async Task<bool> AddExistingDishToRestaurantAsync(int dishId, int restaurantId) 
+        {
+            return false;
         }
 
         public async Task<bool> AddNewDishToRestaurantsAsync(PostDishDTO newDishData)
