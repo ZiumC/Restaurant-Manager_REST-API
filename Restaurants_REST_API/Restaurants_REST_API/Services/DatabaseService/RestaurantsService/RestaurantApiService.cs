@@ -280,10 +280,33 @@ namespace Restaurants_REST_API.Services.Database_Service
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Dish>?> GetAllDishes()
+        public async Task<IEnumerable<Dish>?> GetAllDishesAsync()
         {
             return await _context.Dish
                 .ToListAsync();
+        }
+
+        public async Task<IEnumerable<GetDishDTO>?> GetAllDishesWithRestaurantsAsync()
+        {
+            return await
+                (from d in _context.Dish
+
+                 select new GetDishDTO
+                 {
+                     IdDish = d.IdDish,
+                     Name = d.Name,
+                     Price = d.Price,
+                     Restaurants = (from r in _context.Restaurant
+                                    join dir in _context.RestaurantDish
+                                    on r.IdRestaurant equals dir.IdRestaurant
+
+                                    where d.IdDish == dir.IdDish
+
+                                    select new GetSimpleRestaurantDTO 
+                                    { 
+                                        Name = r.Name
+                                    }).ToList()
+                 }).ToListAsync();
         }
 
         public async Task<bool> AddNewRestaurantAsync(PostRestaurantDTO newRestaurantData, int ownerTypeId)

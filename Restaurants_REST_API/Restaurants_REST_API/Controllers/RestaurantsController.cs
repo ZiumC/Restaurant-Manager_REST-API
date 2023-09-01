@@ -194,12 +194,25 @@ namespace Restaurants_REST_API.Controllers
             return Ok(result);
         }
 
-        [HttpGet("dish")]
-        [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
+        [HttpGet("dishes")]
+        //[Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
         public async Task<IActionResult> GetAllDishes() 
         {
-            
-            return Ok();
+            IEnumerable<GetDishDTO>? allDishes = await _restaurantsApiService.GetAllDishesWithRestaurantsAsync();
+            if (allDishes == null || allDishes.Count() == 0)
+            {
+                return NotFound("Dishes not found");
+            }
+
+            var dataToReturn = allDishes.Select(ad => new
+            {
+                IdDish = ad.IdDish,
+                DishName = ad.Name,
+                DishPrice = ad.Price,
+                Restaurants = ad.Restaurants?.Select(r => r.Name).ToList()
+            });
+
+            return Ok(dataToReturn);
         }
         /// <summary>
         /// Returns dish details.
@@ -380,7 +393,7 @@ namespace Restaurants_REST_API.Controllers
                     return NotFound($"Restaurant at id={restaurantId} not found");
                 }
 
-                IEnumerable<Dish>? dishes = await _restaurantsApiService.GetAllDishes();
+                IEnumerable<Dish>? dishes = await _restaurantsApiService.GetAllDishesAsync();
                 if (dishes != null) 
                 {
                     foreach (Dish dish in dishes) 
