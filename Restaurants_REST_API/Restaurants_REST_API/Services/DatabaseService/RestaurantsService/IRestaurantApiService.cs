@@ -14,7 +14,8 @@ namespace Restaurants_REST_API.Services.Database_Service
         public Task<IEnumerable<EmployeeRestaurant>?> GetHiredEmployeesInRestaurantsAsync();
         public Task<IEnumerable<GetEmployeeTypeDTO>?> GetEmployeeTypesAsync();
         public Task<Dish?> GetDishSimpleDataByIdAsync(int dishId);
-        public Task<IEnumerable<Dish>?> GetAllDishes();
+        public Task<IEnumerable<Dish>?> GetAllDishesAsync();
+        public Task<IEnumerable<GetDishDTO>?> GetAllDishesWithRestaurantsAsync();
         public Task<IEnumerable<RestaurantDish>?> GetRestaurantDishesByRestaurantIdAsync(int restaurantId);
         public Task<bool> AddNewRestaurantAsync(PostRestaurantDTO newRestaurantData, int ownerTypeId);
         public Task<bool> AddNewDishToRestaurantsAsync(PostDishDTO newDish);
