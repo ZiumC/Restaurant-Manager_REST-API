@@ -194,6 +194,13 @@ namespace Restaurants_REST_API.Controllers
             return Ok(result);
         }
 
+        [HttpGet("dish")]
+        [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
+        public async Task<IActionResult> GetAllDishes() 
+        {
+            
+            return Ok();
+        }
         /// <summary>
         /// Returns dish details.
         /// </summary>
