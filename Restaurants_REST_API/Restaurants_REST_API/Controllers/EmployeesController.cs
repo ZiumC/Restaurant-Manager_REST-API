@@ -10,6 +10,7 @@ using System.Data;
 using Microsoft.AspNetCore.Authorization;
 using System.Text.RegularExpressions;
 using Restaurants_REST_API.Utils.UserUtility;
+using Restaurants_REST_API.DAOs;
 
 namespace Restaurants_REST_API.Controllers
 {
@@ -382,12 +383,33 @@ namespace Restaurants_REST_API.Controllers
             {
                 employeeOwnerStatus = _ownerStatusYes;
             }
-            else 
+            else
             {
                 employeeOwnerStatus = _ownerStatusNo;
             }
 
-            bool isEmpAdded = await _employeeApiService.AddNewEmployeeAsync(newEmpData, employeeOwnerStatus);
+            EmployeeDAO empDao = new EmployeeDAO
+            {
+                FirstName = newEmpData.FirstName,
+                LastName = newEmpData.LastName,
+                PESEL = newEmpData.PESEL,
+                Salary = newEmpData.Salary,
+                BonusSalary = newEmpData.Salary,
+                Address = new AddressDAO
+                {
+                    City = newEmpData.Address.City,
+                    Street = newEmpData.Address.Street,
+                    BuildingNumber = newEmpData.Address.BuildingNumber,
+                    LocalNumber = newEmpData.Address.LocalNumber
+                },
+                Certificates = newEmpData.Certificates?.Select(c => new CertificateDAO
+                {
+                    Name= c.Name,
+                    ExpirationDate = c.ExpirationDate
+                }).ToList(),
+            };
+
+            bool isEmpAdded = await _employeeApiService.AddNewEmployeeAsync(empDao, employeeOwnerStatus);
             if (!isEmpAdded)
             {
                 return BadRequest("Something went wrong unable to add new Employee");
@@ -438,7 +460,13 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound("Employee not found");
             }
 
-            bool isCertificateHasBeenAdded = await _employeeApiService.AddNewEmployeeCertificatesAsync(empId, newCertificates);
+            IEnumerable<CertificateDAO> certificatesDao = newCertificates.Select(nc => new CertificateDAO
+            {
+                Name = nc.Name,
+                ExpirationDate = nc.ExpirationDate
+            }).ToList();
+
+            bool isCertificateHasBeenAdded = await _employeeApiService.AddNewEmployeeCertificatesAsync(empId, certificatesDao);
             if (!isCertificateHasBeenAdded)
             {
                 return BadRequest($"Something went wrong unable to add certificates to employee {employeeDatabase.FirstName}");
@@ -518,7 +546,23 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound("Employee doesn't exist");
             }
 
-            bool isEmployeeUpdated = await _employeeApiService.UpdateEmployeeDataByIdAsync(empId, putEmpData);
+            EmployeeDAO empDao = new EmployeeDAO
+            {
+                FirstName = putEmpData.FirstName,
+                LastName = putEmpData.LastName,
+                PESEL = putEmpData.PESEL,
+                Salary = putEmpData.Salary,
+                BonusSalary = putEmpData.Salary,
+                Address = new AddressDAO
+                {
+                    City = putEmpData.Address.City,
+                    Street = putEmpData.Address.Street,
+                    BuildingNumber = putEmpData.Address.BuildingNumber,
+                    LocalNumber = putEmpData.Address.LocalNumber
+                }
+            };
+
+            bool isEmployeeUpdated = await _employeeApiService.UpdateEmployeeDataByIdAsync(empId, empDao);
             if (!isEmployeeUpdated)
             {
                 return BadRequest("Something went wrong unable to update employee");
@@ -575,7 +619,14 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound($"Employee certificate id={certificateId} not found");
             }
 
-            bool isCertificatesHasBeenUpdated = await _employeeApiService.UpdateEmployeeCertificateByIdAsync(certificateId, putEmpCertificates);
+            CertificateDAO certificateDao = new CertificateDAO
+            {
+                Name = putEmpCertificates.Name,
+                ExpirationDate = putEmpCertificates.ExpirationDate
+            };
+
+            bool isCertificatesHasBeenUpdated = 
+                await _employeeApiService.UpdateEmployeeCertificateByIdAsync(certificateId, certificateDao);
             if (!isCertificatesHasBeenUpdated)
             {
                 return Problem("Unable to update certificate");
