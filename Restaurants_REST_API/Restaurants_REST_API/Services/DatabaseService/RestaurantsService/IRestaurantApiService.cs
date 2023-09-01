@@ -18,10 +18,10 @@ namespace Restaurants_REST_API.Services.Database_Service
         public Task<IEnumerable<RestaurantDish>?> GetRestaurantDishesByRestaurantIdAsync(int restaurantId);
         public Task<bool> AddNewRestaurantAsync(PostRestaurantDTO newRestaurantData, int ownerTypeId);
         public Task<bool> AddNewDishToRestaurantsAsync(PostDishDTO newDish);
-        public Task<bool> AddNewEmployeeToRestaurantAsync(int empId, int typeId, int restaurantId);
+        public Task<bool> AddNewEmployeeToRestaurantAsync(int empId, int typeId, int restaurantId, bool isSupervisorInRestaurant);
         public Task<bool> UpdateRestaurantDataAsync(int restaurantId, PutRestaurantDTO restaurantData);
         public Task<bool> UpdateDishDataAsync(int dishId, PutDishDTO dishData);
-        public Task<bool> UpdateEmployeeTypeAsync(int empId, int typeId, int restaurantId);
+        public Task<bool> UpdateEmployeeTypeAsync(int empId, int typeId, int restaurantId, bool isSupervisorInRestaurant);
         public Task<bool> DeleteDishAsync(Dish dish);
         public Task<bool> DeleteDishFromRestaurantAsync(int restaurantId, int dishId);
         public Task<bool> DeleteEmployeeFromRestaurantAsync(int empId, int restaurantId);
