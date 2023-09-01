@@ -2,8 +2,6 @@
 using Restaurants_REST_API.DAOs;
 using Restaurants_REST_API.DbContexts;
 using Restaurants_REST_API.DTOs.GetDTOs;
-using Restaurants_REST_API.DTOs.PostOrPutDTO;
-using Restaurants_REST_API.DTOs.PutDTO;
 using Restaurants_REST_API.Models.Database;
 
 namespace Restaurants_REST_API.Services.Database_Service
@@ -489,7 +487,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
         }
 
-        public async Task<bool> DeleteEmployeeDataByIdAsync(int empId, GetEmployeeDTO empData)
+        public async Task<bool> DeleteEmployeeDataByIdAsync(int empId)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -502,15 +500,27 @@ namespace Restaurants_REST_API.Services.Database_Service
                     if (getUserQuery != null)
                     {
                         _context.Remove(getUserQuery);
+                        await _context.SaveChangesAsync();
                     }
-                    await _context.SaveChangesAsync();
 
-                    var getEmpAddressQuery = await _context.Address
-                        .Where(a => a.IdAddress == empData.Address.IdAddress)
-                        .FirstAsync();
+                    var getEmpCertificatesIdQuery = await _context.EmployeeCertificate
+                        .Where(ec => ec.IdEmployee == empId)
+                        .Select(ec => ec.IdCertificate)
+                        .ToListAsync();
 
-                    _context.Remove(getEmpAddressQuery);
-                    await _context.SaveChangesAsync();
+                    if (getEmpCertificatesIdQuery != null && getEmpCertificatesIdQuery.Count() > 0)
+                    {
+                        foreach (int empCertificateId in getEmpCertificatesIdQuery)
+                        {
+                            var empCertificateQuery = await _context.Certificate
+                                .Where(c => c.IdCertificate == empCertificateId)
+                                .FirstAsync();
+
+                            //removing each employee certificate
+                            _context.Remove(empCertificateQuery);
+                            await _context.SaveChangesAsync();
+                        }
+                    }
 
                     var gerWorkerQuery = await _context.EmployeeRestaurant
                         .Where(eir => eir.IdEmployee == empId)
@@ -521,20 +531,16 @@ namespace Restaurants_REST_API.Services.Database_Service
                         await _context.SaveChangesAsync();
                     }
 
+                    var getEmpQuery = await _context.Employee
+                        .Where(e => e.IdEmployee == empId)
+                        .FirstAsync();
 
-                    if (empData.Certificates != null && empData.Certificates.Count() > 0)
-                    {
-                        foreach (GetCertificateDTO empCert in empData.Certificates)
-                        {
-                            var empCertificateQuery = await _context.Certificate
-                                .Where(c => c.IdCertificate == empCert.IdCertificate)
-                                .FirstAsync();
+                    var getEmpAddressQuery = await _context.Address
+                        .Where(a => a.IdAddress == getEmpQuery.IdAddress)
+                        .FirstAsync();
 
-                            //removing each employee certificate
-                            _context.Remove(empCertificateQuery);
-                            await _context.SaveChangesAsync();
-                        }
-                    }
+                    _context.Remove(getEmpAddressQuery);
+                    await _context.SaveChangesAsync();
                 }
                 catch (Exception ex)
                 {

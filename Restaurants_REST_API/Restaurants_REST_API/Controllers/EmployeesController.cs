@@ -658,7 +658,8 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound($"Employee not found");
             }
 
-            bool isEmployeeHasBeenRemoved = await _employeeApiService.DeleteEmployeeDataByIdAsync(empId, employeeDetails);
+            bool isEmployeeHasBeenRemoved =
+                await _employeeApiService.DeleteEmployeeDataByIdAsync(empId);
             if (!isEmployeeHasBeenRemoved)
             {
                 return BadRequest("Something went wrong unable to delete employee");
