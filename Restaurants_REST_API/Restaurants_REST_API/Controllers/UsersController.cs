@@ -64,11 +64,6 @@ namespace Restaurants_REST_API.Controllers
                     throw new Exception("Pesel regex can't be empty.");
                 }
 
-                if (_saltLength < 0 || _saltLength > 10 )
-                {
-                    throw new Exception("Length of password salt is invalid. Length should be between 1 and 10 characters.");
-                }
-
                 if (string.IsNullOrEmpty(_baseCharactersSalt))
                 {
                     throw new Exception("Base characters for salt can't be empty");
@@ -78,8 +73,6 @@ namespace Restaurants_REST_API.Controllers
                 {
                     throw new Exception("Pepper for passworc can't be empty");
                 }
-
-
             }
             catch (Exception ex)
             {
@@ -94,7 +87,7 @@ namespace Restaurants_REST_API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> RegisterNewUser(PostUserDTO newUserData)
         {
-            if (!ModelState.IsValid) 
+            if (!ModelState.IsValid)
             {
                 return BadRequest("User data to register is invalid");
             }
@@ -156,8 +149,19 @@ namespace Restaurants_REST_API.Controllers
                 emp = basicExistingEmpData;
             }
 
-            var salt = UserPasswordUtility.GetSalt(_saltLength, _baseCharactersSalt);
-            var hashedPassword = UserPasswordUtility.GetHashedPasswordWithSalt(newUserData.Password, salt, _serverPepper);
+            string hashedPassword = "";
+            string salt = "";
+            try
+            {
+                salt = UserPasswordUtility.GetSalt(_saltLength, _baseCharactersSalt);
+                hashedPassword = UserPasswordUtility.GetHashedPasswordWithSalt(newUserData.Password, salt, _serverPepper);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return StatusCode(500, "Server side problem, unable to make reqister request");
+            }
+
             User userToSave = new User
             {
                 Login = newUserData.Login,
@@ -232,7 +236,18 @@ namespace Restaurants_REST_API.Controllers
                 }
             }
 
-            var hashedPassword = UserPasswordUtility.GetHashedPasswordWithSalt(loginRequest.Password, user.PasswordSalt, _serverPepper);
+            string hashedPassword = "";
+            try
+            {
+                hashedPassword = UserPasswordUtility
+                    .GetHashedPasswordWithSalt(loginRequest.Password, user.PasswordSalt, _serverPepper);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return StatusCode(500, "Server side problem, unable to make login request");
+            }
+
             if (hashedPassword.Equals(user.Password))
             {
                 user.LoginAttempts = 0;
