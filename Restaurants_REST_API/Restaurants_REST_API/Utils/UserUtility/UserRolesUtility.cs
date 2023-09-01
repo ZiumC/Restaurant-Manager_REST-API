@@ -1,4 +1,4 @@
-﻿namespace Restaurants_REST_API.Utils
+﻿namespace Restaurants_REST_API.Utils.UserUtility
 {
     public static class UserRolesUtility
     {

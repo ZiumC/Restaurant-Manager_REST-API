@@ -5,7 +5,7 @@ using Restaurants_REST_API.DTOs.PostDTO;
 using Restaurants_REST_API.Services.Database_Service;
 using Restaurants_REST_API.Services.DatabaseService.CustomersService;
 using Restaurants_REST_API.Services.JwtService;
-using Restaurants_REST_API.Utils;
+using Restaurants_REST_API.Utils.UserUtility;
 using Restaurants_REST_API.Utils.ValidatorService;
 using System.Security.Claims;
 
