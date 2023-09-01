@@ -313,7 +313,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                  }).ToListAsync();
         }
 
-        public async Task<bool> AddNewRestaurantAsync(PostRestaurantDTO newRestaurantData, int ownerTypeId)
+        public async Task<bool> AddNewRestaurantAsync(RestaurantDAO newRestaurantData, int ownerTypeId)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -416,7 +416,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             return true;
         }
 
-        public async Task<bool> AddNewDishToRestaurantsAsync(PostDishDTO newDishData)
+        public async Task<bool> AddNewDishToRestaurantsAsync(DishDAO newDishData, IEnumerable<int> restaurantsId)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -432,7 +432,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                         );
                     await _context.SaveChangesAsync();
 
-                    foreach (int idRestaurant in newDishData.IdRestaurants)
+                    foreach (int idRestaurant in restaurantsId)
                     {
                         var newDishInRestaurantQuery = _context.RestaurantDish.Add
                             (

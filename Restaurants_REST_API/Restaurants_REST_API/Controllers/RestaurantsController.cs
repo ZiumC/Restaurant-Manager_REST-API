@@ -352,7 +352,23 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound("Owner of restaurants not found, unable to add new restaurant");
             }
 
-            bool isRestaurantAdded = await _restaurantsApiService.AddNewRestaurantAsync(newRestaurant, ownerTypeId);
+            AddressDAO addressDao = new AddressDAO
+            {
+                City = newRestaurant.Address.City,
+                Street = newRestaurant.Address.Street,
+                BuildingNumber = newRestaurant.Address.BuildingNumber,
+                LocalNumber = newRestaurant.Address.LocalNumber,
+            };
+
+            RestaurantDAO restaurantDao = new RestaurantDAO
+            {
+                Name = newRestaurant.Name,
+                Status = newRestaurant.Status,
+                BonusBudget = newRestaurant.BonusBudget,
+                Address = addressDao
+            };
+
+            bool isRestaurantAdded = await _restaurantsApiService.AddNewRestaurantAsync(restaurantDao, ownerTypeId);
             if (!isRestaurantAdded)
             {
                 return BadRequest("Something went wrong unable to add new restaruant");
@@ -426,7 +442,13 @@ namespace Restaurants_REST_API.Controllers
                 }
             }
 
-            bool isDishAdded = await _restaurantsApiService.AddNewDishToRestaurantsAsync(newDish);
+            DishDAO dishDao = new DishDAO
+            {
+                Name = newDish.Name,
+                Price = newDish.Price
+            };
+            
+            bool isDishAdded = await _restaurantsApiService.AddNewDishToRestaurantsAsync(dishDao, newDish.IdRestaurants);
             if (!isDishAdded)
             {
                 return BadRequest("Something went wrong unable to add new dish");
