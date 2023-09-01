@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Restaurants_REST_API.DAOs;
 using Restaurants_REST_API.DTOs.GetDTO;
 using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.DTOs.PostOrPutDTO;
@@ -810,7 +811,23 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound($"Restaurant id={restaurantId} not found");
             }
 
-            bool isRestaurantUpdated = await _restaurantsApiService.UpdateRestaurantDataAsync(restaurantId, putRestaurantData);
+            AddressDAO addressDao = new AddressDAO
+            {
+                City = putRestaurantData.Address.City,
+                Street = putRestaurantData.Address.Street,
+                BuildingNumber = putRestaurantData.Address.BuildingNumber,
+                LocalNumber = putRestaurantData.Address.LocalNumber
+            };
+
+            RestaurantDAO restaurantDao = new RestaurantDAO
+            {
+                Name= putRestaurantData.Name,
+                Status = putRestaurantData.Status,
+                BonusBudget = putRestaurantData.BonusBudget,
+                Address = addressDao
+            };
+
+            bool isRestaurantUpdated = await _restaurantsApiService.UpdateRestaurantDataAsync(restaurantId, restaurantDao);
             if (!isRestaurantUpdated)
             {
                 return BadRequest("Something went wrong unable to update restaurant data");
@@ -859,7 +876,12 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound("Dish to update not found");
             }
 
-            bool isDishUpdated = await _restaurantsApiService.UpdateDishDataAsync(dishId, putDishData);
+            DishDAO dishDao = new DishDAO 
+            {
+                Name = putDishData.Name,
+                Price = putDishData.Price
+            };
+            bool isDishUpdated = await _restaurantsApiService.UpdateDishDataAsync(dishId, dishDao);
             if (!isDishUpdated)
             {
                 return BadRequest("Something went wrong unable to update dish data");
