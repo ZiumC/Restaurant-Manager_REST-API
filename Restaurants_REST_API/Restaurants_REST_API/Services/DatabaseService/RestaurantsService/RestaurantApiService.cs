@@ -302,8 +302,8 @@ namespace Restaurants_REST_API.Services.Database_Service
 
                                     where d.IdDish == dir.IdDish
 
-                                    select new GetSimpleRestaurantDTO 
-                                    { 
+                                    select new GetSimpleRestaurantDTO
+                                    {
                                         IdRestaurant = r.IdRestaurant,
                                         Name = r.Name,
                                         Status = r.RestaurantStatus,
@@ -382,9 +382,37 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
         }
 
-        public async Task<bool> AddExistingDishToRestaurantAsync(int dishId, int restaurantId) 
+        public async Task<bool> AddExistingDishToRestaurantAsync(int dishId, int restaurantId)
         {
-            return false;
+            try
+            {
+                var getDishQuery = await _context.Dish
+                    .Where(d => d.IdDish == dishId)
+                    .FirstAsync();
+
+                var getRestaurantQuery = await _context.Restaurant
+                    .Where(r => r.IdRestaurant == restaurantId)
+                    .FirstAsync();
+
+                var dishInRestaurant = _context.RestaurantDish.Add
+                    (
+                        new RestaurantDish
+                        {
+                            IdDish = dishId,
+                            Dish = getDishQuery,
+                            IdRestaurant = restaurantId,
+                            Restaurant = getRestaurantQuery
+                        }
+                    );
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return false;
+            }
+            return true;
         }
 
         public async Task<bool> AddNewDishToRestaurantsAsync(PostDishDTO newDishData)
