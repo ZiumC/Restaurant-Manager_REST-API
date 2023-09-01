@@ -102,10 +102,16 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Email is invalid");
             }
 
-            User? existingUser = await _userApiService.GetUserDataByEmail(newUserData.Email);
-            if (existingUser != null)
+            User? userByEmail = await _userApiService.GetUserDataByLoginOrEmail(newUserData.Email);
+            if (userByEmail != null)
             {
                 return BadRequest("Email already exist");
+            }
+
+            User? userByLogin = await _userApiService.GetUserDataByLoginOrEmail(newUserData.Login);
+            if (userByLogin != null)
+            {
+                return BadRequest("Login already exists");
             }
 
             Employee? emp = null;

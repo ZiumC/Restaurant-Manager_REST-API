@@ -63,12 +63,6 @@ namespace Restaurants_REST_API.Services.DatabaseService.UsersService
                 return false;
             }
         }
-        public async Task<User?> GetUserDataByEmail(string email)
-        {
-            return await _context.User
-                .Where(u => u.Email.ToLower() == email.ToLower())
-                .FirstOrDefaultAsync();
-        }
 
         public async Task<User?> GetUserDataByLoginOrEmail(string loginOrEmil)
         {
