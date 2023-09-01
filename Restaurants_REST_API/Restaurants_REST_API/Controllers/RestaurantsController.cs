@@ -434,9 +434,19 @@ namespace Restaurants_REST_API.Controllers
             return Ok("Dish has been added");
         }
 
+        /// <summary>
+        /// Adds existing dish to restaurant.
+        /// </summary>
+        /// <param name="dishId">Dish id</param>
+        /// <param name="restaurantId">Restaurant id</param>
+        /// <remarks>
+        /// To use that endpoint, access token should contain following roles:
+        /// - Owner.
+        /// - Supervisor.
+        /// </remarks>
         [HttpPost("{restaurantId}/dish/{dishId}")]
         [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
-        public async Task<IActionResult> AddExistingDishToRestaurant(int dishId, int restaurantId) 
+        public async Task<IActionResult> AddExistingDishToRestaurant(int restaurantId, int dishId) 
         {
             if (!GeneralValidatorUtility.isIntNumberGtZero(dishId))
             {
