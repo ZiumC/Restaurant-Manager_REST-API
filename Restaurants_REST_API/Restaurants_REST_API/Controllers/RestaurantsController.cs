@@ -21,6 +21,7 @@ namespace Restaurants_REST_API.Controllers
         private readonly IEmployeeApiService _employeeApiService;
         private readonly IConfiguration _config;
         private readonly string _ownerTypeName;
+        private readonly string _supervisorTypeName;
         private readonly string _ownerRegex;
         private readonly string _newComplaintStatus;
         private readonly string _acceptedComplaintStatus;
@@ -34,6 +35,7 @@ namespace Restaurants_REST_API.Controllers
             _config = config;
 
             _ownerTypeName = _config["ApplicationSettings:AdministrativeRoles:Owner"];
+            _supervisorTypeName = _config["ApplicationSettings:AdministrativeRoles:Supervisor"];
 
             _ownerRegex = _config["ApplicationSettings:DataValidation:OwnerRegex"];
 
@@ -47,6 +49,11 @@ namespace Restaurants_REST_API.Controllers
                 if (string.IsNullOrEmpty(_ownerTypeName))
                 {
                     throw new Exception("Owner type name can't be empty");
+                }
+
+                if (string.IsNullOrEmpty(_supervisorTypeName))
+                {
+                    throw new Exception("Supervisor type name can't be empty");
                 }
 
                 if (string.IsNullOrEmpty(_ownerRegex))
@@ -505,7 +512,13 @@ namespace Restaurants_REST_API.Controllers
                 }
             }
 
-            bool isEmployeeHired = await _restaurantsApiService.AddNewEmployeeToRestaurantAsync(empId, typeId, restaurantId);
+            bool isSupervisorInRestaurant = allTypes
+                .Where(at => at.Name == _ownerTypeName || at.Name == _supervisorTypeName)
+                .Select(at => at.IdType)
+                .ToList()
+                .Contains(typeId);
+
+            bool isEmployeeHired = await _restaurantsApiService.AddNewEmployeeToRestaurantAsync(empId, typeId, restaurantId, isSupervisorInRestaurant);
             if (!isEmployeeHired)
             {
                 return BadRequest("Something went wrong unable to hire employee");
@@ -624,7 +637,13 @@ namespace Restaurants_REST_API.Controllers
                 }
             }
 
-            bool isEmployeeTypeChanged = await _restaurantsApiService.UpdateEmployeeTypeAsync(empId, typeId, restaurantId);
+            bool isSupervisorInRestaurant = allTypes
+                .Where(at => at.Name == _ownerTypeName || at.Name == _supervisorTypeName)
+                .Select(at => at.IdType)
+                .ToList()
+                .Contains(typeId);
+
+            bool isEmployeeTypeChanged = await _restaurantsApiService.UpdateEmployeeTypeAsync(empId, typeId, restaurantId, isSupervisorInRestaurant);
             if (!isEmployeeTypeChanged)
             {
                 return BadRequest($"Unalbe to update employee role in restaurant {restaurantDatabase.Name}");

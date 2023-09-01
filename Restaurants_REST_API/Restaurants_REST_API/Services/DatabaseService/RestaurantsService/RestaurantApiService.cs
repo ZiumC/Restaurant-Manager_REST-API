@@ -398,7 +398,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
         }
 
-        public async Task<bool> AddNewEmployeeToRestaurantAsync(int empId, int typeId, int restaurantId)
+        public async Task<bool> AddNewEmployeeToRestaurantAsync(int empId, int typeId, int restaurantId, bool isSupervisorInRestaurant)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -426,6 +426,18 @@ namespace Restaurants_REST_API.Services.Database_Service
                         userQuery.UserRole = new MapUserRolesUtility(_config).GetUserRoleBasedOnEmployeeTypesId(employeeRoles);
                     }
                     await _context.SaveChangesAsync();
+
+                    if (isSupervisorInRestaurant)
+                    {
+                        //In 100% emp exist in db because inside RestaurantController has already checked does emp exist or not.
+                        var getEmpQuery = await _context.Employee
+                            .Where(e => e.IdEmployee == empId)
+                            .FirstAsync();
+
+                        getEmpQuery.FirstPromotionChefDate = DateTime.Now.Date;
+
+                        await _context.SaveChangesAsync();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -500,7 +512,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             return true;
         }
 
-        public async Task<bool> UpdateEmployeeTypeAsync(int empId, int typeId, int restaurantId)
+        public async Task<bool> UpdateEmployeeTypeAsync(int empId, int typeId, int restaurantId, bool isSupervisorInRestaurant)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -526,6 +538,18 @@ namespace Restaurants_REST_API.Services.Database_Service
                         getUserQuery.UserRole = new MapUserRolesUtility(_config).GetUserRoleBasedOnEmployeeTypesId(employeeRoles);
                     }
                     await _context.SaveChangesAsync();
+
+                    if (isSupervisorInRestaurant)
+                    {
+                        //In 100% emp exist in db because inside RestaurantController has already checked does emp exist or not.
+                        var getEmpQuery = await _context.Employee
+                            .Where(e => e.IdEmployee == empId)
+                            .FirstAsync();
+
+                        getEmpQuery.FirstPromotionChefDate = DateTime.Now.Date;
+
+                        await _context.SaveChangesAsync();
+                    }
                 }
                 catch (Exception ex)
                 {
