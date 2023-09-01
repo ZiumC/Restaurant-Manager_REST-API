@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Restaurants_REST_API.DAOs;
 using Restaurants_REST_API.DbContexts;
 using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.DTOs.PostOrPutDTO;
@@ -298,7 +299,7 @@ namespace Restaurants_REST_API.Services.Database_Service
         }
 
 
-        public async Task<bool> AddNewEmployeeAsync(PostEmployeeDTO newEmpData, string ownerStatus)
+        public async Task<bool> AddNewEmployeeAsync(EmployeeDAO newEmpData, string ownerStatus)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -335,7 +336,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                     if (newEmpData.Certificates != null && newEmpData.Certificates.Count() > 0)
                     {
                         //inside EmployeesController certificates names are checked if they are NOT NULL
-                        foreach (PostCertificateDTO empCertificate in newEmpData.Certificates)
+                        foreach (var empCertificate in newEmpData.Certificates)
                         {
                             var newDatabaseCertificate = _context.Add
                                 (
@@ -372,13 +373,13 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
         }
 
-        public async Task<bool> AddNewEmployeeCertificatesAsync(int empId, IEnumerable<PostCertificateDTO> empCertificatesData)
+        public async Task<bool> AddNewEmployeeCertificatesAsync(int empId, IEnumerable<CertificateDAO> empCertificatesData)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
                 try
                 {
-                    foreach (PostCertificateDTO postCert in empCertificatesData)
+                    foreach (var postCert in empCertificatesData)
                     {
                         var newCertificateQuery = _context.Add
                         (
@@ -414,7 +415,7 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
         }
 
-        public async Task<bool> UpdateEmployeeDataByIdAsync(int id, PutEmployeeDTO empData)
+        public async Task<bool> UpdateEmployeeDataByIdAsync(int id, EmployeeDAO empData)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -455,7 +456,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 
         }
 
-        public async Task<bool> UpdateEmployeeCertificateByIdAsync(int certificateId, PutCertificateDTO empCertificateData)
+        public async Task<bool> UpdateEmployeeCertificateByIdAsync(int certificateId, CertificateDAO empCertificateData)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
