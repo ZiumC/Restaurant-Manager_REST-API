@@ -622,12 +622,15 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
         }
 
-        public async Task<bool> DeleteDishAsync(Dish dishData)
+        public async Task<bool> DeleteDishAsync(int dishId)
         {
             try
             {
-                //removing dish
-                _context.Remove(dishData);
+                var getDishQuery = await _context.Dish
+                    .Where(d => d.IdDish == dishId)
+                    .FirstAsync();
+
+                _context.Remove(getDishQuery);
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)
