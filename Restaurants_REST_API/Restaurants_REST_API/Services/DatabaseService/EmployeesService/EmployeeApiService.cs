@@ -553,17 +553,15 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
         }
 
-        public async Task<bool> DeleteEmployeeCertificateAsync(int empId, GetCertificateDTO empCertificateData)
+        public async Task<bool> DeleteEmployeeCertificateAsync(int certificateId)
         {
             try
             {
-                Certificate certificateToDelete = new Certificate
-                {
-                    IdCertificate = empCertificateData.IdCertificate,
-                    Name = empCertificateData.Name
-                };
+                var getEmployeeCertificateQuery = await _context.Certificate
+                    .Where(ec => ec.IdCertificate == certificateId)
+                    .FirstAsync();
 
-                _context.Remove(certificateToDelete);
+                _context.Remove(getEmployeeCertificateQuery);
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)

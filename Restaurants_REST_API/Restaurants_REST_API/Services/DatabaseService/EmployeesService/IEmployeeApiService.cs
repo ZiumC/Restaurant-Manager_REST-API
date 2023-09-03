@@ -1,7 +1,5 @@
 ﻿using Restaurants_REST_API.DAOs;
 using Restaurants_REST_API.DTOs.GetDTOs;
-using Restaurants_REST_API.DTOs.PostOrPutDTO;
-using Restaurants_REST_API.DTOs.PutDTO;
 using Restaurants_REST_API.Models.Database;
 
 namespace Restaurants_REST_API.Services.Database_Service
@@ -20,7 +18,7 @@ namespace Restaurants_REST_API.Services.Database_Service
         public Task<bool> UpdateEmployeeDataByIdAsync(int empId, EmployeeDAO empData);
         public Task<bool> UpdateEmployeeCertificateByIdAsync(int certificateId, CertificateDAO empCertificateData);
         public Task<bool> DeleteEmployeeDataByIdAsync(int empId);
-        public Task<bool> DeleteEmployeeCertificateAsync(int empId, GetCertificateDTO empCertificateData);
+        public Task<bool> DeleteEmployeeCertificateAsync(int certificateId);
 
     }
 }
