@@ -205,7 +205,7 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpGet("dishes")]
         [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
-        public async Task<IActionResult> GetAllDishes() 
+        public async Task<IActionResult> GetAllDishes()
         {
             IEnumerable<GetDishDTO>? allDishes = await _restaurantsApiService.GetAllDishesWithRestaurantsAsync();
             if (allDishes == null || allDishes.Count() == 0)
@@ -352,20 +352,18 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound("Owner of restaurants not found, unable to add new restaurant");
             }
 
-            AddressDAO addressDao = new AddressDAO
-            {
-                City = newRestaurant.Address.City,
-                Street = newRestaurant.Address.Street,
-                BuildingNumber = newRestaurant.Address.BuildingNumber,
-                LocalNumber = newRestaurant.Address.LocalNumber,
-            };
-
-            RestaurantDAO restaurantDao = new RestaurantDAO
+            var restaurantDao = new RestaurantDAO
             {
                 Name = newRestaurant.Name,
                 Status = newRestaurant.Status,
                 BonusBudget = newRestaurant.BonusBudget,
-                Address = addressDao
+                Address = new AddressDAO
+                {
+                    City = newRestaurant.Address.City,
+                    Street = newRestaurant.Address.Street,
+                    BuildingNumber = newRestaurant.Address.BuildingNumber,
+                    LocalNumber = newRestaurant.Address.LocalNumber,
+                }
             };
 
             bool isRestaurantAdded = await _restaurantsApiService.AddNewRestaurantAsync(restaurantDao, ownerTypeId);
@@ -419,11 +417,11 @@ namespace Restaurants_REST_API.Controllers
                 }
 
                 IEnumerable<Dish>? dishes = await _restaurantsApiService.GetAllDishesAsync();
-                if (dishes != null) 
+                if (dishes != null)
                 {
-                    foreach (Dish dish in dishes) 
+                    foreach (Dish dish in dishes)
                     {
-                        if (dish.Name.ToLower().Replace("\\s","").Equals(newDish.Name.ToLower().Replace("\\s","")))
+                        if (dish.Name.ToLower().Replace("\\s", "").Equals(newDish.Name.ToLower().Replace("\\s", "")))
                         {
                             return BadRequest($"Dish {newDish.Name} already exist");
                         }
@@ -442,12 +440,12 @@ namespace Restaurants_REST_API.Controllers
                 }
             }
 
-            DishDAO dishDao = new DishDAO
+            var dishDao = new DishDAO
             {
                 Name = newDish.Name,
                 Price = newDish.Price
             };
-            
+
             bool isDishAdded = await _restaurantsApiService.AddNewDishToRestaurantsAsync(dishDao, newDish.IdRestaurants);
             if (!isDishAdded)
             {
@@ -469,7 +467,7 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpPost("{restaurantId}/dish/{dishId}")]
         [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
-        public async Task<IActionResult> AddExistingDishToRestaurant(int restaurantId, int dishId) 
+        public async Task<IActionResult> AddExistingDishToRestaurant(int restaurantId, int dishId)
         {
             if (!GeneralValidatorUtility.isIntNumberGtZero(dishId))
             {
@@ -481,14 +479,14 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest($"Restaurant id={restaurantId} is invalid");
             }
 
-            Restaurant? simpleRestaurantData = 
+            Restaurant? simpleRestaurantData =
                 await _restaurantsApiService.GetRestaurantSimpleDataByIdAsync(restaurantId);
             if (simpleRestaurantData == null)
             {
                 return NotFound("Restaurant not found");
             }
 
-            Dish? simpleDishData = 
+            Dish? simpleDishData =
                 await _restaurantsApiService.GetDishSimpleDataByIdAsync(dishId);
             if (simpleDishData == null)
             {
@@ -500,9 +498,9 @@ namespace Restaurants_REST_API.Controllers
             {
                 GetDishDTO? dish = allDishes
                     .Where
-                    ( ad => 
+                    (ad =>
                         ad.IdDish == dishId &&
-                        ad.Restaurants != null && 
+                        ad.Restaurants != null &&
                         ad.Restaurants.Any(a => a.IdRestaurant == restaurantId)
                     )
                     .FirstOrDefault();
@@ -518,7 +516,7 @@ namespace Restaurants_REST_API.Controllers
             {
                 return BadRequest("Something went wrong, unable to add dish to restaurant");
             }
-            
+
             return Ok($"Dish {simpleDishData.Name} has been added to restaurant {simpleRestaurantData.Name}");
 
         }
@@ -833,20 +831,18 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound($"Restaurant id={restaurantId} not found");
             }
 
-            AddressDAO addressDao = new AddressDAO
+            var restaurantDao = new RestaurantDAO
             {
-                City = putRestaurantData.Address.City,
-                Street = putRestaurantData.Address.Street,
-                BuildingNumber = putRestaurantData.Address.BuildingNumber,
-                LocalNumber = putRestaurantData.Address.LocalNumber
-            };
-
-            RestaurantDAO restaurantDao = new RestaurantDAO
-            {
-                Name= putRestaurantData.Name,
+                Name = putRestaurantData.Name,
                 Status = putRestaurantData.Status,
                 BonusBudget = putRestaurantData.BonusBudget,
-                Address = addressDao
+                Address = new AddressDAO
+                {
+                    City = putRestaurantData.Address.City,
+                    Street = putRestaurantData.Address.Street,
+                    BuildingNumber = putRestaurantData.Address.BuildingNumber,
+                    LocalNumber = putRestaurantData.Address.LocalNumber
+                }
             };
 
             bool isRestaurantUpdated = await _restaurantsApiService.UpdateRestaurantDataAsync(restaurantId, restaurantDao);
@@ -898,7 +894,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound("Dish to update not found");
             }
 
-            DishDAO dishDao = new DishDAO 
+            var dishDao = new DishDAO
             {
                 Name = putDishData.Name,
                 Price = putDishData.Price
