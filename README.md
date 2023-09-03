@@ -4,6 +4,7 @@ a) Microsoft.EntityFrameworkCore | **6.0.15**
 b) Microsoft.EntityFrameworkCore.SqlServer | **6.0.15**    
 c) Microsoft.EntityFrameworkCore.Tools | **6.0.15**    
 d) Swashbuckle.AspNetCore | **6.2.3**    
+e) Microsoft.AspNetCore.Authentication.JwtBearer | **6.0.15** 
 
 *Project will work if you install packages in specific version. Otherwise project won't work.
 
@@ -68,8 +69,8 @@ _After filling up those fields just click "Connect" button._
 **2.8)** Now, right click on project structure in "Solution Explorer", then select "Manage User Secrets".
 ![How to run10](https://user-images.githubusercontent.com/90453529/226387488-60a49a65-f6c9-46dd-97d5-9cc0fe444124.png)
 
-**2.9)** Finally, copy contenf of "appsettings.json", then paste into "secrets.json". In field "Default" paste your saver connection string from point 2.7, and project should work.   
-![How to run11](https://user-images.githubusercontent.com/90453529/226387572-49e31e0c-1613-4c2e-a624-69de471d9246.png)
+**2.9)** Finally, copy content of "appsettings.json", then paste into "secrets.json". In field "Default" paste your saver connection string from point 2.7. **Don't forget to fill up all empty fields**.   
+![image](https://github.com/ZiumC/Obsluga_Restauracji_REST_API/assets/90453529/030b7bc0-3037-4041-9270-f2d90678bb5e)
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
