@@ -388,7 +388,7 @@ namespace Restaurants_REST_API.Controllers
                 employeeOwnerStatus = _ownerStatusNo;
             }
 
-            EmployeeDAO empDao = new EmployeeDAO
+            var empDao = new EmployeeDAO
             {
                 FirstName = newEmpData.FirstName,
                 LastName = newEmpData.LastName,
@@ -460,7 +460,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound("Employee not found");
             }
 
-            IEnumerable<CertificateDAO> certificatesDao = newCertificates.Select(nc => new CertificateDAO
+            var certificatesDao = newCertificates.Select(nc => new CertificateDAO
             {
                 Name = nc.Name,
                 ExpirationDate = nc.ExpirationDate
@@ -546,7 +546,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound("Employee doesn't exist");
             }
 
-            EmployeeDAO empDao = new EmployeeDAO
+            var empDao = new EmployeeDAO
             {
                 FirstName = putEmpData.FirstName,
                 LastName = putEmpData.LastName,
@@ -619,7 +619,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound($"Employee certificate id={certificateId} not found");
             }
 
-            CertificateDAO certificateDao = new CertificateDAO
+            var certificateDao = new CertificateDAO
             {
                 Name = putEmpCertificates.Name,
                 ExpirationDate = putEmpCertificates.ExpirationDate
