@@ -23,7 +23,7 @@ namespace Restaurants_REST_API.Services.Database_Service
         public Task<bool> UpdateRestaurantDataAsync(int restaurantId, RestaurantDAO restaurantData);
         public Task<bool> UpdateDishDataAsync(int dishId, DishDAO dishData);
         public Task<bool> UpdateEmployeeTypeAsync(int empId, int typeId, int restaurantId, bool isSupervisorInRestaurant);
-        public Task<bool> DeleteDishAsync(Dish dish);
+        public Task<bool> DeleteDishAsync(int dishId);
         public Task<bool> DeleteDishFromRestaurantAsync(int restaurantId, int dishId);
         public Task<bool> DeleteEmployeeFromRestaurantAsync(int empId, int restaurantId);
     }

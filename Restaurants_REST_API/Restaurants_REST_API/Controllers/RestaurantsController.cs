@@ -935,7 +935,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound("Dish not found");
             }
 
-            bool isDishHasBeenRemoved = await _restaurantsApiService.DeleteDishAsync(dishDatabase);
+            bool isDishHasBeenRemoved = await _restaurantsApiService.DeleteDishAsync(dishId);
             if (!isDishHasBeenRemoved)
             {
                 return BadRequest("Something went wrong unable to delete dish");
