@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Restaurants_REST_API.DAOs;
 using Restaurants_REST_API.DbContexts;
 using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.DTOs.PostDTO;
@@ -19,14 +21,14 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
             _config = config;
 
             _newReservationStatus = _config["ApplicationSettings:ReservationStatus:New"];
-            try 
+            try
             {
                 if (string.IsNullOrEmpty(_newReservationStatus))
                 {
                     throw new Exception("Reservation status (NEW) can't be empty");
                 }
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
@@ -95,7 +97,7 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
                  }).FirstOrDefaultAsync();
         }
 
-        public async Task<bool> MakeReservationByClientIdAsync(int clientId, PostReservationDTO newReservation)
+        public async Task<bool> MakeReservationByClientIdAsync(int clientId, ReservationDAO newReservation)
         {
             try
             {
@@ -123,36 +125,44 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
             return true;
         }
 
-        public async Task<bool> UpdateReservationByClientIdAsync(int clientId, GetReservationDTO reservationData)
+        public async Task<bool> UpdateReservationStatusAsync(int clientId, int reservationId, string status)
         {
-            using (var transaction = await _context.Database.BeginTransactionAsync())
+            try
             {
-                try
-                {
-                    var getReservationQuery = await _context.Reservation
-                        .Where(r => r.IdReservation == reservationData.IdReservation && r.IdClient == clientId)
-                        .FirstAsync();
+                var getReservationQuery = await _context.Reservation
+                    .Where(r => r.IdReservation == reservationId && r.IdClient == clientId)
+                    .FirstAsync();
 
-                    getReservationQuery.ReservationStatus = reservationData.Status;
-                    getReservationQuery.ReservationGrade = reservationData.ReservationGrade;
+                getReservationQuery.ReservationStatus = status;
 
-                    var reservationComplaint = reservationData.ReservationComplaint;
-                    if (reservationComplaint != null)
-                    {
-                        reservationComplaint.Status = reservationData.ReservationComplaint.Status;
-                    }
-
-                    await _context.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.ToString());
-                    await transaction.RollbackAsync();
-                    return false;
-                }
-                await transaction.CommitAsync();
-                return true;
+                await _context.SaveChangesAsync();
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<bool> UpdateReservationGradeAsync(int clientId, int reservationId, int grade)
+        {
+            try
+            {
+                var getReservationQuery = await _context.Reservation
+                    .Where(r => r.IdReservation == reservationId && r.IdClient == clientId)
+                    .FirstAsync();
+
+                getReservationQuery.ReservationGrade = grade;
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return false;
+            }
+            return true;
         }
 
 

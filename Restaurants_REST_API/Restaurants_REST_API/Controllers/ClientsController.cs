@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Restaurants_REST_API.DAOs;
 using Restaurants_REST_API.DTOs.GetDTOs;
 using Restaurants_REST_API.DTOs.PostDTO;
 using Restaurants_REST_API.Services.Database_Service;
@@ -327,7 +328,14 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Reservation date can't be older than now");
             }
 
-            bool isReservationMade = await _clientApiService.MakeReservationByClientIdAsync(clientId, newReservation);
+            ReservationDAO reservationDao = new ReservationDAO
+            {
+                ReservationDate = newReservation.ReservationDate,
+                IdRestaurant = newReservation.IdRestaurant,
+                HowManyPeoples = newReservation.HowManyPeoples
+            };
+
+            bool isReservationMade = await _clientApiService.MakeReservationByClientIdAsync(clientId, reservationDao);
 
             if (!isReservationMade)
             {
@@ -455,9 +463,9 @@ namespace Restaurants_REST_API.Controllers
                     return BadRequest("Unable to confirm reservation because date of reservation is passed away");
                 }
 
-                reservationDetails.Status = _confirmedReservationStatus;
-
-                bool isConfirmed = await _clientApiService.UpdateReservationByClientIdAsync(clientId, reservationDetails);
+                bool isConfirmed = 
+                    await _clientApiService
+                    .UpdateReservationStatusAsync(clientId, reservationId, _confirmedReservationStatus);
                 if (!isConfirmed)
                 {
                     return BadRequest("Unable to confirm reservation");
@@ -523,9 +531,8 @@ namespace Restaurants_REST_API.Controllers
                     return BadRequest("Unable to cancel reservation because date of reservation is passed away");
                 }
 
-                reservationDetails.Status = _canceledReservationStatus;
-
-                bool isConfirmed = await _clientApiService.UpdateReservationByClientIdAsync(clientId, reservationDetails);
+                bool isConfirmed = 
+                    await _clientApiService.UpdateReservationStatusAsync(clientId, reservationId, _canceledReservationStatus);
                 if (!isConfirmed)
                 {
                     return BadRequest("Unable to cancel reservation");
@@ -592,11 +599,14 @@ namespace Restaurants_REST_API.Controllers
             string currentReservationStatus = reservationDetails.Status;
             if (currentReservationStatus == _confirmedReservationStatus)
             {
-                reservationDetails.ReservationGrade = grade;
-                reservationDetails.Status = _ratedReservationStatus;
 
-                bool isUpdated = await _clientApiService.UpdateReservationByClientIdAsync(clientId, reservationDetails);
-                if (!isUpdated)
+                bool isGradeUpdated = 
+                    await _clientApiService.UpdateReservationGradeAsync(clientId, reservationId, grade);
+
+                bool isStatusUpdated =
+                    await _clientApiService.UpdateReservationStatusAsync(clientId, reservationId, _ratedReservationStatus);
+                
+                if (!isStatusUpdated || !isGradeUpdated)
                 {
                     return BadRequest("Unable to rate reservation");
                 }
