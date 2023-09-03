@@ -12,6 +12,6 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
         public Task<bool> MakeReservationByClientIdAsync(int clientId, ReservationDAO newReservation);
         public Task<bool> UpdateReservationStatusAsync(int clientId, int reservationId, string status);
         public Task<bool> UpdateReservationGradeAsync(int clientId, int reservationId, int grade);
-        public Task<bool> MakeComplainByClientIdAsync(int clientId, GetReservationDTO reservation, GetComplaintDTO newComplaint);
+        public Task<bool> MakeComplainByClientIdAsync(int clientId, int reservationId, ComplaintDAO complaint);
     }
 }
