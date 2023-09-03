@@ -328,13 +328,12 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Reservation date can't be older than now");
             }
 
-            ReservationDAO reservationDao = new ReservationDAO
+            var reservationDao = new ReservationDAO
             {
                 ReservationDate = newReservation.ReservationDate,
                 IdRestaurant = newReservation.IdRestaurant,
                 HowManyPeoples = newReservation.HowManyPeoples
             };
-
             bool isReservationMade = await _clientApiService.MakeReservationByClientIdAsync(clientId, reservationDao);
 
             if (!isReservationMade)
@@ -404,13 +403,13 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Complaint has been already made");
             }
 
-            var complaint = new GetComplaintDTO
+            var complaint = new ComplaintDAO
             {
                 Message = newComplaint.Message,
                 Status = _newComplaintStatus,
                 ComplaintDate = DateTime.Now
             };
-            bool isComplaintMade = await _clientApiService.MakeComplainByClientIdAsync(clientId, reservationDetails, complaint);
+            bool isComplaintMade = await _clientApiService.MakeComplainByClientIdAsync(clientId, reservationId, complaint);
             if (!isComplaintMade)
             {
                 return BadRequest("Unable to make complaint");

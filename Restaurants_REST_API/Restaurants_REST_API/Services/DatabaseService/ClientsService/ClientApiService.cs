@@ -166,40 +166,34 @@ namespace Restaurants_REST_API.Services.DatabaseService.CustomersService
         }
 
 
-        public async Task<bool> MakeComplainByClientIdAsync(int clientId, GetReservationDTO reservationData, GetComplaintDTO complaintData)
+        public async Task<bool> MakeComplainByClientIdAsync(int clientId, int reservationId, ComplaintDAO complaint)
         {
-            using (var transaction = await _context.Database.BeginTransactionAsync())
+            try
             {
-                try
-                {
-                    var restaurantId = await (_context.Reservation
-                        .Where(r => r.IdReservation == reservationData.IdReservation && r.IdClient == clientId))
-                        .Select(r => new { IdRestaurant = r.IdRestaurant })
-                        .FirstAsync();
+                var restaurantId = await (_context.Reservation
+                    .Where(r => r.IdReservation == reservationId && r.IdClient == clientId))
+                    .FirstAsync();
 
-                    var newComplaintQuery = _context.Add
-                    (
-                        new Complaint
-                        {
-                            ComplaintMessage = complaintData.Message,
-                            ComplainDate = complaintData.ComplaintDate,
-                            ComplaintStatus = complaintData.Status,
-                            IdReservation = reservationData.IdReservation,
-                            IdRestaurant = restaurantId.IdRestaurant
-                        }
-                    );
+                var newComplaintQuery = _context.Add
+                (
+                    new Complaint
+                    {
+                        ComplaintMessage = complaint.Message,
+                        ComplainDate = complaint.ComplaintDate,
+                        ComplaintStatus = complaint.Status,
+                        IdReservation = reservationId,
+                        IdRestaurant = restaurantId.IdRestaurant
+                    }
+                );
 
-                    await _context.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.ToString());
-                    await transaction.RollbackAsync();
-                    return false;
-                }
-                await transaction.CommitAsync();
-                return true;
+                await _context.SaveChangesAsync();
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return false;
+            }
+            return true;
         }
     }
 }
