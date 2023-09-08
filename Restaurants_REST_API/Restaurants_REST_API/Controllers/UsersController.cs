@@ -102,13 +102,13 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Email is invalid");
             }
 
-            User? userByEmail = await _userApiService.GetUserDataByLoginOrEmail(newUserData.Email);
+            User? userByEmail = await _userApiService.GetUserDataByLoginOrEmailAsync(newUserData.Email);
             if (userByEmail != null)
             {
                 return BadRequest("Email already exist");
             }
 
-            User? userByLogin = await _userApiService.GetUserDataByLoginOrEmail(newUserData.Login);
+            User? userByLogin = await _userApiService.GetUserDataByLoginOrEmailAsync(newUserData.Login);
             if (userByLogin != null)
             {
                 return BadRequest("Login already exists");
@@ -143,7 +143,7 @@ namespace Restaurants_REST_API.Controllers
                 }
 
                 //checking if employee is already registered
-                User? userByEmpId = await _userApiService.GetUserDataByEmpId(basicExistingEmpData.IdEmployee);
+                User? userByEmpId = await _userApiService.GetUserDataByEmpIdAsync(basicExistingEmpData.IdEmployee);
                 if (userByEmpId != null)
                 {
                     /*
@@ -217,7 +217,7 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest("Invalid login request");
             }
 
-            User? user = await _userApiService.GetUserDataByLoginOrEmail(loginRequest.LoginOrEmail);
+            User? user = await _userApiService.GetUserDataByLoginOrEmailAsync(loginRequest.LoginOrEmail);
             if (user == null)
             {
                 /*
@@ -238,7 +238,7 @@ namespace Restaurants_REST_API.Controllers
                 else if (dateBlockedTo < DateTime.Now && user.LoginAttempts >= _maxLoginAttempts)
                 {
                     user.LoginAttempts = 0;
-                    await _userApiService.UpdateUserData(user);
+                    await _userApiService.UpdateUserDataAsync(user);
                 }
             }
 
@@ -263,7 +263,7 @@ namespace Restaurants_REST_API.Controllers
                 var accessToken = _jwtService.GenerateAccessTokenForUser(user);
 
                 user.RefreshToken = refreshToken;
-                bool isUpdated = await _userApiService.UpdateUserData(user);
+                bool isUpdated = await _userApiService.UpdateUserDataAsync(user);
                 if (!isUpdated)
                 {
                     return StatusCode(500, "Server side error, unable to give you an access token");
@@ -274,13 +274,13 @@ namespace Restaurants_REST_API.Controllers
             else
             {
                 user.LoginAttempts += 1;
-                await _userApiService.UpdateUserData(user);
+                await _userApiService.UpdateUserDataAsync(user);
 
                 if (user.LoginAttempts >= _maxLoginAttempts)
                 {
                     user.DateBlockedTo = DateTime.Now.AddDays(_amountBlockedDays);
                     user.RefreshToken = null;
-                    await _userApiService.UpdateUserData(user);
+                    await _userApiService.UpdateUserDataAsync(user);
                     return Unauthorized($"Login or password are incorrect, you have been blocked to {user.DateBlockedTo}");
                 }
 
@@ -307,7 +307,7 @@ namespace Restaurants_REST_API.Controllers
                 return Unauthorized("Tokens aren't valid to this server");
             }
 
-            var userByRefreshToken = await _userApiService.GetUserDataByRefreshToken(jwt.RefreshToken);
+            var userByRefreshToken = await _userApiService.GetUserDataByRefreshTokenAsync(jwt.RefreshToken);
             if (userByRefreshToken == null || string.IsNullOrEmpty(userByRefreshToken.RefreshToken))
             {
                 /*
@@ -334,7 +334,7 @@ namespace Restaurants_REST_API.Controllers
             userByRefreshToken.LoginAttempts = 0;
             userByRefreshToken.DateBlockedTo = null;
 
-            bool isUpdated = await _userApiService.UpdateUserData(userByRefreshToken);
+            bool isUpdated = await _userApiService.UpdateUserDataAsync(userByRefreshToken);
             if (!isUpdated)
             {
                 return StatusCode(500, "Server side error, unable to give you an access token");

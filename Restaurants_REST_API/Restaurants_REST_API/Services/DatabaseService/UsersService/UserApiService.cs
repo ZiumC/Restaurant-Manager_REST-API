@@ -44,7 +44,7 @@ namespace Restaurants_REST_API.Services.DatabaseService.UsersService
             }
         }
 
-        public async Task<User?> GetUserDataByEmpId(int empId)
+        public async Task<User?> GetUserDataByEmpIdAsync(int empId)
         {
             return await _context.User.Where(u => u.IdEmployee == empId).FirstOrDefaultAsync();
         }
@@ -64,14 +64,14 @@ namespace Restaurants_REST_API.Services.DatabaseService.UsersService
             }
         }
 
-        public async Task<User?> GetUserDataByLoginOrEmail(string loginOrEmil)
+        public async Task<User?> GetUserDataByLoginOrEmailAsync(string loginOrEmil)
         {
             return await _context.User
                 .Where(u => u.Email == loginOrEmil || u.Login == loginOrEmil)
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<bool> UpdateUserData(User userData)
+        public async Task<bool> UpdateUserDataAsync(User userData)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -102,7 +102,7 @@ namespace Restaurants_REST_API.Services.DatabaseService.UsersService
             }
         }
 
-        public async Task<User?> GetUserDataByRefreshToken(string refreshToken)
+        public async Task<User?> GetUserDataByRefreshTokenAsync(string refreshToken)
         {
             return await _context.User
                 .Where(u => u.RefreshToken == refreshToken
