@@ -3,8 +3,6 @@ using Restaurants_REST_API.DAOs;
 using Restaurants_REST_API.DbContexts;
 using Restaurants_REST_API.DTOs.GetDTO;
 using Restaurants_REST_API.DTOs.GetDTOs;
-using Restaurants_REST_API.DTOs.PostOrPutDTO;
-using Restaurants_REST_API.DTOs.PutDTO;
 using Restaurants_REST_API.Models.Database;
 using Restaurants_REST_API.Utils.MapperService;
 
@@ -359,16 +357,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                         );
                     await _context.SaveChangesAsync();
 
-                    var getUserQuery = await _context.User
-                        .Where(u => u.IdEmployee == getChefQuery.IdEmployee)
-                        .FirstOrDefaultAsync();
-                    if (getUserQuery != null)
-                    {
-                        IEnumerable<int> employeeRoles = _context.EmployeeRestaurant
-                            .Where(eir => eir.IdEmployee == getChefQuery.IdEmployee)
-                            .Select(eir => eir.IdType);
-                        getUserQuery.UserRole = new MapUserRolesUtility(_config).GetUserRoleBasedOnEmployeeTypesId(employeeRoles);
-                    }
+                    UpdateUserRole(getChefQuery.IdEmployee);
                     await _context.SaveChangesAsync();
                 }
                 catch (Exception ex)
@@ -475,16 +464,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                         );
                     await _context.SaveChangesAsync();
 
-                    var userQuery = await _context.User
-                        .Where(u => u.IdEmployee == empId)
-                        .FirstOrDefaultAsync();
-                    if (userQuery != null)
-                    {
-                        IEnumerable<int> employeeRoles = _context.EmployeeRestaurant
-                            .Where(eir => eir.IdEmployee == empId)
-                            .Select(eir => eir.IdType);
-                        userQuery.UserRole = new MapUserRolesUtility(_config).GetUserRoleBasedOnEmployeeTypesId(employeeRoles);
-                    }
+                    UpdateUserRole(empId);
                     await _context.SaveChangesAsync();
 
                     if (isSupervisorInRestaurant)
@@ -587,16 +567,7 @@ namespace Restaurants_REST_API.Services.Database_Service
 
                     await _context.SaveChangesAsync();
 
-                    var getUserQuery = await _context.User
-                        .Where(u => u.IdEmployee == empId)
-                        .FirstOrDefaultAsync();
-                    if (getUserQuery != null)
-                    {
-                        IEnumerable<int> employeeRoles = _context.EmployeeRestaurant
-                            .Where(eir => eir.IdEmployee == empId)
-                            .Select(eir => eir.IdType);
-                        getUserQuery.UserRole = new MapUserRolesUtility(_config).GetUserRoleBasedOnEmployeeTypesId(employeeRoles);
-                    }
+                    UpdateUserRole(empId);
                     await _context.SaveChangesAsync();
 
                     if (isSupervisorInRestaurant)
@@ -677,16 +648,7 @@ namespace Restaurants_REST_API.Services.Database_Service
                     _context.Remove(getEmployeeInRestaurantQuery);
                     await _context.SaveChangesAsync();
 
-                    var getUserQuery = await _context.User
-                        .Where(u => u.IdEmployee == empId)
-                        .FirstOrDefaultAsync();
-                    if (getUserQuery != null)
-                    {
-                        IEnumerable<int> employeeRoles = _context.EmployeeRestaurant
-                            .Where(eir => eir.IdEmployee == empId)
-                            .Select(eir => eir.IdType);
-                        getUserQuery.UserRole = new MapUserRolesUtility(_config).GetUserRoleBasedOnEmployeeTypesId(employeeRoles);
-                    }
+                    UpdateUserRole(empId);
                     await _context.SaveChangesAsync();
 
                 }
@@ -698,6 +660,20 @@ namespace Restaurants_REST_API.Services.Database_Service
                 }
                 await transaction.CommitAsync();
                 return true;
+            }
+        }
+
+        private void UpdateUserRole(int empId) 
+        {
+            var getUserQuery =  _context.User
+                            .Where(u => u.IdEmployee == empId)
+                            .FirstOrDefault();
+            if (getUserQuery != null)
+            {
+                IEnumerable<int> employeeRoles = _context.EmployeeRestaurant
+                    .Where(eir => eir.IdEmployee == empId)
+                    .Select(eir => eir.IdType);
+                getUserQuery.UserRole = new MapUserRolesUtility(_config).GetUserRoleBasedOnEmployeeTypesId(employeeRoles);
             }
         }
     }
