@@ -64,6 +64,7 @@ builder.Services.AddAuthentication(options =>
 }).AddJwtBearer(options =>
 {
     var issuer = builder.Configuration["ApplicationSettings:JwtSettings:Issuer"];
+    var audience = builder.Configuration["ApplicationSettings:JwtSettings:Audience"];
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
@@ -72,7 +73,7 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         ClockSkew = TimeSpan.FromMinutes(1),
         ValidIssuer = issuer,
-        ValidAudience = issuer,
+        ValidAudience = audience,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["ApplicationSettings:JwtSettings:SecretSignatureKey"]))
     };
 
