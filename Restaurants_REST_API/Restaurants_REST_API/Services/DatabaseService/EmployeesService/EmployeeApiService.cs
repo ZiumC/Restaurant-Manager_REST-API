@@ -553,12 +553,12 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
         }
 
-        public async Task<bool> DeleteEmployeeCertificateAsync(int certificateId)
+        public async Task<bool> DeleteEmployeeCertificateAsync(int certificateId, int employeId)
         {
             try
             {
-                var getEmployeeCertificateQuery = await _context.Certificate
-                    .Where(ec => ec.IdCertificate == certificateId)
+                var getEmployeeCertificateQuery = await _context.EmployeeCertificate
+                    .Where(ec => ec.IdCertificate == certificateId && ec.IdEmployee == employeId)
                     .FirstAsync();
 
                 _context.Remove(getEmployeeCertificateQuery);

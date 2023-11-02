@@ -712,7 +712,7 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound($"Employee {employeeDetails.FirstName} doen't contains certificate id={certificateId}");
             }
 
-            bool isCertificateHasBeenDeleted = await _employeeApiService.DeleteEmployeeCertificateAsync(certificateId);
+            bool isCertificateHasBeenDeleted = await _employeeApiService.DeleteEmployeeCertificateAsync(certificateId, employeeDetails.IdEmployee);
             if (!isCertificateHasBeenDeleted)
             {
                 return BadRequest("Something went wrong unable to delete certificate");
