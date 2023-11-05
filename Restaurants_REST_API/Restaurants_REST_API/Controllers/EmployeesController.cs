@@ -552,7 +552,7 @@ namespace Restaurants_REST_API.Controllers
                 LastName = putEmpData.LastName,
                 PESEL = putEmpData.PESEL,
                 Salary = putEmpData.Salary,
-                BonusSalary = putEmpData.Salary,
+                BonusSalary = putEmpData.BonusSalary,
                 Address = new AddressDAO
                 {
                     City = putEmpData.Address.City,
