@@ -371,36 +371,33 @@ namespace Restaurants_REST_API.Services.Database_Service
             }
         }
 
-        public async Task<bool> AddNewEmployeeCertificatesAsync(int empId, IEnumerable<CertificateDAO> empCertificatesData)
+        public async Task<bool> AddNewEmployeeCertificatesAsync(int empId, CertificateDAO empCertificatesData)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
                 try
                 {
-                    foreach (var postCert in empCertificatesData)
-                    {
-                        var newCertificateQuery = _context.Add
+                    var newCertificateQuery = _context.Add
+                    (
+                        new Certificate
+                        {
+                            Name = empCertificatesData.Name
+                        }
+                    );
+
+                    await _context.SaveChangesAsync();
+
+                    var newEmpCertificateQuery = _context.Add
                         (
-                            new Certificate
+                            new EmployeeCertificate
                             {
-                                Name = postCert.Name
+                                IdEmployee = empId,
+                                ExpirationDate = empCertificatesData.ExpirationDate,
+                                IdCertificate = newCertificateQuery.Entity.IdCertificate
                             }
                         );
 
-                        await _context.SaveChangesAsync();
-
-                        var newEmpCertificateQuery = _context.Add
-                            (
-                                new EmployeeCertificate
-                                {
-                                    IdEmployee = empId,
-                                    ExpirationDate = postCert.ExpirationDate,
-                                    IdCertificate = newCertificateQuery.Entity.IdCertificate
-                                }
-                            );
-
-                        await _context.SaveChangesAsync();
-                    }
+                    await _context.SaveChangesAsync();
                 }
                 catch (Exception ex)
                 {

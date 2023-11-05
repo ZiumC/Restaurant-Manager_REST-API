@@ -14,7 +14,7 @@ namespace Restaurants_REST_API.Services.Database_Service
         public Task<Employee?> GetEmployeeSimpleDataByPeselAsync(string pesel);
         public Task<IEnumerable<GetEmployeeDTO>?> GetAllEmployeesDetailsByRestaurantIdAsync(int restaurantId);
         public Task<bool> AddNewEmployeeAsync(EmployeeDAO newEmployee, string ownerStatus);
-        public Task<bool> AddNewEmployeeCertificatesAsync(int empId, IEnumerable<CertificateDAO> empCertificatesData);
+        public Task<bool> AddNewEmployeeCertificatesAsync(int empId, CertificateDAO empCertificatesData);
         public Task<bool> UpdateEmployeeDataByIdAsync(int empId, EmployeeDAO empData);
         public Task<bool> UpdateEmployeeCertificateByIdAsync(int certificateId, CertificateDAO empCertificateData);
         public Task<bool> DeleteEmployeeDataByIdAsync(int empId);

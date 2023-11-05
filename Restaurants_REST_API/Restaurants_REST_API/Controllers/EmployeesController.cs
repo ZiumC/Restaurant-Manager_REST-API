@@ -429,7 +429,7 @@ namespace Restaurants_REST_API.Controllers
         /// </remarks>
         [HttpPost("{empId}/certificate")]
         [Authorize(Roles = UserRolesUtility.OwnerAndSupervisor)]
-        public async Task<IActionResult> AddCertificateToEmployee(int empId, IEnumerable<PostCertificateDTO> newCertificates)
+        public async Task<IActionResult> AddCertificateToEmployee(int empId, PostCertificateDTO newCertificate)
         {
             if (!ModelState.IsValid)
             {
@@ -441,15 +441,12 @@ namespace Restaurants_REST_API.Controllers
                 return BadRequest($"Employee id={empId} is invalid");
             }
 
-            if (newCertificates == null || newCertificates.Count() == 0)
+            if (newCertificate == null)
             {
                 return BadRequest("Certificates can't be empty");
             }
 
-            IEnumerable<PostCertificateDTO>? certificatesEmptyName =
-                newCertificates
-                .Where(nc => nc.Name.Replace("\\s", "").Equals(""));
-            if (certificatesEmptyName.Count() > 0)
+            if (string.IsNullOrEmpty(newCertificate.Name))
             {
                 return BadRequest("One or more certificates has empty name");
             }
@@ -460,11 +457,11 @@ namespace Restaurants_REST_API.Controllers
                 return NotFound("Employee not found");
             }
 
-            var certificatesDao = newCertificates.Select(nc => new CertificateDAO
+            var certificatesDao = new CertificateDAO
             {
-                Name = nc.Name,
-                ExpirationDate = nc.ExpirationDate
-            }).ToList();
+                Name = newCertificate.Name,
+                ExpirationDate = newCertificate.ExpirationDate
+            };
 
             bool isCertificateHasBeenAdded = await _employeeApiService.AddNewEmployeeCertificatesAsync(empId, certificatesDao);
             if (!isCertificateHasBeenAdded)
