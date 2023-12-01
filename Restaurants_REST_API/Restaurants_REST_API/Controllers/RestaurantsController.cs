@@ -222,7 +222,7 @@ namespace Restaurants_REST_API.Controllers
                         rd.RestaurantReservations?
                         .Where(rr => rr.ReservationGrade != null)
                         .Average(rr => rr.ReservationGrade),
-                Reservations = new 
+                Reservations = new
                 {
                     AllReservations = rd.RestaurantReservations?.Count(),
                     New = rd.RestaurantReservations?.Where(rr => rr.Status == _newReservationStatus).Count(),
@@ -232,7 +232,7 @@ namespace Restaurants_REST_API.Controllers
                 },
                 Complaints = new
                 {
-                    TotalComplaints = rd.RestaurantReservations?.Where(rc => rc.ReservationComplaint != null).Count(),
+                    AllComplaints = rd.RestaurantReservations?.Where(rc => rc.ReservationComplaint != null).Count(),
                     NewComplaints =
                             rd.RestaurantReservations?
                             .Where(rc => rc.ReservationComplaint?.Status == _newComplaintStatus)
@@ -255,13 +255,10 @@ namespace Restaurants_REST_API.Controllers
                     TotalSalary = _employeeApiService.GetAllEmployeesDetailsByRestaurantIdAsync(rd.IdRestaurant).Result?.Sum(a => a.Salary),
                     TotalBonus = _employeeApiService.GetAllEmployeesDetailsByRestaurantIdAsync(rd.IdRestaurant).Result?.Sum(a => a.BonusSalary),
                     AllEmployees = rd.RestaurantWorkers?.Count(),
-                    TypesCount = new 
-                    {
-                        Owner = rd.RestaurantWorkers?.Where(rw => rw.EmployeeType.Equals(_ownerRole)).Count(),
-                        Chef = rd.RestaurantWorkers?.Where(rw => rw.EmployeeType.Equals(_chefRole)).Count(),
-                        ChefHelper = rd.RestaurantWorkers?.Where(rw => rw.EmployeeType.Equals(_chefHelperRole)).Count(),
-                        Waiter = rd.RestaurantWorkers?.Where(rw => rw.EmployeeType.Equals(_waiterRole)).Count(),
-                    }
+                    Owner = rd.RestaurantWorkers?.Where(rw => rw.EmployeeType.Equals(_ownerRole)).Count(),
+                    Chef = rd.RestaurantWorkers?.Where(rw => rw.EmployeeType.Equals(_chefRole)).Count(),
+                    ChefHelper = rd.RestaurantWorkers?.Where(rw => rw.EmployeeType.Equals(_chefHelperRole)).Count(),
+                    Waiter = rd.RestaurantWorkers?.Where(rw => rw.EmployeeType.Equals(_waiterRole)).Count(),
                 }
             });
 
