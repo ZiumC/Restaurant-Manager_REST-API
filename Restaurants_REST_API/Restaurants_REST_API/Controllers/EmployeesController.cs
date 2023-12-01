@@ -421,7 +421,7 @@ namespace Restaurants_REST_API.Controllers
         /// Adds new certificate to employee based on employee id.
         /// </summary>
         /// <param name="empId">Employee id</param>
-        /// <param name="newCertificates">Certificates data</param>
+        /// <param name="newCertificate">Certificates data</param>
         /// <remarks>
         /// To use that endpoint, access token should contain following roles:
         /// - Owner.

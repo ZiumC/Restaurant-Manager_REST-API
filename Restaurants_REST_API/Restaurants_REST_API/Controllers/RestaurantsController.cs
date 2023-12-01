@@ -158,35 +158,36 @@ namespace Restaurants_REST_API.Controllers
 
             var result = restaurantsDetails.Select(rd => new
             {
+                IdRestaurant = rd.IdRestaurant,
                 RestaurantName = rd.Name,
-                RestaurantGrade =
+                RGrade =
                         rd.RestaurantReservations?
                         .Where(rr => rr.ReservationGrade != null)
                         .Average(rr => rr.ReservationGrade),
-                ReservationsCount = rd.RestaurantReservations?.Count(),
+                Reservations = rd.RestaurantReservations?.Count(),
                 Complaints = new
                 {
-                    ComplaintsCount = rd.RestaurantReservations?.Where(rc => rc.ReservationComplaint != null).Count(),
-                    NewComplaintsCount =
+                    TotalComplaints = rd.RestaurantReservations?.Where(rc => rc.ReservationComplaint != null).Count(),
+                    NewComplaints =
                             rd.RestaurantReservations?
                             .Where(rc => rc.ReservationComplaint?.Status == _newComplaintStatus)
                             .Count(),
-                    PendingComplaintsCount =
+                    PendingComplaints =
                             rd.RestaurantReservations?
                             .Where(rc => rc.ReservationComplaint?.Status == _pendingComplaintStatus)
                             .Count(),
-                    AcceptedComplaintsCount =
+                    AcceptedComplaints =
                             rd.RestaurantReservations?
                             .Where(rc => rc.ReservationComplaint?.Status == _acceptedComplaintStatus)
                             .Count(),
-                    RejectedComplaintsCount =
+                    RejectedComplaints =
                             rd.RestaurantReservations?
                             .Where(rc => rc.ReservationComplaint?.Status == _rejectedComplaintStatus)
                             .Count(),
                 },
                 Employees = new
                 {
-                    EmployeesCount = rd.RestaurantWorkers?.Count(),
+                    AllEmployees = rd.RestaurantWorkers?.Count(),
                     TotalSalary = _employeeApiService.GetAllEmployeesDetailsByRestaurantIdAsync(rd.IdRestaurant).Result?.Sum(a => a.Salary),
                     TotalBonus = _employeeApiService.GetAllEmployeesDetailsByRestaurantIdAsync(rd.IdRestaurant).Result?.Sum(a => a.BonusSalary)
                 }
