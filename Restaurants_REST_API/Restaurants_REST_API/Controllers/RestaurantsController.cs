@@ -28,6 +28,10 @@ namespace Restaurants_REST_API.Controllers
         private readonly string _acceptedComplaintStatus;
         private readonly string _pendingComplaintStatus;
         private readonly string _rejectedComplaintStatus;
+        private readonly string _ownerRole;
+        private readonly string _chefRole;
+        private readonly string _chefHelperRole;
+        private readonly string _waiterRole;
 
         public RestaurantsController(IRestaurantApiService restaurantsApiService, IEmployeeApiService employeeApiService, IConfiguration config)
         {
@@ -44,6 +48,11 @@ namespace Restaurants_REST_API.Controllers
             _pendingComplaintStatus = _config["ApplicationSettings:ComplaintStatus:Pending"];
             _acceptedComplaintStatus = _config["ApplicationSettings:ComplaintStatus:Accepted"];
             _rejectedComplaintStatus = _config["ApplicationSettings:ComplaintStatus:Rejected"];
+
+            _ownerRole = _config["ApplicationSettings:EmployeeTypes:Owner"];
+            _chefRole = _config["ApplicationSettings:EmployeeTypes:Chef"];
+            _chefHelperRole = _config["ApplicationSettings:EmployeeTypes:Chef-helper"];
+            _waiterRole = _config["ApplicationSettings:EmployeeTypes:Waiter"];
 
             try
             {
@@ -80,6 +89,26 @@ namespace Restaurants_REST_API.Controllers
                 if (string.IsNullOrEmpty(_rejectedComplaintStatus))
                 {
                     throw new Exception("Complaint status (REJECTED) can't be empty");
+                }
+
+                if (string.IsNullOrEmpty(_ownerRole))
+                {
+                    throw new Exception("Owner role can't be empty");
+                }
+
+                if (string.IsNullOrEmpty(_chefRole))
+                {
+                    throw new Exception("Chef role can't be empty");
+                }
+
+                if (string.IsNullOrEmpty(_chefHelperRole))
+                {
+                    throw new Exception("Chef helper role can't be empty");
+                }
+
+                if (string.IsNullOrEmpty(_waiterRole))
+                {
+                    throw new Exception("Waiter role can't be empty");
                 }
             }
             catch (Exception ex)
@@ -187,9 +216,16 @@ namespace Restaurants_REST_API.Controllers
                 },
                 Employees = new
                 {
-                    AllEmployees = rd.RestaurantWorkers?.Count(),
                     TotalSalary = _employeeApiService.GetAllEmployeesDetailsByRestaurantIdAsync(rd.IdRestaurant).Result?.Sum(a => a.Salary),
-                    TotalBonus = _employeeApiService.GetAllEmployeesDetailsByRestaurantIdAsync(rd.IdRestaurant).Result?.Sum(a => a.BonusSalary)
+                    TotalBonus = _employeeApiService.GetAllEmployeesDetailsByRestaurantIdAsync(rd.IdRestaurant).Result?.Sum(a => a.BonusSalary),
+                    AllEmployees = rd.RestaurantWorkers?.Count(),
+                    TypesCount = new 
+                    {
+                        Owner = rd.RestaurantWorkers?.Where(rw => rw.EmployeeType.Equals(_ownerRole)).Count(),
+                        Chef = rd.RestaurantWorkers?.Where(rw => rw.EmployeeType.Equals(_chefRole)).Count(),
+                        ChefHelper = rd.RestaurantWorkers?.Where(rw => rw.EmployeeType.Equals(_chefHelperRole)).Count(),
+                        Waiter = rd.RestaurantWorkers?.Where(rw => rw.EmployeeType.Equals(_waiterRole)).Count(),
+                    }
                 }
             });
 
