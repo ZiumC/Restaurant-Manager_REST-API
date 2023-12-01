@@ -32,6 +32,10 @@ namespace Restaurants_REST_API.Controllers
         private readonly string _chefRole;
         private readonly string _chefHelperRole;
         private readonly string _waiterRole;
+        private readonly string _newReservationStatus;
+        private readonly string _confirmedReservationStatus;
+        private readonly string _ratedReservationStatus;
+        private readonly string _cancelledReservationStatus;
 
         public RestaurantsController(IRestaurantApiService restaurantsApiService, IEmployeeApiService employeeApiService, IConfiguration config)
         {
@@ -53,6 +57,11 @@ namespace Restaurants_REST_API.Controllers
             _chefRole = _config["ApplicationSettings:EmployeeTypes:Chef"];
             _chefHelperRole = _config["ApplicationSettings:EmployeeTypes:Chef-helper"];
             _waiterRole = _config["ApplicationSettings:EmployeeTypes:Waiter"];
+
+            _newReservationStatus = _config["ApplicationSettings:ReservationStatus:New"];
+            _confirmedReservationStatus = _config["ApplicationSettings:ReservationStatus:Confirmed"];
+            _cancelledReservationStatus = _config["ApplicationSettings:ReservationStatus:Canceled"];
+            _ratedReservationStatus = _config["ApplicationSettings:ReservationStatus:Rated"];
 
             try
             {
@@ -109,6 +118,26 @@ namespace Restaurants_REST_API.Controllers
                 if (string.IsNullOrEmpty(_waiterRole))
                 {
                     throw new Exception("Waiter role can't be empty");
+                }
+
+                if (string.IsNullOrEmpty(_newReservationStatus))
+                {
+                    throw new Exception("Reservation status (NEW) can't be empty");
+                }
+
+                if (string.IsNullOrEmpty(_confirmedReservationStatus))
+                {
+                    throw new Exception("Reservation status (CONFIRMED) can't be empty");
+                }
+
+                if (string.IsNullOrEmpty(_cancelledReservationStatus))
+                {
+                    throw new Exception("Reservation status (CANCELLED) can't be empty");
+                }
+
+                if (string.IsNullOrEmpty(_ratedReservationStatus))
+                {
+                    throw new Exception("Reservation status (RATED) can't be empty");
                 }
             }
             catch (Exception ex)
@@ -193,7 +222,14 @@ namespace Restaurants_REST_API.Controllers
                         rd.RestaurantReservations?
                         .Where(rr => rr.ReservationGrade != null)
                         .Average(rr => rr.ReservationGrade),
-                Reservations = rd.RestaurantReservations?.Count(),
+                Reservations = new 
+                {
+                    AllReservations = rd.RestaurantReservations?.Count(),
+                    New = rd.RestaurantReservations?.Where(rr => rr.Status == _newReservationStatus).Count(),
+                    Confirmed = rd.RestaurantReservations?.Where(rr => rr.Status == _confirmedReservationStatus).Count(),
+                    Canceled = rd.RestaurantReservations?.Where(rr => rr.Status == _cancelledReservationStatus).Count(),
+                    Rated = rd.RestaurantReservations?.Where(rr => rr.Status == _ratedReservationStatus).Count(),
+                },
                 Complaints = new
                 {
                     TotalComplaints = rd.RestaurantReservations?.Where(rc => rc.ReservationComplaint != null).Count(),
