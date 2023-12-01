@@ -217,8 +217,8 @@ namespace Restaurants_REST_API.Controllers
             var result = restaurantsDetails.Select(rd => new
             {
                 IdRestaurant = rd.IdRestaurant,
-                RestaurantName = rd.Name,
-                RGrade =
+                Name = rd.Name,
+                Grade =
                         rd.RestaurantReservations?
                         .Where(rr => rr.ReservationGrade != null)
                         .Average(rr => rr.ReservationGrade),
