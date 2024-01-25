@@ -89,8 +89,86 @@ _After filling up those fields just click "Connect" button._
 **2.8)** Now, right click on project structure in "Solution Explorer", then select "Manage User Secrets".
 ![How to run10](https://user-images.githubusercontent.com/90453529/226387488-60a49a65-f6c9-46dd-97d5-9cc0fe444124.png)
 
-**2.9)** Finally, copy content of "appsettings.json", then paste into "secrets.json". In field "Default" paste your saver connection string from point 2.7. **Don't forget to fill up all empty fields**.   
+**2.9)** Finally, copy content of "appsettings.json", then paste into "secrets.json". In field "Default" paste your saver connection string from point 2.7. 
 ![image](https://github.com/ZiumC/Obsluga_Restauracji_REST_API/assets/90453529/030b7bc0-3037-4041-9270-f2d90678bb5e)
+
+**Important notes**:
+``` json
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "ConnectionStrings": {
+    "Default": ""
+  },
+  "ApplicationSettings": {
+    "BasicBonus": "150",
+    "MaxLoginAttempts": "3",
+    "AmountBlockedDays": "3",
+    "DataValidation": {
+      "LoginRegex": "^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$",
+      "EmailRegex": "^([\\w\\.\\-]+)@([\\w\\-]+)((\\.(\\w){2,3})+)$",
+      "PeselRegex": "^[0-9]{11}$",
+      "OwnerRegex": "^T$|^t$|^Y$|^y$"
+    },
+    "Security": {
+      "SaltBase": "",
+      "SaltLength": "10",
+      "SecretKey": "",
+      "PasswordPepper": ""
+    },
+    "ReservationStatus": {
+      "New": "NEW",
+      "Confirmed": "CONFIRMED",
+      "Canceled": "CANCELED",
+      "Rated": "RATED"
+    },
+    "ComplaintStatus": {
+      "New": "NEW",
+      "Accepted": "ACCEPTED",
+      "Pending": "PENDING",
+      "Rejected": "REJECTED"
+    },
+    "ComplaintActions": {
+      "Consider": "consider",
+      "Accept": "accept",
+      "Reject": "reject"
+    },
+    "JwtSettings": {
+      //This field should be as same as well webpage appsettings.json
+      "Issuer": "",
+      //This field also should be as same as well webpage appsettings.json
+      "Audience": "",
+      "SecretSignatureKey": "",
+      "RefreshTokenLength": "512",
+      "AccessTokenValidity": "2"
+    },
+    "UserRoles": {
+      "Client": "CLIENT",
+      "Employee": "EMPLOYEE",
+      "Supervisor": "SUPERVISOR",
+      "Owner": "OWNER"
+    },
+    "AdministrativeRoles": {
+      "Owner": "Owner",
+      "Supervisor": "Chef",
+      "OwnerStatusYes": "Y",
+      "OwnerStatusNo": "N"
+    },
+    "EmployeeTypes": {
+      "Owner": "Owner",
+      "Chef": "Chef",
+      "Chef-helper": "Chef helper",
+      "Waiter": "Waiter"
+    }
+  }
+}
+```
+
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -102,5 +180,5 @@ _After filling up those fields just click "Connect" button._
 **3.2)** In Package Console just type: "update-database". If you are connected to your database, this command should generate all tables and insert data into new database.    
 ![How to run13](https://user-images.githubusercontent.com/90453529/226390347-86494ce7-a755-4812-8c75-34b422605caa.png)
 
-
+Now you can run proect in IDE MS Visual Studio Community 2022.
 
