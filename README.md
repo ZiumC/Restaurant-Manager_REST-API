@@ -1,16 +1,36 @@
-This project should have installed packages:    
-**Package name | version***    
-a) Microsoft.EntityFrameworkCore | **6.0.15**    
-b) Microsoft.EntityFrameworkCore.SqlServer | **6.0.15**    
-c) Microsoft.EntityFrameworkCore.Tools | **6.0.15**    
-d) Swashbuckle.AspNetCore | **6.2.3**    
-e) Microsoft.AspNetCore.Authentication.JwtBearer | **6.0.15** 
+# Restaurant-Manager_REST-API
+This project was created as part of an engineering thesis.   
 
-*Project will work if you install packages in specific version. Otherwise project won't work.
+<div align="center">
+  <table style="width:100%">
+    <tr align="center">
+      <td>Package name</td>
+      <td>Package version</td>
+    </tr>
+   <tr>
+      <td>Microsoft.EntityFrameworkCore</td>
+      <td align="center">6.0.15</td>
+    </tr>
+   <tr>
+      <td>Microsoft.EntityFrameworkCore.SqlServer</td>
+      <td align="center">6.0.15</td>
+    </tr>
+   <tr>
+      <td>Microsoft.EntityFrameworkCore.Tools</td>
+      <td align="center">6.0.15</td>
+    </tr>
+   <tr>
+      <td>Swashbuckle.AspNetCore</td>
+      <td align="center">6.2.3</td>
+    </tr>
+   <tr>
+      <td>Microsoft.AspNetCore.Authentication.JwtBearer</td>
+      <td align="center">6.0.15</td>
+    </tr>
+  </table>
+</div>
 
-How to run REST API?
------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
+# How to run REST API
 **1)** You need to set up database, so:
 
 **1.1)** Make sure you have installed **SQL Server Management Studio (SSMS)**   
